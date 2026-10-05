@@ -416,11 +416,14 @@ model Transaction {
   excludeFromAllowance Boolean    @default(false)
   isAdjustment         Boolean    @default(false)
   matchedImport        Boolean    @default(false)
+  /// Set on rows created by jobs (recurring, goal auto-transfer) so a rerun never posts twice.
+  genKey               String?
   createdById          String?
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
   deletedAt            DateTime?
 
+  @@unique([householdId, genKey])
   @@index([householdId, occurredOn])
   @@index([accountId])
   @@index([counterAccountId])
@@ -471,6 +474,8 @@ model Recurring {
   mode        RecurringMode
   opensPeriod Boolean       @default(false)
   active      Boolean       @default(true)
+  startDate   DateTime      @db.Date @default(now())
+  endDate     DateTime?     @db.Date
   lastRunOn   DateTime?     @db.Date
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -497,10 +502,13 @@ model Bill {
   amount            BigInt
   status            BillStatus @default(UNPAID)
   paidTransactionId String?
+  /// Generation key so jobs never create the same bill twice (rec:, inst:, card:, goal:).
+  key               String?
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
   deletedAt         DateTime?
 
+  @@unique([householdId, key])
   @@index([householdId, dueDate])
 }
 
@@ -532,6 +540,9 @@ model Goal {
   contributionAmount  BigInt?
   contributionPercent Decimal?   @db.Decimal(6, 3)
   contributionMode    String     @default("BILL")
+  /// For contributionMode AUTO: transfer from this account into savingsAccountId when a period opens.
+  fundingAccountId    String?
+  savingsAccountId    String?
   isEmergencyFund     Boolean    @default(false)
   visibility          Visibility @default(SHARED)
   ownerId             String?

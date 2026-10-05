@@ -34,6 +34,7 @@ export const txInput = z.object({
   importBatchId: id.optional().nullable(),
   counterpartyId: id.optional().nullable(),
   excludeFromAllowance: z.boolean().default(false),
+  genKey: z.string().max(200).optional().nullable(),
   isAdjustment: z.boolean().default(false),
   matchedImport: z.boolean().optional(),
 });
@@ -101,10 +102,15 @@ async function buildData(db: Db, actor: Actor, i: z.output<typeof txInput>) {
     excludeFromAllowance: i.excludeFromAllowance,
     isAdjustment: i.isAdjustment,
     matchedImport: i.matchedImport ?? false,
+    genKey: i.genKey ?? null,
     createdById: actor.memberId,
   };
   return data;
 }
+
+let hooksReady: Promise<void> | null = null;
+/** Loads the side-effect hooks (bills, goals, trips) once; dynamic import avoids a module cycle. */
+const ready = () => (hooksReady ??= import("./hooks").then((m) => m.installLedgerHooks()));
 
 type Hook = (db: Db, actor: Actor, tx: { id: string }) => Promise<void>;
 const afterCreateHooks: Hook[] = [];
@@ -113,6 +119,7 @@ export const onTransactionCreated = (h: Hook) => afterCreateHooks.push(h);
 
 export async function createTransaction(actor: Actor, raw: TxInput, db?: Db) {
   const i = txInput.parse(raw);
+  await ready();
   const run = async (tx: Db) => {
     const data = await buildData(tx, actor, i);
     const row = await tx.transaction.create({ data });
@@ -163,6 +170,7 @@ export async function updateTransaction(actor: Actor, txId: string, raw: z.input
         excludeFromAllowance: before.excludeFromAllowance,
         isAdjustment: before.isAdjustment,
         matchedImport: before.matchedImport,
+        genKey: before.genKey,
       },
       ...Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== undefined)),
     });
@@ -183,6 +191,7 @@ export const onTransactionDeleted = (h: DelHook) => afterDeleteHooks.push(h);
 
 /** Soft delete; restorable (SPEC 5.1). */
 export async function deleteTransaction(actor: Actor, txId: string) {
+  await ready();
   return prisma.$transaction(async (tx) => {
     const before = await getTransaction(actor, txId, tx);
     if (before.type === "OPENING") throw bad("edit_opening_on_account");
@@ -194,6 +203,7 @@ export async function deleteTransaction(actor: Actor, txId: string) {
 }
 
 export async function restoreTransaction(actor: Actor, txId: string) {
+  await ready();
   return prisma.$transaction(async (tx) => {
     const before = await getTransaction(actor, txId, tx, true);
     if (!before.deletedAt) return before;

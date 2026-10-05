@@ -10,7 +10,7 @@
     "dev": "next dev -H 127.0.0.1 -p 3070",
     "build": "next build",
     "start": "next start -H 127.0.0.1 -p 3070",
-    "worker": "tsx src/server/worker/main.ts",
+    "worker": "node --env-file-if-exists=.env --import tsx src/server/worker/main.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

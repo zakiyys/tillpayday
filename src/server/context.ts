@@ -4,6 +4,7 @@ import { prisma } from "./db";
 import { currentSession, type SessionInfo } from "./auth/session";
 import { ownerExists } from "./auth/setup";
 import { todayIn } from "@/domain/dates";
+import { markSynced, needsSync } from "./sync-state";
 
 export interface PageCtx extends SessionInfo {
   household: {
@@ -29,12 +30,18 @@ export async function requirePage(opts: { allowUnfinished?: boolean } = {}): Pro
   if (!s) redirect((await ownerExists()) ? "/login" : "/setup");
   const h = await prisma.household.findUniqueOrThrow({ where: { id: s.householdId } });
   if (!h.setupDoneAt && !opts.allowUnfinished) redirect("/onboarding");
+  const today = todayIn(h.timezone);
+  if (h.setupDoneAt && needsSync(h.id)) {
+    const { syncHousehold } = await import("./ledger/periods");
+    await syncHousehold(h.id, today);
+    markSynced(h.id);
+  }
   const jar = await cookies();
   const locale = (jar.get("locale")?.value ?? h.locale) === "en" ? "en" : "id";
   return {
     ...s,
     household: { ...h, settings: (h.settings ?? {}) as Record<string, unknown> },
-    today: todayIn(h.timezone),
+    today,
     locale,
     intl: locale === "en" ? "en-GB" : "id-ID",
   };

@@ -10,7 +10,7 @@ Resume rule: read this file first, then `docs/DECISIONS.md`. Stages follow SPEC 
 | 2 Ledger core | done |
 | 3 Auth and first install | done |
 | 4 Manual recording | done |
-| 5 Periods and home | not started |
+| 5 Periods and home | done |
 | 6 Debt, investments, currency | not started |
 | 7 Manual onboarding and demo mode | not started |
 | 8 AI input | not started |
@@ -89,6 +89,24 @@ dial ENERGY 1 / RHYTHM 2 / MOTION 1.
 - Tests: integration (balances, soft delete/restore, audit trail, input validation, household isolation,
   scenario 24 service level, scenario 9 service level, category merge); e2e with axe and 390 px overflow check.
   Screenshots reviewed: long transfer titles wrapped instead of truncating, row actions moved into the sheet on phones.
+
+### Stage 5: Periods and home (done)
+
+- `syncHousehold` (src/server/ledger/periods.ts) brings a household up to date: Period rows from the payday rule
+  and recorded salaries, Recurring bills and AUTO_POST transactions, installment portion bills, card statement
+  bills (owed balance on the statement day), goal contribution bills and AUTO goal transfers. Every generated row
+  has a unique key (`Bill.key`, `Transaction.genKey`), so reruns never duplicate. Runs from the worker hourly and
+  on page load when the household changed (throttled per process).
+- Hooks on recording: payments matching an unpaid bill mark it paid (no double count against the allowance),
+  goal deposits raise allocations, trip expenses are tagged (used in stage 6).
+- Worker: `src/server/worker/main.ts` (pg-boss 12, own `pgboss` schema), job registry in `jobs.ts`.
+- Pages: Home (hero card per SPEC 12.3, two small cards, recent list, notices for missing salary, sanity check,
+  extra income, leftover near period end, drafts), Budgets (per category with 85/100 status, suggestions from the
+  last two periods, history), Bills and recurring (pay, skip, recurring CRUD with four schedule kinds, detected
+  subscriptions), Goals (progress, reach date, emergency months, allocations, deposit, set aside, withdraw that
+  asks which goal gives up money).
+- Tests: unit (schedules, subscriptions), integration (SPEC 6.2 figures through the real services, idempotent sync,
+  scenarios 6, 10, 13, 14 at service level, auto-post once, card statements), e2e with axe and screenshots.
 
 ## Open problems
 

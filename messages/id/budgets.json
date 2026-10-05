@@ -1,0 +1,18 @@
+{
+  "title": "Budget",
+  "subtitle": "Batas per kategori, opsional. Jatah harian tetap jalan tanpa budget.",
+  "period": "Periode {from} sampai {to}",
+  "current": "Periode ini",
+  "history": "Periode sebelumnya",
+  "limit": "Batas untuk {name}",
+  "spent": "{spent} dari {limit}",
+  "spentOnly": "Terpakai {spent}",
+  "noLimit": "Tanpa batas",
+  "status": { "OK": "Aman", "NEAR": "Hampir habis", "OVER": "Lewat batas" },
+  "suggestion": "Saran {amount}",
+  "applySuggestions": "Pakai saran",
+  "saveLimits": "Simpan batas",
+  "saved": "Batas tersimpan.",
+  "noHistory": "Saran muncul setelah ada riwayat dua periode.",
+  "empty": "Belum ada kategori pengeluaran."
+}

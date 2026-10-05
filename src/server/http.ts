@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { prisma } from "./db";
 import { sha256 } from "./crypto";
 import { readSession, SESSION_COOKIE, type SessionInfo } from "./auth/session";
+import { markDirty } from "./sync-state";
 
 export class HttpError extends Error {
   constructor(
@@ -94,7 +95,9 @@ export function route<P = Record<string, string>>(fn: (c: Ctx<P>) => Promise<Res
       if (!session) throw new HttpError(401, "unauthenticated");
       if (opts.owner && session.role !== "OWNER") throw forbidden("owner_only");
       if (opts.reauth && !session.reauthOk) throw new HttpError(403, "reauth_required");
-      return await fn({ req, params: await ctx.params, session });
+      const res = await fn({ req, params: await ctx.params, session });
+      if (req.method !== "GET" && req.method !== "HEAD") markDirty(session.householdId);
+      return res;
     } catch (e) {
       return toResponse(e);
     }
