@@ -15,7 +15,7 @@ Resume rule: read this file first, then `docs/DECISIONS.md`. Stages follow SPEC 
 | 7 Manual onboarding and demo mode | done |
 | 8 AI input | done |
 | 9 AI onboarding | done |
-| 10 Statement import | not started |
+| 10 Statement import | done |
 | 11 PWA | not started |
 | 12 Dashboard and extras | not started |
 | 13 Two-person mode | not started |
@@ -172,6 +172,21 @@ dial ENERGY 1 / RHYTHM 2 / MOTION 1.
   phones open it as a sheet. Per-topic progress list.
 - Tests: integration (order owned by code, cross-topic patch ignored, skip without model, secret refusal,
   model down keeps draft, consent required); e2e through the mock HTTP model server.
+
+### Stage 10: Statement import (done)
+
+- `src/domain/statement.ts`: RFC 4180 CSV with delimiter detection, column mapping (signed amount, debit/credit,
+  or amount + DB/CR marker, balance), date formats incl. Indonesian month names, statement money cells, mapping
+  guess from headers, account detection by account number vs `last4`.
+- `src/server/import/statements.ts`: batch per upload (CSV by code with the mapping saved per account; PDF/image
+  read by the model with a Zod-checked row schema), duplicate matching (account, amount, direction, +/- 2 days,
+  not paired before; one candidate auto, several = user chooses), estimated FX rows updated to the statement amount,
+  unpaid bills suggested for new rows, rows already imported earlier skipped, own transfers paired across batches
+  into one TRANSFER, commit through the ledger services (`via` IMPORT), then a balance check against the closing
+  balance.
+- Page: Import (account or auto-detect, file, mapping editor, review list with matched/new/transfer, choose,
+  category, skip, commit, history with resume).
+- Tests: integration for scenarios 12, 21 (incl. re-import of the same file), 22 and account detection; e2e.
 
 ## Open problems
 
