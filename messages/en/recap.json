@@ -1,0 +1,14 @@
+{
+  "title": "Weekly recap",
+  "subtitle": "Every week at the time you set in Notifications. Figures come from your records.",
+  "now": "Make this week's recap now",
+  "empty": "No recaps yet",
+  "emptyBody": "The first one appears at the end of the week.",
+  "week": "{from} to {to}",
+  "spent": "Spent",
+  "over": "Over budget",
+  "goals": "Goals",
+  "drafts": "Waiting for review",
+  "stale": "Not checked for a while",
+  "none": "None"
+}

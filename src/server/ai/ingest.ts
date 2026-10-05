@@ -328,7 +328,18 @@ async function resolveActions(ctx: IngestContext, actions: Action[], rawText: st
   return out;
 }
 
-export type IngestResult = { status: "proposals"; proposals: Proposal[]; usedModel: boolean } | { status: "manual"; proposals: Proposal[]; reason: string } | { status: "queued"; draftId: string; reason: string; proposals: Proposal[] };
+export type IngestResult = { status: "proposals"; proposals: Proposal[]; usedModel: boolean; autoSave?: boolean } | { status: "manual"; proposals: Proposal[]; reason: string } | { status: "queued"; draftId: string; reason: string; proposals: Proposal[] };
+
+/**
+ * Setting (SPEC 2.2, off by default): small complete expenses may be saved without the confirmation card.
+ * Only when every proposal is a complete EXPENSE under the limit and nothing needs an answer.
+ */
+async function autoSaveFor(householdId: string, ps: Proposal[]) {
+  const h = await prisma.household.findUniqueOrThrow({ where: { id: householdId } });
+  const limit = (h.settings as { autoSaveBelow?: string | null } | null)?.autoSaveBelow;
+  if (!limit) return false;
+  return ps.length > 0 && ps.every((p) => p.kind === "tx" && p.type === "EXPENSE" && p.currency === h.baseCurrency && BigInt(p.amount) < BigInt(limit) && missingFields(p).length === 0 && !p.interpretedThousands);
+}
 
 /** Interprets one input (SPEC 7.1). Local parser first; model only when needed; manual fallback when AI is down. */
 export async function interpret(actor: Actor, today: ISODate, raw: { text?: string | null; image?: { mime: string; base64: string; attachmentId: string } | null }): Promise<IngestResult> {
@@ -342,14 +353,14 @@ export async function interpret(actor: Actor, today: ISODate, raw: { text?: stri
         const idx = out.filter((p) => p.kind !== "question").length;
         await txFromSimple(ctx, { kind: e.kind, description: e.description, major: e.amount.major, currency: e.currency, accountId: e.accountId, ambiguous: e.accountAmbiguous, date: e.date, interpretedThousands: e.amount.interpretedThousands }, idx, out);
       }
-      return { status: "proposals", proposals: out, usedModel: false };
+      return { status: "proposals", proposals: out, usedModel: false, autoSave: await autoSaveFor(actor.householdId, out) };
     }
   }
   try {
     const out = await extractWithFallback(actor.householdId, { system: SYSTEM(ctx), text: text || "(see attached document)", image: raw.image ? { mime: raw.image.mime, base64: raw.image.base64 } : undefined });
     const { actions } = validateActions(stripNulls(out));
     const proposals = await resolveActions(ctx, actions, text);
-    return { status: "proposals", proposals: proposals.length ? proposals : [{ kind: "answer", text: T(ctx, "Tidak ada yang bisa dicatat dari input ini.", "Nothing to record from this input.") }], usedModel: true };
+    return { status: "proposals", autoSave: await autoSaveFor(actor.householdId, proposals), proposals: proposals.length ? proposals : [{ kind: "answer", text: T(ctx, "Tidak ada yang bisa dicatat dari input ini.", "Nothing to record from this input.") }], usedModel: true };
   } catch (e) {
     if (!(e instanceof AiUnavailable)) throw e;
     if (raw.image) {

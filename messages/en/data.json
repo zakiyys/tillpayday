@@ -1,0 +1,21 @@
+{
+  "title": "Backup and export",
+  "subtitle": "Your data in open formats, at any time.",
+  "exportJson": "Export everything (JSON)",
+  "exportCsv": "Export a table (CSV)",
+  "table": "Table",
+  "exportNote": "Exports never contain passwords, keys, tokens or attachments. The download needs a recent sign-in confirmation.",
+  "importTitle": "Import an export",
+  "importBody": "Loads a JSON export into this household. Only possible while it has no transactions yet.",
+  "importFile": "Export file (JSON)",
+  "importRun": "Import",
+  "imported": "Imported.",
+  "yearEnd": "Year-end list",
+  "yearEndBody": "Accounts, holdings at cost and debts on 31 December, as CSV or a printable page. No tax calculation.",
+  "year": "Year",
+  "csv": "Download CSV",
+  "print": "Printable page",
+  "backup": "Server backups",
+  "backupBody": "Daily encrypted database backups run on the server (see the README for restore). They are separate from these exports.",
+  "import_needs_empty_household": "This household already has transactions."
+}

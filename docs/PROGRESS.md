@@ -17,7 +17,7 @@ Resume rule: read this file first, then `docs/DECISIONS.md`. Stages follow SPEC 
 | 9 AI onboarding | done |
 | 10 Statement import | done |
 | 11 PWA | done |
-| 12 Dashboard and extras | not started |
+| 12 Dashboard and extras | done |
 | 13 Two-person mode | not started |
 | 14 Hardening and docs | not started |
 
@@ -202,6 +202,29 @@ dial ENERGY 1 / RHYTHM 2 / MOTION 1.
   push texts carry no amounts. Settings > Notifications: push on/off, per-kind toggles, recap day/hour, inbox.
 - Tests: e2e scenario 25 (scopes both ways, hash-only storage, revoke), token ingest draft, manifest, service
   worker cache contents after visiting data pages, share target POST.
+
+### Stage 12: Dashboard and extras (done)
+
+- Dashboard (SPEC 12.3): quick entry, four cards (safe today on the accent card, net worth with change since last
+  period, cashflow, savings rate marked provisional plus last closed period), income/expense chart for six periods
+  with a table equivalent, budgets, accounts by group, goals, net worth trend, balance projection 30/60/90 days with
+  lowest point and first negative date, category trend, simulation form, investments, recent transactions.
+  Charts are SVG with titles/descriptions, axis labels, focusable points with values on hover/focus, outlined
+  expense bars (not colour only).
+- SPEC 11: weekly recap (worker job at the chosen day/hour, template text or model text that may not invent numbers;
+  Recap page with archive), notifications job (bills and cards due, budget near/over, day without entries, stale
+  prices, warranties, over-allocation; deduplicated, opt-out per kind), rules page, projection, simulations,
+  emergency months, subscription detection, year-end list (CSV and printable page, holdings at cost, no tax),
+  warranty date on attachments, summary endpoint, full export (JSON, CSV per table, no secrets, CSV-injection safe)
+  and re-import into an empty household with id remapping.
+- Settings: Household (all SPEC 2.2 defaults editable: payday, allowance unit, auto-save limit, leftover handling,
+  net worth view), Categories and rules (add, rename, merge, delete unused, remove rules), Appearance (language,
+  theme, accent per device), Backup and export.
+- Implemented SPEC 2.2 behaviours: auto-save of small complete expenses (off by default), leftover carry-over.
+- Tests: integration (dashboard figures, recap template, notification dedupe and opt-out, year-end cost, export and
+  import round trip with equal balances and no secrets, carry-over, auto-save); e2e with axe and overflow checks.
+  Fixed: grid items with wide tables stretched columns (`min-w-0` on cards), axe `aria-prohibited-attr` on chart
+  points.
 
 ## Open problems
 

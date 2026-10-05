@@ -263,7 +263,17 @@ export async function periodSummary(actor: Actor, today: ISODate, period?: Perio
   const periodIncome = txRows.filter((t) => t.type === "INCOME" && t.categoryId && poolSet.has(t.categoryId)).reduce((s, t) => s + t.baseAmount, 0n);
   const periodSavings = goalBillsTotal(bills);
   const fixedBills = fixedBillsTotal(bills);
-  const pool = spendingPool({ periodIncome, periodSavings, fixedBills });
+  let pool = spendingPool({ periodIncome, periodSavings, fixedBills });
+  // Setting (SPEC 2.2): leftover spending money carries into the next period instead of being offered to a goal.
+  let carried = 0n;
+  if ((h.settings as { leftover?: string } | null)?.leftover === "CARRY") {
+    const prev = (await ensurePeriods(prisma, actor.householdId, today)).filter((x) => x.end < p.start).pop();
+    if (prev) {
+      const ps = await periodSummary(actor, prev.end, prev);
+      if (ps.allowance.leftUntilPayday > 0n) carried = ps.allowance.leftUntilPayday;
+    }
+    pool += carried;
+  }
   const unit = h.allowanceUnit === "WEEKLY" ? "WEEKLY" : "DAILY";
   const a = computeAllowance({ pool, periodStart: p.start, periodEnd: p.end, today, txs, unit });
   const unpaid = billRows.filter((b) => b.status === "UNPAID" && b.kind !== "INSTALLMENT");
@@ -276,6 +286,7 @@ export async function periodSummary(actor: Actor, today: ISODate, period?: Perio
     period: p,
     unit,
     periodIncome,
+    carried,
     periodSavings,
     fixedBills,
     pool,

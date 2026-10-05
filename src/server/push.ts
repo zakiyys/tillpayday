@@ -10,7 +10,14 @@ export function installPush() {
   const pub = process.env.VAPID_PUBLIC_KEY;
   const priv = process.env.VAPID_PRIVATE_KEY;
   if (!pub || !priv) return;
-  webpush.setVapidDetails(process.env.PUBLIC_URL ?? "http://localhost", pub, priv);
+  // web-push needs an https: or mailto: subject. Local http installs use a reserved placeholder address.
+  const url = process.env.PUBLIC_URL ?? "";
+  const subject = url.startsWith("https://") ? url : "mailto:push@example.invalid";
+  try {
+    webpush.setVapidDetails(subject, pub, priv);
+  } catch {
+    return; // malformed keys: push stays off, in-app notifications still work
+  }
   setPushSender(async (memberId, kind, payload) => {
     const subs = await prisma.pushSubscription.findMany({ where: { memberId } });
     const m = await prisma.member.findUnique({ where: { id: memberId }, include: { household: true } });

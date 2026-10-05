@@ -1,0 +1,14 @@
+{
+  "title": "Language and theme",
+  "language": "Language",
+  "theme": "Theme",
+  "system": "Follow the device",
+  "light": "Light",
+  "dark": "Dark",
+  "accent": "Accent colour",
+  "evergreen": "Evergreen",
+  "slate": "Slate blue",
+  "plum": "Plum",
+  "graphite": "Graphite",
+  "save": "Apply"
+}

@@ -1,0 +1,21 @@
+{
+  "title": "Kategori dan rule",
+  "add": "Tambah kategori",
+  "name": "Nama",
+  "kind": "Jenis",
+  "INCOME": "Pemasukan",
+  "EXPENSE": "Pengeluaran",
+  "countsToPool": "Dihitung sebagai pemasukan dana belanja",
+  "countsHelp": "Pemasukan di kategori ini masuk ke jatah harian (gaji, penghasilan sampingan).",
+  "rename": "Ganti nama",
+  "merge": "Gabung ke",
+  "mergeTitle": "Gabung {name}",
+  "mergeBody": "Semua transaksi, budget, dan rule dipindah ke kategori yang dipilih.",
+  "delete": "Hapus",
+  "rules": "Rule dari koreksimu",
+  "rulesBody": "Kalau keterangan berisi teks itu, kategori atau akun diisi otomatis.",
+  "noRules": "Belum ada rule. Rule muncul saat kamu mengubah saran dan memilih untuk mengingatnya.",
+  "ruleTo": "\"{match}\" mengisi {target}",
+  "category_in_use": "Kategori ini punya transaksi. Gabungkan saja.",
+  "same_category": "Pilih kategori lain."
+}

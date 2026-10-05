@@ -119,3 +119,17 @@ describe("periods, bills and allowance end to end", () => {
     expect((await listAccountsWithBalances(s.actor)).find((a) => a.id === s.card.id)!.balance).toBe(0n);
   });
 });
+
+describe("settings from SPEC 2.2", () => {
+  it("leftover CARRY adds last period's leftover to the pool; default offers it instead", async () => {
+    const s = await setup();
+    await createTransaction(s.actor, { type: "INCOME", occurredOn: "2026-01-25", accountId: s.bank.id, amount: "3000000", categoryId: s.salary });
+    await createTransaction(s.actor, { type: "INCOME", occurredOn: "2026-02-25", accountId: s.bank.id, amount: "3000000", categoryId: s.salary });
+    await syncHousehold(s.actor.householdId, "2026-03-01");
+    const plain = await periodSummary(s.actor, "2026-03-01");
+    expect(plain.pool).toBe(3_000_000n);
+    await prisma.household.update({ where: { id: s.actor.householdId }, data: { settings: { leftover: "CARRY" } } });
+    const carry = await periodSummary(s.actor, "2026-03-01");
+    expect(carry.pool).toBe(6_000_000n);
+  });
+});

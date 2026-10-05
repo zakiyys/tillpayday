@@ -1,0 +1,14 @@
+{
+  "title": "Rekap mingguan",
+  "subtitle": "Tiap minggu pada waktu yang kamu atur di Notifikasi. Angka dari catatanmu.",
+  "now": "Buat rekap minggu ini sekarang",
+  "empty": "Belum ada rekap",
+  "emptyBody": "Rekap pertama muncul di akhir minggu.",
+  "week": "{from} sampai {to}",
+  "spent": "Pengeluaran",
+  "over": "Lewat budget",
+  "goals": "Goal",
+  "drafts": "Menunggu review",
+  "stale": "Lama tidak dicocokkan",
+  "none": "Tidak ada"
+}

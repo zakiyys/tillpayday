@@ -1,0 +1,21 @@
+{
+  "title": "Categories and rules",
+  "add": "Add category",
+  "name": "Name",
+  "kind": "Kind",
+  "INCOME": "Income",
+  "EXPENSE": "Expense",
+  "countsToPool": "Counts as spending money income",
+  "countsHelp": "Income in these categories feeds the daily allowance (salary, side income).",
+  "rename": "Rename",
+  "merge": "Merge into",
+  "mergeTitle": "Merge {name}",
+  "mergeBody": "All transactions, budgets and rules move to the chosen category.",
+  "delete": "Delete",
+  "rules": "Rules from your corrections",
+  "rulesBody": "When a description contains the text, the category or account is filled in for you.",
+  "noRules": "No rules yet. They appear when you change a suggestion and choose to remember it.",
+  "ruleTo": "\"{match}\" sets {target}",
+  "category_in_use": "This category has transactions. Merge it instead.",
+  "same_category": "Choose another category."
+}

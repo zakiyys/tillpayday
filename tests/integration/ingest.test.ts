@@ -29,7 +29,7 @@ async function setup(withAi = true) {
   await createRecurring(actor, { name: "Gaji", template: { type: "INCOME", accountId: bca1.id, amount: "15000000", categoryId: await cat(actor.householdId, "salary") }, schedule: { kind: "MONTHLY", day: 25 }, mode: "CREATE_BILL", opensPeriod: true, active: false, startDate: opening });
   return { actor, gopay, bca1, bca2, bca3, broker };
 }
-const run = (actor: Awaited<ReturnType<typeof setup>>["actor"], text: string) => interpret(actor, today, { text });
+const run = async (actor: Awaited<ReturnType<typeof setup>>["actor"], text: string) => (await interpret(actor, today, { text })) as Extract<Awaited<ReturnType<typeof interpret>>, { status: "proposals" }>;
 const tx = (ps: Proposal[]) => ps.filter((p): p is Extract<Proposal, { kind: "tx" }> => p.kind === "tx");
 
 beforeEach(async () => {
@@ -188,5 +188,16 @@ describe("rules from corrections", () => {
     await confirmProposals(s.actor, { proposals: [{ ...p, categoryId: shopping, remember: true }] });
     const again = await run(s.actor, "nasi padang 25k gopay");
     expect(tx(again.proposals)[0]!.categoryId).toBe(shopping);
+  });
+});
+
+describe("auto-save setting (SPEC 2.2)", () => {
+  it("is off by default and only applies to complete small expenses", async () => {
+    const s = await setup();
+    expect((await run(s.actor, "kopi 25k gopay")).autoSave).toBe(false);
+    await prisma.household.update({ where: { id: s.actor.householdId }, data: { settings: { autoSaveBelow: "50000" } } });
+    expect((await run(s.actor, "kopi 25k gopay")).autoSave).toBe(true);
+    expect((await run(s.actor, "kopi 75k gopay")).autoSave).toBe(false);
+    expect((await run(s.actor, "isi bensin 15")).autoSave).toBe(false); // needs an account
   });
 });

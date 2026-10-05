@@ -31,4 +31,14 @@ export const JOBS: JobDef[] = [
       await processPendingDrafts();
     },
   },
+  {
+    name: "weekly-recap",
+    cron: "5 * * * *",
+    run: async () => (await import("../reports/jobs")).recapJob(),
+  },
+  {
+    name: "notifications",
+    cron: "15 1 * * *",
+    run: async () => (await import("../reports/jobs")).notificationJob(),
+  },
 ];

@@ -80,7 +80,7 @@ export function Conversation({ opts, intl, today, base, aiState, initialText, dr
         return;
       }
       try {
-        let r: { status: string; proposals: Proposal[]; attachmentId?: string | null; draftId?: string };
+        let r: { status: string; proposals: Proposal[]; attachmentId?: string | null; draftId?: string; autoSave?: boolean };
         if (photo) {
           const fd = new FormData();
           fd.set("file", photo);
@@ -90,6 +90,12 @@ export function Conversation({ opts, intl, today, base, aiState, initialText, dr
           if (!res.ok) throw new ApiError(res.status, data?.error ?? "internal");
           r = data;
         } else r = await api("/api/v1/ingest", { body: { text: input } });
+        if (r.autoSave) {
+          // Auto-save setting: confirm directly, still visible in the thread with the saved mark.
+          await api("/api/v1/ingest/confirm", { body: { proposals: r.proposals, rawText: input, source: "TEXT" } });
+          update(id, { status: "saved", proposals: r.proposals });
+          return;
+        }
         update(id, { status: r.status === "manual" ? "manual" : r.status === "queued" ? "queued" : "ready", proposals: r.proposals, attachmentId: r.attachmentId ?? null, draftId: r.draftId ?? null });
       } catch (e) {
         if (e instanceof TypeError) {

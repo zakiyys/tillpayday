@@ -1,0 +1,21 @@
+{
+  "title": "Backup dan ekspor",
+  "subtitle": "Datamu dalam format terbuka, kapan saja.",
+  "exportJson": "Ekspor semua (JSON)",
+  "exportCsv": "Ekspor satu tabel (CSV)",
+  "table": "Tabel",
+  "exportNote": "Ekspor tidak pernah berisi password, kunci, token, atau lampiran. Unduhan perlu konfirmasi masuk yang baru.",
+  "importTitle": "Impor hasil ekspor",
+  "importBody": "Memuat ekspor JSON ke household ini. Hanya bisa selama belum ada transaksi.",
+  "importFile": "File ekspor (JSON)",
+  "importRun": "Impor",
+  "imported": "Berhasil diimpor.",
+  "yearEnd": "Daftar akhir tahun",
+  "yearEndBody": "Akun, holding dengan nilai perolehan, dan hutang per 31 Desember, sebagai CSV atau halaman siap cetak. Tanpa perhitungan pajak.",
+  "year": "Tahun",
+  "csv": "Unduh CSV",
+  "print": "Halaman cetak",
+  "backup": "Backup server",
+  "backupBody": "Backup database harian terenkripsi berjalan di server (lihat README untuk restore). Terpisah dari ekspor ini.",
+  "import_needs_empty_household": "Household ini sudah punya transaksi."
+}

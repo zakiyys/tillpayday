@@ -10,7 +10,7 @@ export function cx(...c: Array<string | false | null | undefined>) {
 
 export function Card({ className, children, flush = false, ...rest }: ComponentProps<"section"> & { flush?: boolean }) {
   return (
-    <section className={cx("rounded-card-sm border border-line bg-surface", flush ? "overflow-hidden" : "p-4", className)} {...rest}>
+    <section className={cx("min-w-0 rounded-card-sm border border-line bg-surface", flush ? "overflow-hidden" : "p-4", className)} {...rest}>
       {children}
     </section>
   );
