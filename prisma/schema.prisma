@@ -76,6 +76,13 @@ enum RecurringMode {
   CREATE_BILL
 }
 
+enum BillKind {
+  REGULAR
+  INSTALLMENT
+  CARD_STATEMENT
+  GOAL
+}
+
 enum BillStatus {
   UNPAID
   PAID
@@ -477,6 +484,7 @@ model Bill {
   householdId       String
   household         Household  @relation(fields: [householdId], references: [id])
   name              String
+  kind              BillKind   @default(REGULAR)
   recurringId       String?
   recurring         Recurring? @relation(fields: [recurringId], references: [id])
   periodId          String?
@@ -555,6 +563,7 @@ model AssetType {
   name        String
   key         String?
   unitLabel   String
+  unitSize    Decimal     @default(1) @db.Decimal(20, 6)
   valuation   Valuation
   priceSource PriceSource
   providerKey String?

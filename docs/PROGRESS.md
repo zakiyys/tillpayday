@@ -7,7 +7,7 @@ Resume rule: read this file first, then `docs/DECISIONS.md`. Stages follow SPEC 
 | Stage | Status |
 | --- | --- |
 | 1 Foundation | done |
-| 2 Ledger core | not started |
+| 2 Ledger core | done |
 | 3 Auth and first install | not started |
 | 4 Manual recording | not started |
 | 5 Periods and home | not started |
@@ -49,6 +49,20 @@ dial ENERGY 1 / RHYTHM 2 / MOTION 1.
   for light, dark and four accent options. Every text pair contrast-checked with the WCAG formula.
   Plus Jakarta Sans self-hosted from the Fontsource package with its OFL licence file.
 - Tests: env validation unit tests, process-level startup refusal test (scenario 27).
+
+### Stage 2: Ledger core (done)
+
+- Pure functions in `src/domain/`: `dates` (UTC day arithmetic, no DST drift), `money` (bigint minor units,
+  decimal.js for rates/units, floor division, locale formatting), `ledger` (effects per type, balances, net worth,
+  cashflow, savings rate), `period` (payday rule, +/- 5 day salary window, period bounds), `allowance` (pool,
+  daily and weekly allowance, sanity check), `budget` (category spend with installment portions, 85/100 status,
+  suggestions), `goals` (allocations, withdrawals that force a goal choice, reach date, emergency months),
+  `assets` (weighted average cost, realized and unrealized P&L, price vs FX split, valuation modes),
+  `fx` (weighted inflow rate, base amount selection), `reconcile` (balance check proposals, repeating fees),
+  `matching` (statement rows, transfer pairing, bill matching), `split` (split bill, loan split, annuity,
+  installment schedule).
+- Tests written first: `tests/unit/domain-scenarios.test.ts` covers scenarios 1 to 14 (one describe each),
+  `tests/unit/domain-helpers.test.ts` covers edge cases. 53 unit tests pass.
 
 ## Open problems
 

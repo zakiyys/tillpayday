@@ -22,3 +22,14 @@ Readings of the spec where it was ambiguous, and deviations with reasons. Newest
 8. **Private-details scan.** Owner-specific deny patterns (names, domains, host names) are kept in
    `deploy.local/private-patterns.txt`, which is gitignored, so the patterns themselves are never committed.
    The committed script also flags any IP, server path, unknown host name or e-mail address.
+9. **Signed OPENING/ADJUSTMENT.** These two types store a signed `amount` (the delta). Every other type keeps a
+   positive amount as the spec says. This keeps "transfer is one row with two sides" and avoids a direction flag.
+10. **Fixed bills vs savings.** Bills of kind GOAL (goal contributions created as bills) count toward
+    `tabunganPeriode`, all other bills (regular, installment portions, card statements) toward `tagihanTetap`.
+    Card statement bills are excluded from the pool by default, because the card spending already reduced the
+    allowance when it happened; counting the statement again would double-count. Recorded as a setting.
+11. **Weekly allowance.** Weeks are counted from the period start (week 1 = days 1-7), the last week may be short.
+12. **Period end.** An open period's expected end is the day before the next scheduled payday. When the next
+    salary is recorded early (inside the window), the period closes the day before that salary.
+13. **Estimated FX matching on import.** An estimated card transaction matches a statement row with the same
+    direction, inside the date window, and an amount within 10 percent; the statement amount then replaces it.

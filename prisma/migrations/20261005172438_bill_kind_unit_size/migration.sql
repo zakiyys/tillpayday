@@ -1,0 +1,8 @@
+-- CreateEnum
+CREATE TYPE "BillKind" AS ENUM ('REGULAR', 'INSTALLMENT', 'CARD_STATEMENT', 'GOAL');
+
+-- AlterTable
+ALTER TABLE "AssetType" ADD COLUMN     "unitSize" DECIMAL(20,6) NOT NULL DEFAULT 1;
+
+-- AlterTable
+ALTER TABLE "Bill" ADD COLUMN     "kind" "BillKind" NOT NULL DEFAULT 'REGULAR';
