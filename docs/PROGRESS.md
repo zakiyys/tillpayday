@@ -12,7 +12,7 @@ Resume rule: read this file first, then `docs/DECISIONS.md`. Stages follow SPEC 
 | 4 Manual recording | done |
 | 5 Periods and home | done |
 | 6 Debt, investments, currency | not started |
-| 7 Manual onboarding and demo mode | not started |
+| 7 Manual onboarding and demo mode | done |
 | 8 AI input | not started |
 | 9 AI onboarding | not started |
 | 10 Statement import | not started |
@@ -123,6 +123,18 @@ dial ENERGY 1 / RHYTHM 2 / MOTION 1.
 - Tests: integration for scenarios 3, 4, 5, 7, 8, 11 through the services, loan split, trips; e2e with axe/overflow.
   Fixed: a horizontally scrolling table leaked width to the page (sr-only header text); scroll regions are now
   `relative`.
+
+### Stage 7: Manual onboarding and demo mode (done)
+
+- `/onboarding` offers the manual wizard, the AI path (stage 9) and demo data. The wizard walks the SPEC 9.2 topics
+  (basics, payday, bank accounts, wallets and cash, cards and debts, investments, recurring bills, goals) with a
+  per-topic progress list; every step saves the draft (`OnboardingDraft`), nothing else is written until the
+  summary is confirmed. Commit creates accounts (opening balances, default per institution), a salary Recurring
+  that opens periods, bill Recurrings, goals and holdings, then runs the first sync.
+- Drafts that contain something like a PIN, password or full card number (Luhn check) are refused.
+- Demo mode: `POST /api/v1/onboarding/demo` or `npm run db:seed-demo -- <owner e-mail>`; generic names, fixed seed,
+  three months of history, card installment, split, loan to a friend, holdings, a yen account.
+- Tests: integration (commit, topic order, secret refusal, demo data), e2e (skip all steps, confirm, land on home).
 
 ## Open problems
 

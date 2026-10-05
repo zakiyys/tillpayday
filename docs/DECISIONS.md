@@ -33,3 +33,10 @@ Readings of the spec where it was ambiguous, and deviations with reasons. Newest
     salary is recorded early (inside the window), the period closes the day before that salary.
 13. **Estimated FX matching on import.** An estimated card transaction matches a statement row with the same
     direction, inside the date window, and an amount within 10 percent; the statement amount then replaces it.
+14. **Full reloads after sign-in, sign-out and setup.** `window.location.assign` (lint warning) is used on purpose
+    after the session cookie changes, so every server component and the service worker see the new session.
+15. **Onboarding draft.** Both setup paths edit one `OnboardingDraft` row (Zod schema in
+    `src/server/onboarding/draft.ts`); only the summary's confirm writes accounts, recurring, goals and holdings.
+    Existing holdings entered during setup are recorded as a buy plus an opening entry of the same amount, so the
+    account balance stays what the user reported and the cost basis is known.
+16. **Demo data** uses generic names ("Bank A", "Kedai Kopi Contoh") and a fixed pseudo-random seed.
