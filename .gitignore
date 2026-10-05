@@ -1,0 +1,41 @@
+# dependencies
+node_modules/
+.pnp*
+
+# build
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# env and secrets
+.env
+.env.*
+!.env.example
+deploy.local/
+*.pem
+*.key
+
+# local tools and data
+.tools/
+data/
+backups/
+uploads/
+*.dump
+*.sql.gz
+*.enc
+
+# test output
+coverage/
+test-results/
+playwright-report/
+blob-report/
+.screenshots-tmp/
+
+# os / editor
+.DS_Store
+*.log
+.vscode/
+.idea/
