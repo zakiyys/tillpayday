@@ -19,6 +19,14 @@ http
         return;
       }
       const j = JSON.parse(body || "{}");
+      const sys = j.messages?.find((m) => m.role === "system")?.content ?? "";
+      if (/set up a personal finance app/.test(sys)) {
+        const u = j.messages?.find((m) => m.role === "user")?.content ?? "";
+        const patch = /Current topic: basics/.test(sys) ? { basics: { baseCurrency: "IDR", timezone: "Asia/Jakarta" } } : /Current topic: accounts/.test(sys) ? { accounts: [{ name: "Bank Wawancara", type: "BANK", institution: "Bank W", balance: "2500000" }] } : {};
+        void u;
+        res.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify({ choices: [{ index: 0, message: { role: "assistant", content: JSON.stringify({ patch, skip: false, next_question: null }) } }] }));
+        return;
+      }
       const user = j.messages?.find((m) => m.role === "user")?.content;
       const text = typeof user === "string" ? user : (user?.find?.((p) => p.type === "text")?.text ?? "");
       let actions = [{ intent: "clarify", question: "ok", options: [], unknown: [] }];

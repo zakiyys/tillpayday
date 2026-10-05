@@ -12,11 +12,12 @@ export default async function OnboardingPage() {
   const ctx = await requirePage({ allowUnfinished: true });
   if (ctx.household.setupDoneAt) redirect("/");
   const t = await getTranslations("onboarding");
-  const [draft, exists, currencies, types] = await Promise.all([
+  const [draft, exists, currencies, types, ai] = await Promise.all([
     loadDraft(ctx.householdId),
     prisma.onboardingDraft.count({ where: { householdId: ctx.householdId } }),
     prisma.currency.findMany({ orderBy: { code: "asc" } }),
     prisma.assetType.findMany({ where: { householdId: ctx.householdId, deletedAt: null }, orderBy: { name: "asc" } }),
+    prisma.aiConfig.findUnique({ where: { householdId: ctx.householdId } }),
   ]);
   return (
     <>
@@ -29,6 +30,7 @@ export default async function OnboardingPage() {
           path={draft.path}
           currencies={currencies.map((c) => ({ code: c.code, exponent: c.exponent }))}
           assetTypes={types.filter((x) => x.key).map((x) => ({ key: x.key!, name: x.name }))}
+          ai={{ hasConfig: !!ai, consented: !!ai?.consentAt, endpoint: ai?.endpoint ?? null }}
         />
       )}
     </>

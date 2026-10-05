@@ -54,7 +54,9 @@ function ReauthDialog({ onDone, onCancel }: { onDone: () => void; onCancel: () =
   const [error, setError] = useState<string | null>(null);
   const [needCode, setNeedCode] = useState(false);
   const supported = usePasskeySupported();
-  useEffect(() => ref.current?.showModal(), []);
+  useEffect(() => {
+    ref.current?.showModal();
+  }, []);
 
   async function withPasskey() {
     setError(null);

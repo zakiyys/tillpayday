@@ -14,7 +14,7 @@ Resume rule: read this file first, then `docs/DECISIONS.md`. Stages follow SPEC 
 | 6 Debt, investments, currency | not started |
 | 7 Manual onboarding and demo mode | done |
 | 8 AI input | done |
-| 9 AI onboarding | not started |
+| 9 AI onboarding | done |
 | 10 Statement import | not started |
 | 11 PWA | not started |
 | 12 Dashboard and extras | not started |
@@ -159,6 +159,19 @@ dial ENERGY 1 / RHYTHM 2 / MOTION 1.
   every page, Settings > AI (with what is sent to the provider).
 - Tests: unit (parser), integration with a mock model (scenarios 15 to 20, rules), e2e against a mock
   OpenAI-compatible HTTP server on 127.0.0.1:3071 (real adapter path), axe checks and screenshots.
+
+### Stage 9: AI onboarding (done)
+
+- `src/server/ai/interview.ts`: connect (endpoint, key, model; saved with reauth), connection test, consent screen
+  showing what is sent, then one question per turn. Code keeps the topic list, order and status; the model only
+  returns a patch for the current topic, which is validated with the manual form's Zod schema (patches for other
+  topics are ignored). Skips are handled by code without calling the model.
+- Secrets (card numbers via Luhn, PIN/password words) are refused before the model call and never stored.
+- Model down: the draft stays; the user continues in the manual wizard from the same draft at any time
+  (button in the side panel, error notice, or the done screen). Desktop shows the draft beside the chat;
+  phones open it as a sheet. Per-topic progress list.
+- Tests: integration (order owned by code, cross-topic patch ignored, skip without model, secret refusal,
+  model down keeps draft, consent required); e2e through the mock HTTP model server.
 
 ## Open problems
 

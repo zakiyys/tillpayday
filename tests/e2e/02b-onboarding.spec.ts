@@ -10,7 +10,7 @@ test("manual setup: skip every step, review, confirm, land on home", async ({ pa
   await shoot(page, "onboarding");
   // shoot() reloads; without a saved draft the path choice shows again.
   await page.getByRole("button", { name: /Isi sendiri/ }).click();
-  await page.getByRole("button", { name: "Lanjut" }).click();
+  await page.getByRole("button", { name: "Lanjut", exact: true }).click();
   // Each step saves the draft before moving on; wait for the step counter so clicks never land twice on one step.
   for (let i = 2; i <= 8; i++) {
     await expect(page.getByText(`Langkah ${i} dari 8`)).toBeVisible();
