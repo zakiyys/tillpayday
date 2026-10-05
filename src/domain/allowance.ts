@@ -108,10 +108,13 @@ export function computeAllowance(i: AllowanceInput): AllowanceResult {
   };
 }
 
-/** Sum of bills in a period that count toward fixed bills (goal contributions are counted as savings). */
+/**
+ * Fixed bills of a period, paid or not. Goal bills count as savings instead. Card statement bills are left out:
+ * the card spending already reduced the allowance on the day it happened (see docs/DECISIONS.md #10).
+ */
 export function fixedBillsTotal(bills: Iterable<LedgerBill>): bigint {
   let t = 0n;
-  for (const b of bills) if (b.kind !== "GOAL" && b.status !== "SKIPPED") t += b.amount;
+  for (const b of bills) if (b.kind !== "GOAL" && b.kind !== "CARD_STATEMENT" && b.status !== "SKIPPED") t += b.amount;
   return t;
 }
 

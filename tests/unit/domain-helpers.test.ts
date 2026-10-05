@@ -7,7 +7,7 @@ import { annuityPayment, installmentSchedule, loanSplit } from "@/domain/split";
 import { emergencyMonths, estimateReachDate, contributionFor } from "@/domain/goals";
 import { repeatedFee } from "@/domain/reconcile";
 import { pairTransfers, matchBill, matchRows } from "@/domain/matching";
-import { sanityWarning } from "@/domain/allowance";
+import { fixedBillsTotal, goalBillsTotal, sanityWarning } from "@/domain/allowance";
 
 describe("dates", () => {
   it("handles month ends and leap years", () => {
@@ -112,6 +112,17 @@ describe("reconcile and matching helpers", () => {
   it("matches a bill by amount and date", () => {
     const b = matchBill([{ id: "b1", amount: 450_000n, dueDate: "2026-01-20", status: "UNPAID", name: "Listrik" }], 450_000n, "2026-01-18");
     expect(b?.id).toBe("b1");
+  });
+  it("fixed bills exclude goal and card statement bills", () => {
+    const bills = [
+      { id: "1", kind: "REGULAR" as const, dueDate: "2026-01-05", amount: 100n, status: "PAID" as const },
+      { id: "2", kind: "INSTALLMENT" as const, dueDate: "2026-01-05", amount: 50n, status: "UNPAID" as const },
+      { id: "3", kind: "CARD_STATEMENT" as const, dueDate: "2026-01-05", amount: 999n, status: "UNPAID" as const },
+      { id: "4", kind: "GOAL" as const, dueDate: "2026-01-05", amount: 300n, status: "UNPAID" as const },
+      { id: "5", kind: "REGULAR" as const, dueDate: "2026-01-05", amount: 7n, status: "SKIPPED" as const },
+    ];
+    expect(fixedBillsTotal(bills)).toBe(150n);
+    expect(goalBillsTotal(bills)).toBe(300n);
   });
   it("sanity warning", () => {
     expect(sanityWarning(1_000n, 900n, 200n)).toBe(true);
