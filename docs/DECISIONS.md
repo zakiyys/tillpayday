@@ -40,3 +40,10 @@ Readings of the spec where it was ambiguous, and deviations with reasons. Newest
     Existing holdings entered during setup are recorded as a buy plus an opening entry of the same amount, so the
     account balance stays what the user reported and the cost basis is known.
 16. **Demo data** uses generic names ("Bank A", "Kedai Kopi Contoh") and a fixed pseudo-random seed.
+17. **AI action schema is flat for strict mode.** The `response_format` JSON Schema is one object with every field
+    (nullable) and an `intent` enum, because strict structured output needs all properties required and small
+    local models handle flat objects better. Nulls are stripped, then the discriminated Zod schema decides.
+    Endpoints without structured output fall back to `json_object` (recorded by the connection test).
+18. **Plain numbers as thousands** apply when the base currency has no decimals in everyday use (exponent 0,
+    e.g. IDR); the card always shows how the number was read.
+19. **Input bar on other pages** sends the text to `/record?q=...`, where the card is shown; photos open Record.

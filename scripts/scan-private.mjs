@@ -32,6 +32,8 @@ const emailRe = /\b[\w.+-]+@([\w-]+\.)+[a-z]{2,}\b/gi;
 
 function hostAllowed(h) {
   h = h.toLowerCase();
+  // RFC 2606/6761 reserved names never resolve and cannot point at a real host.
+  if (/\.(invalid|test|example|localhost)$/.test(h) || h === "localhost") return true;
   for (const a of allowedHosts) if (h === a || h.endsWith("." + a)) return true;
   return false;
 }
@@ -47,6 +49,8 @@ function scanLine(where, line) {
   for (const m of line.matchAll(hostRe)) {
     const h = m[1] ?? m[2];
     if (/\.(ts|tsx|js|mjs|json|md|sh|css|yml|yaml|toml|prisma|png|webp|woff2|txt|html|env|io\.ts)$/i.test(h) && !m[1]) continue;
+    // Bare (scheme-less) matches: code like `navigator.onLine` is camelCase; real host names are lower case.
+    if (!m[1] && h !== h.toLowerCase()) continue;
     if (!hostAllowed(h)) hits.push(`host ${h}`);
   }
   for (const m of line.matchAll(emailRe)) {

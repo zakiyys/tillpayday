@@ -21,4 +21,14 @@ export async function syncAll() {
 }
 
 /** Jobs registered here are scheduled by the worker. Later stages add prices, FX, recap, notifications, backup. */
-export const JOBS: JobDef[] = [{ name: "sync-households", cron: "7 * * * *", run: syncAll }];
+export const JOBS: JobDef[] = [
+  { name: "sync-households", cron: "7 * * * *", run: syncAll },
+  {
+    name: "process-drafts",
+    cron: "*/5 * * * *",
+    run: async () => {
+      const { processPendingDrafts } = await import("../ai/drafts");
+      await processPendingDrafts();
+    },
+  },
+];

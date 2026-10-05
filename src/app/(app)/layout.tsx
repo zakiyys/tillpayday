@@ -14,10 +14,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       </a>
       <Sidebar appName={name} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <main id="main" className="mx-auto w-full max-w-[1280px] flex-1 px-4 pb-40 pt-5 md:px-6 lg:pb-10 lg:pt-8">
+        <div className="mx-auto hidden w-full max-w-[1280px] px-6 pt-6 lg:block">
+          <InputBarSlot />
+        </div>
+        <main id="main" className="mx-auto w-full max-w-[1280px] flex-1 px-4 pb-44 pt-5 md:px-6 lg:pb-10 lg:pt-6">
           {children}
         </main>
-        <div className="fixed inset-x-0 bottom-0 z-30 lg:hidden">
+        <div className="fixed inset-x-0 bottom-0 z-30 bg-canvas lg:hidden">
           <InputBarSlot />
           <BottomTabs />
         </div>

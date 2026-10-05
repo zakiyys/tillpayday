@@ -13,7 +13,7 @@ Resume rule: read this file first, then `docs/DECISIONS.md`. Stages follow SPEC 
 | 5 Periods and home | done |
 | 6 Debt, investments, currency | not started |
 | 7 Manual onboarding and demo mode | done |
-| 8 AI input | not started |
+| 8 AI input | done |
 | 9 AI onboarding | not started |
 | 10 Statement import | not started |
 | 11 PWA | not started |
@@ -135,6 +135,30 @@ dial ENERGY 1 / RHYTHM 2 / MOTION 1.
 - Demo mode: `POST /api/v1/onboarding/demo` or `npm run db:seed-demo -- <owner e-mail>`; generic names, fixed seed,
   three months of history, card installment, split, loan to a friend, holdings, a yen account.
 - Tests: integration (commit, topic order, secret refusal, demo data), e2e (skip all steps, confirm, land on home).
+
+### Stage 8: AI input (done)
+
+- Local parser (`src/domain/parse.ts`): amounts with k/rb/jt/juta, Indonesian separators, plain-number thousands,
+  relative dates, currency words, account by alias/name/last4/institution default, multi-entry sentences,
+  category hints; complex sentences are handed to the model.
+- `LlmProvider` with the OpenAI chat-completions adapter (verified against the official API reference via
+  context7: `response_format` `json_schema` strict, `image_url` data URL parts), timeout, fallback provider,
+  connection test recording structured-output and vision capabilities. Keys AES-GCM encrypted, shown masked,
+  never logged; saving needs owner + reauth; test is rate limited.
+- Action schema (SPEC 7.3) validated with Zod; invalid actions dropped. Resolution to real accounts, categories,
+  holdings, bills and counterparties; questions with option buttons when something is missing (never guessed);
+  non-own recipients always ask what the transfer was. Query functions (spend by category, account balance, goal
+  progress, balance projection, purchase and goal simulations) answer with numbers from code only.
+- Confirm re-validates every proposal and saves through the same services as manual entry (`via` AI/API in the
+  audit log). Corrections can be remembered as Rules.
+- AI down: simple patterns still work, complex text opens the prefilled manual form, photos become PENDING_AI
+  drafts processed by the worker (`process-drafts`) with a DRAFT_READY notification.
+- Uploads: magic-byte sniffing, 10 MB limit, EXIF/XMP/text chunks stripped, stored outside the web root, served
+  only through a session-checked route. Offline queue in IndexedDB (`src/lib/offline-queue.ts`).
+- Pages: Record (conversation per SPEC 12.3, cards, chips, questions, saved state, date separators), input bar on
+  every page, Settings > AI (with what is sent to the provider).
+- Tests: unit (parser), integration with a mock model (scenarios 15 to 20, rules), e2e against a mock
+  OpenAI-compatible HTTP server on 127.0.0.1:3071 (real adapter path), axe checks and screenshots.
 
 ## Open problems
 

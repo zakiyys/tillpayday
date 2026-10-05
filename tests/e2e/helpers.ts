@@ -34,6 +34,7 @@ export async function shoot(page: Page, name: string, dir = ".screenshots-tmp") 
       await page.setViewportSize({ width: w, height: w === 390 ? 844 : 900 });
       await page.reload();
       await page.waitForLoadState("networkidle");
+      await page.evaluate(() => window.scrollTo(0, 0));
       await page.screenshot({ path: `${dir}/${name}-${w}-${theme}.png`, fullPage: true });
     }
   }
