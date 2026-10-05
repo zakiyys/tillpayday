@@ -108,6 +108,22 @@ dial ENERGY 1 / RHYTHM 2 / MOTION 1.
 - Tests: unit (schedules, subscriptions), integration (SPEC 6.2 figures through the real services, idempotent sync,
   scenarios 6, 10, 13, 14 at service level, auto-post once, card statements), e2e with axe and screenshots.
 
+### Stage 6: Debts, investments, currency (done)
+
+- Debts (`src/server/ledger/debts.ts`): borrow/lend/repay/repaid as transfers to per-counterparty RECEIVABLE or
+  PERSONAL_DEBT accounts created on first use; split bill (own share EXPENSE, rest receivable); loan payments split
+  into principal and interest when terms exist; installment purchases (stage 5 service) from the Debts page.
+- Investments (`assets.ts`): asset types as data (create/edit/delete), holdings, buy/sell with weighted average cost
+  and realised P&L, unit size (lots), manual prices with staleness flag, valuation for units x price, principal plus
+  interest and appraised; P&L split into price and FX parts for foreign holdings. Deleting a trade replays the
+  holding. `PriceProvider` and `FxProvider` interfaces exist with no providers registered (no verified source).
+- Currency: reference rates and currencies in Settings, net worth valued at the latest rate, base amounts kept.
+- Trips: active trip tags expenses, keeps them out of the allowance and reduces the linked goal; refill transfer offer.
+- Pages: Debts, Investments, Trips, Settings index, Settings > Currencies and rates.
+- Tests: integration for scenarios 3, 4, 5, 7, 8, 11 through the services, loan split, trips; e2e with axe/overflow.
+  Fixed: a horizontally scrolling table leaked width to the page (sr-only header text); scroll regions are now
+  `relative`.
+
 ## Open problems
 
 - none yet

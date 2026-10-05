@@ -24,3 +24,24 @@ export async function baseValuer(householdId: string, base: string, db: Db = pri
   };
   return { toBase, rate, exp, currencies: cur, rates };
 }
+
+/**
+ * Net worth now (SPEC 5.2): every visible account balance (debts negative) valued at the latest reference rate,
+ * plus every holding value, in base currency. Accounts without a rate are reported in `missingRates`.
+ */
+export async function netWorthNow(actor: import("./scope").Actor, today: string, db: Db = prisma) {
+  const { listAccountsWithBalances } = await import("./accounts");
+  const { holdingsBaseTotal } = await import("./assets");
+  const h = await db.household.findUniqueOrThrow({ where: { id: actor.householdId } });
+  const v = await baseValuer(actor.householdId, h.baseCurrency, db);
+  const accounts = await listAccountsWithBalances(actor, { includeArchived: true }, db);
+  let total = 0n;
+  const missingRates = new Set<string>();
+  for (const a of accounts) {
+    const b = v.toBase(a.balance, a.currency);
+    if (b == null) missingRates.add(a.currency);
+    else total += b;
+  }
+  const holdings = await holdingsBaseTotal(actor, today, db);
+  return { total: total + holdings, accounts: total, holdings, missingRates: [...missingRates] };
+}

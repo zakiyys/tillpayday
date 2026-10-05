@@ -1,0 +1,22 @@
+{
+  "title": "Trips",
+  "subtitle": "While a trip is active, spending is tagged, kept out of the daily allowance and taken from its goal.",
+  "add": "Add trip",
+  "empty": "No trips yet",
+  "emptyBody": "Start a trip before you travel so spending stays separate.",
+  "active": "Active",
+  "ended": "Ended",
+  "spent": "Spent",
+  "goal": "Paid from goal",
+  "noGoal": "No goal",
+  "end": "End trip",
+  "activate": "Make active",
+  "fields": { "name": "Name", "start": "Starts", "end": "Ends", "currency": "Default currency", "goal": "Goal that pays for it" },
+  "refill": "Refill spending account",
+  "refillTitle": "Move {amount} from savings",
+  "refillBody": "Trip spending paid from daily accounts this trip: {amount}. Move the same amount from the goal's savings account?",
+  "from": "From savings account",
+  "to": "To daily account",
+  "end_before_start": "The end date is before the start date.",
+  "trip_without_goal": "This trip has no goal."
+}

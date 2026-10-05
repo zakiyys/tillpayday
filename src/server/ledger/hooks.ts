@@ -19,6 +19,12 @@ export function installLedgerHooks() {
   onTransactionCreated(async (db: Db, _actor, row) => {
     const t = await db.transaction.findUniqueOrThrow({ where: { id: row.id } });
     if (t.deletedAt) return;
+    if (t.holdingId && (t.type === "ASSET_BUY" || t.type === "ASSET_SELL")) {
+      // Restore of a deleted trade: replay the holding.
+      const { rebuildHolding } = await import("./assets");
+      await rebuildHolding(db, t.holdingId);
+      return;
+    }
 
     // Bill matching: explicit billId, otherwise an unpaid bill of the same amount near the date (expenses and card payments).
     let billId = t.billId;
@@ -81,6 +87,11 @@ export function installLedgerHooks() {
   });
 
   onTransactionDeleted(async (db, _actor, row) => {
+    const full = await db.transaction.findUniqueOrThrow({ where: { id: row.id } });
+    if (full.holdingId) {
+      const { rebuildHolding } = await import("./assets");
+      await rebuildHolding(db, full.holdingId);
+    }
     if (row.billId) {
       await db.bill.updateMany({ where: { id: row.billId, paidTransactionId: row.id, kind: { not: "INSTALLMENT" } }, data: { status: "UNPAID", paidTransactionId: null } });
     }

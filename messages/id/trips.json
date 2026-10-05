@@ -1,0 +1,22 @@
+{
+  "title": "Perjalanan",
+  "subtitle": "Selama perjalanan aktif, pengeluaran ditandai, tidak memotong jatah harian, dan diambil dari goal-nya.",
+  "add": "Tambah perjalanan",
+  "empty": "Belum ada perjalanan",
+  "emptyBody": "Mulai perjalanan sebelum berangkat supaya pengeluarannya terpisah.",
+  "active": "Aktif",
+  "ended": "Selesai",
+  "spent": "Terpakai",
+  "goal": "Dibayar dari goal",
+  "noGoal": "Tanpa goal",
+  "end": "Selesaikan",
+  "activate": "Aktifkan",
+  "fields": { "name": "Nama", "start": "Mulai", "end": "Selesai", "currency": "Mata uang bawaan", "goal": "Goal yang membiayai" },
+  "refill": "Isi ulang akun belanja",
+  "refillTitle": "Pindahkan {amount} dari tabungan",
+  "refillBody": "Pengeluaran perjalanan dari akun harian: {amount}. Pindahkan jumlah yang sama dari akun tabungan goal?",
+  "from": "Dari akun tabungan",
+  "to": "Ke akun harian",
+  "end_before_start": "Tanggal selesai sebelum tanggal mulai.",
+  "trip_without_goal": "Perjalanan ini tidak punya goal."
+}
