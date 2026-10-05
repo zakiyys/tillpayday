@@ -33,8 +33,12 @@ export async function netWorthNow(actor: import("./scope").Actor, today: string,
   const { listAccountsWithBalances } = await import("./accounts");
   const { holdingsBaseTotal } = await import("./assets");
   const h = await db.household.findUniqueOrThrow({ where: { id: actor.householdId } });
+  // Setting (SPEC 2.2): by default each member's net worth is own private plus shared accounts; "ALL" totals
+  // the whole household. Only the total changes; account details stay private either way.
+  const all = (h.settings as { netWorthView?: string } | null)?.netWorthView === "ALL";
+  const scope = all ? { ...actor, memberId: null } : actor;
   const v = await baseValuer(actor.householdId, h.baseCurrency, db);
-  const accounts = await listAccountsWithBalances(actor, { includeArchived: true }, db);
+  const accounts = await listAccountsWithBalances(scope, { includeArchived: true }, db);
   let total = 0n;
   const missingRates = new Set<string>();
   for (const a of accounts) {
@@ -42,6 +46,6 @@ export async function netWorthNow(actor: import("./scope").Actor, today: string,
     if (b == null) missingRates.add(a.currency);
     else total += b;
   }
-  const holdings = await holdingsBaseTotal(actor, today, db);
+  const holdings = await holdingsBaseTotal(scope, today, db);
   return { total: total + holdings, accounts: total, holdings, missingRates: [...missingRates] };
 }

@@ -47,3 +47,9 @@ Readings of the spec where it was ambiguous, and deviations with reasons. Newest
 18. **Plain numbers as thousands** apply when the base currency has no decimals in everyday use (exponent 0,
     e.g. IDR); the card always shows how the number was read.
 19. **Input bar on other pages** sends the text to `/record?q=...`, where the card is shown; photos open Record.
+20. **404 on streamed pages.** App pages have a loading state (`loading.tsx`), so the response is already streaming
+    when `notFound()` runs; Next then renders the not-found UI with HTTP 200. Hidden or foreign records still show
+    no data (checked in e2e for scenario 24); API routes return a real 404.
+21. **Net worth "ALL" view** changes only the member's total; account lists and details keep the visibility rules.
+22. **Attachments in two-person mode** are readable by the uploader, or by members who can see a transaction the file
+    is attached to.

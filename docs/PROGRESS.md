@@ -18,7 +18,7 @@ Resume rule: read this file first, then `docs/DECISIONS.md`. Stages follow SPEC 
 | 10 Statement import | done |
 | 11 PWA | done |
 | 12 Dashboard and extras | done |
-| 13 Two-person mode | not started |
+| 13 Two-person mode | done |
 | 14 Hardening and docs | not started |
 
 ## Design skills applied
@@ -225,6 +225,17 @@ dial ENERGY 1 / RHYTHM 2 / MOTION 1.
   import round trip with equal balances and no secrets, carry-over, auto-save); e2e with axe and overflow checks.
   Fixed: grid items with wide tables stretched columns (`min-w-0` on cards), axe `aria-prohibited-attr` on chart
   points.
+
+### Stage 13: Two-person mode (done)
+
+- Invitations (`src/server/auth/invite.ts`): owner + reauth creates a single-use link (hash stored, 7 days),
+  `/invite/[token]` creates a MEMBER with password, then offers a passkey. Registration stays closed otherwise.
+- Members list with remove (revokes sessions, tokens, push, passkeys; records stay). Pending invites revocable.
+- Visibility: accounts PRIVATE/SHARED (existing scopes), drafts and notifications per member, attachments limited to
+  the uploader or members who can see the linked transaction, owner-only routes refuse members.
+  Net worth view setting (own+shared or whole household) changes only the total.
+- Tests: integration (single use, expiry, sign-in, privacy of accounts/transactions/attachments, net worth view,
+  removal); e2e scenario 24 through pages and API with a second browser context.
 
 ## Open problems
 

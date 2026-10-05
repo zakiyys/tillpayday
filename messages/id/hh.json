@@ -21,5 +21,20 @@
   "netWorthAll": "Semua akun household",
   "save": "Simpan",
   "saved": "Tersimpan.",
-  "base_currency_locked": "Mata uang dasar tidak bisa diubah setelah ada transaksi."
+  "base_currency_locked": "Mata uang dasar tidak bisa diubah setelah ada transaksi.",
+  "members": "Anggota",
+  "owner": "Pemilik",
+  "member": "Anggota",
+  "you": "kamu",
+  "invite": "Undang anggota",
+  "inviteEmail": "E-mail anggota",
+  "inviteSend": "Buat tautan undangan",
+  "inviteLink": "Kirim tautan ini ke anggota. Berlaku sekali dan habis dalam 7 hari.",
+  "pending": "Undangan menunggu",
+  "revoke": "Cabut",
+  "remove": "Keluarkan",
+  "removeLabel": "Keluarkan {name}",
+  "privacy": "Tiap anggota melihat akun pribadinya ditambah akun bersama. Tandai akun sebagai bersama atau pribadi saat mengubahnya.",
+  "cannot_remove_self": "Kamu tidak bisa mengeluarkan diri sendiri.",
+  "cannot_remove_owner": "Pemilik tidak bisa dikeluarkan."
 }

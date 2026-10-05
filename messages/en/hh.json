@@ -21,5 +21,20 @@
   "netWorthAll": "All household accounts",
   "save": "Save",
   "saved": "Saved.",
-  "base_currency_locked": "The base currency cannot change once there are transactions."
+  "base_currency_locked": "The base currency cannot change once there are transactions.",
+  "members": "Members",
+  "owner": "Owner",
+  "member": "Member",
+  "you": "you",
+  "invite": "Invite a member",
+  "inviteEmail": "Their e-mail",
+  "inviteSend": "Create invitation link",
+  "inviteLink": "Send this link to them. It works once and expires in 7 days.",
+  "pending": "Pending invitations",
+  "revoke": "Revoke",
+  "remove": "Remove",
+  "removeLabel": "Remove {name}",
+  "privacy": "Each member sees their own private accounts plus shared accounts. Mark accounts as shared or private when you edit them.",
+  "cannot_remove_self": "You cannot remove yourself.",
+  "cannot_remove_owner": "The owner cannot be removed."
 }

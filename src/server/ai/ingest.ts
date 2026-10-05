@@ -555,7 +555,7 @@ export async function confirmProposals(actor: Actor, raw: z.input<typeof confirm
           }
         }
       }
-      if (i.draftId) await db.ingestDraft.updateMany({ where: { id: i.draftId, householdId: actor.householdId }, data: { status: "CONFIRMED" } });
+      if (i.draftId) await db.ingestDraft.updateMany({ where: { id: i.draftId, householdId: actor.householdId, OR: [{ memberId: actor.memberId }, { memberId: null }] }, data: { status: "CONFIRMED" } });
     },
     { timeout: 30_000 },
   );

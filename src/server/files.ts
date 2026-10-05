@@ -84,9 +84,18 @@ export async function saveAttachment(householdId: string, memberId: string | nul
   return prisma.attachment.create({ data: { householdId, path: name, mime, size: clean.length, sha256: sha, createdById: memberId } });
 }
 
-export async function readAttachment(householdId: string, id: string) {
+/**
+ * Read a stored file. With `memberId`, the member must have uploaded it or be able to see a transaction it is
+ * attached to (private accounts stay private in two-person mode, scenario 24).
+ */
+export async function readAttachment(householdId: string, id: string, memberId?: string | null) {
   const a = await prisma.attachment.findFirst({ where: { id, householdId, deletedAt: null } });
   if (!a) throw notFound();
+  if (memberId && a.createdById !== memberId) {
+    const { txScope } = await import("./ledger/scope");
+    const visible = await prisma.transaction.count({ where: { AND: [txScope({ householdId, memberId }), { attachmentId: a.id }] } });
+    if (!visible) throw notFound();
+  }
   // Stored names are random hex; reject anything else so a row can never point outside the folder.
   if (!/^[a-f0-9]{32}$/.test(a.path)) throw notFound();
   return { meta: a, data: await readFile(path.join(dir(), a.path)) };

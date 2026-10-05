@@ -31,7 +31,7 @@ export default async function HomePage() {
     periodSummary(actor, ctx.today),
     listTransactions(actor, { take: 6 }),
     formOptions(actor),
-    prisma.ingestDraft.count({ where: { householdId: ctx.householdId, status: { in: ["NEEDS_REVIEW", "PENDING_AI"] }, deletedAt: null } }),
+    prisma.ingestDraft.count({ where: { householdId: ctx.householdId, status: { in: ["NEEDS_REVIEW", "PENDING_AI"] }, deletedAt: null, OR: [{ memberId: ctx.memberId }, { memberId: null }] } }),
   ]);
   const p = sum.period;
   const [saved, allocated] = await Promise.all([

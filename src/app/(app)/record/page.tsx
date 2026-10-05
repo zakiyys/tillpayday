@@ -18,7 +18,7 @@ export default async function RecordPage({ searchParams }: { searchParams: Promi
   const [opts, aiState, drafts] = await Promise.all([
     formOptions(actor),
     aiStateFor(ctx.householdId),
-    prisma.ingestDraft.findMany({ where: { householdId: ctx.householdId, deletedAt: null, status: { in: ["NEEDS_REVIEW", "PENDING_AI"] } }, orderBy: { createdAt: "desc" }, take: 20 }),
+    prisma.ingestDraft.findMany({ where: { householdId: ctx.householdId, deletedAt: null, status: { in: ["NEEDS_REVIEW", "PENDING_AI"] }, OR: [{ memberId: ctx.memberId }, { memberId: null }] }, orderBy: { createdAt: "desc" }, take: 20 }),
   ]);
   const parsed = (v: unknown): Proposal[] | null => {
     if (!Array.isArray(v)) return null;
