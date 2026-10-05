@@ -93,9 +93,9 @@ export function BarPairs({
 export function Line({ points, title, desc, intl, zeroLine = false, emptyText }: { points: Array<{ label: string; v: number; text: string }>; title: string; desc: string; intl: string; zeroLine?: boolean; emptyText?: string }) {
   const id = useId();
   const fmtAxis = compact(intl);
+  const [hover, setHover] = useState<number | null>(null);
   // A trend needs two points; with one, say so instead of drawing an empty frame.
   if (points.length < 2) return <p className="rounded-btn bg-surface-2 p-3 text-sm text-muted">{emptyText ?? points[0]?.text ?? ""}</p>;
-  const [hover, setHover] = useState<number | null>(null);
   const W = 560;
   const H = 220;
   const pad = { l: 64, r: 12, t: 12, b: 28 };
