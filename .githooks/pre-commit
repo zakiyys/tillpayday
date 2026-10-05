@@ -1,0 +1,11 @@
+#!/bin/sh
+# Blocks commits that contain secrets or private details.
+set -e
+GL="./.tools/gitleaks"
+if [ ! -x "$GL" ]; then GL="$(command -v gitleaks || true)"; fi
+if [ -z "$GL" ]; then
+  echo "gitleaks not found. Run: sh scripts/install-gitleaks.sh" >&2
+  exit 1
+fi
+"$GL" git --pre-commit --staged --redact --no-banner -c .gitleaks.toml
+sh scripts/scan-private.sh --staged

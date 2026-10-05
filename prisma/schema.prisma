@@ -1,0 +1,800 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Money is stored as BigInt minor units. Units, prices and rates are Decimal.
+
+enum Role {
+  OWNER
+  MEMBER
+}
+
+enum TokenScope {
+  INGEST
+  SUMMARY_READ
+}
+
+enum AccountType {
+  BANK
+  EWALLET
+  CASH
+  INVESTMENT
+  RECEIVABLE
+  CREDIT_CARD
+  PAYLATER
+  LOAN
+  PERSONAL_DEBT
+}
+
+enum AccountRole {
+  DAILY
+  SAVINGS
+  NONE
+}
+
+enum Visibility {
+  PRIVATE
+  SHARED
+}
+
+enum CategoryKind {
+  INCOME
+  EXPENSE
+}
+
+enum TxType {
+  INCOME
+  EXPENSE
+  TRANSFER
+  ASSET_BUY
+  ASSET_SELL
+  ADJUSTMENT
+  OPENING
+}
+
+enum TxSource {
+  TEXT
+  PHOTO
+  IMPORT
+  RECURRING
+  MANUAL
+  API
+}
+
+enum PeriodStatus {
+  OPEN
+  CLOSED
+}
+
+enum RecurringMode {
+  AUTO_POST
+  CREATE_BILL
+}
+
+enum BillStatus {
+  UNPAID
+  PAID
+  SKIPPED
+}
+
+enum GoalStatus {
+  ACTIVE
+  ACHIEVED
+  ARCHIVED
+}
+
+enum Valuation {
+  UNITS_TIMES_PRICE
+  FIXED_PLUS_INTEREST
+  APPRAISED
+}
+
+enum PriceSource {
+  AUTO
+  MANUAL
+  FIXED
+}
+
+enum IngestStatus {
+  PENDING_AI
+  NEEDS_REVIEW
+  CONFIRMED
+  DISCARDED
+}
+
+enum ImportStatus {
+  PARSED
+  REVIEWED
+  COMMITTED
+  FAILED
+}
+
+enum AuditVia {
+  UI
+  AI
+  IMPORT
+  JOB
+  API
+}
+
+model Household {
+  id            String    @id @default(cuid())
+  name          String
+  baseCurrency  String    @default("IDR")
+  timezone      String    @default("Asia/Jakarta")
+  locale        String    @default("id")
+  paydayRule    Json      @default("{\"day\":25,\"shiftWeekend\":\"before\"}")
+  allowanceUnit String    @default("DAILY")
+  settings      Json      @default("{}")
+  setupDoneAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  members        Member[]
+  accounts       Account[]
+  counterparties Counterparty[]
+  categories     Category[]
+  transactions   Transaction[]
+  periods        Period[]
+  recurrings     Recurring[]
+  bills          Bill[]
+  installments   InstallmentPlan[]
+  goals          Goal[]
+  assetTypes     AssetType[]
+  holdings       Holding[]
+  prices         Price[]
+  fxRates        FxRate[]
+  trips          Trip[]
+  attachments    Attachment[]
+  ingestDrafts   IngestDraft[]
+  importBatches  ImportBatch[]
+  rules          Rule[]
+  aiConfig       AiConfig?
+  auditLogs      AuditLog[]
+  invites        Invite[]
+  weeklyRecaps   WeeklyRecap[]
+  onboardingDraft OnboardingDraft?
+}
+
+model Member {
+  id          String    @id @default(cuid())
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id])
+  name        String
+  email       String    @unique
+  role        Role      @default(MEMBER)
+  settings    Json      @default("{}")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  credential        Credential?
+  passkeys          Passkey[]
+  sessions          Session[]
+  apiTokens         ApiToken[]
+  notifications     Notification[]
+  pushSubscriptions PushSubscription[]
+  recoveryCodes     RecoveryCode[]
+  accounts          Account[]          @relation("AccountOwner")
+
+  @@index([householdId])
+}
+
+model Credential {
+  id                 String    @id @default(cuid())
+  memberId           String    @unique
+  member             Member    @relation(fields: [memberId], references: [id])
+  passwordHash       String?
+  totpSecretEnc      String?
+  totpEnabledAt      DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+model Passkey {
+  id           String    @id @default(cuid())
+  memberId     String
+  member       Member    @relation(fields: [memberId], references: [id])
+  credentialId String    @unique
+  publicKey    Bytes
+  counter      BigInt    @default(0)
+  transports   String[]
+  label        String    @default("Passkey")
+  lastUsedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([memberId])
+}
+
+model RecoveryCode {
+  id        String    @id @default(cuid())
+  memberId  String
+  member    Member    @relation(fields: [memberId], references: [id])
+  codeHash  String
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([memberId])
+}
+
+model Session {
+  id          String    @id
+  memberId    String
+  member      Member    @relation(fields: [memberId], references: [id])
+  deviceLabel String
+  deviceHash  String
+  lastSeenAt  DateTime  @default(now())
+  expiresAt   DateTime
+  reauthAt    DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([memberId])
+}
+
+model AuthChallenge {
+  id        String   @id @default(cuid())
+  challenge String
+  purpose   String
+  memberId  String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RateLimit {
+  key       String   @id
+  count     Int
+  windowEnd DateTime
+  lockUntil DateTime?
+  strikes   Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ApiToken {
+  id         String     @id @default(cuid())
+  memberId   String
+  member     Member     @relation(fields: [memberId], references: [id])
+  tokenHash  String     @unique
+  scope      TokenScope
+  label      String
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([memberId])
+}
+
+model Invite {
+  id          String    @id @default(cuid())
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id])
+  email       String
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdById String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Account {
+  id                      String      @id @default(cuid())
+  householdId             String
+  household               Household   @relation(fields: [householdId], references: [id])
+  name                    String
+  type                    AccountType
+  institution             String?
+  last4                   String?
+  aliases                 String[]
+  currency                String
+  role                    AccountRole @default(NONE)
+  ownerId                 String?
+  owner                   Member?     @relation("AccountOwner", fields: [ownerId], references: [id])
+  visibility              Visibility  @default(SHARED)
+  isDefaultForInstitution Boolean     @default(false)
+  openingBalance          BigInt      @default(0)
+  openingDate             DateTime    @db.Date
+  creditLimit             BigInt?
+  statementDay            Int?
+  dueDay                  Int?
+  loanTerms               Json?
+  csvMapping              Json?
+  counterpartyId          String?
+  counterparty            Counterparty? @relation(fields: [counterpartyId], references: [id])
+  lastReconciledAt        DateTime?
+  archivedAt              DateTime?
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+  deletedAt               DateTime?
+
+  transactions        Transaction[]     @relation("TxAccount")
+  counterTransactions Transaction[]     @relation("TxCounterAccount")
+  goalAllocations     GoalAllocation[]
+  holdings            Holding[]
+  installmentPlans    InstallmentPlan[]
+  importBatches       ImportBatch[]
+
+  @@index([householdId])
+}
+
+model Counterparty {
+  id          String    @id @default(cuid())
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id])
+  name        String
+  aliases     String[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  accounts     Account[]
+  transactions Transaction[]
+
+  @@index([householdId])
+}
+
+model Category {
+  id           String       @id @default(cuid())
+  householdId  String
+  household    Household    @relation(fields: [householdId], references: [id])
+  name         String
+  key          String?
+  kind         CategoryKind
+  parentId     String?
+  parent       Category?    @relation("CategoryTree", fields: [parentId], references: [id])
+  children     Category[]   @relation("CategoryTree")
+  countsToPool Boolean      @default(false)
+  isSystem     Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  deletedAt    DateTime?
+
+  transactions     Transaction[]
+  budgets          Budget[]
+  rules            Rule[]
+  installmentPlans InstallmentPlan[]
+
+  @@index([householdId])
+}
+
+model Transaction {
+  id                   String     @id @default(cuid())
+  householdId          String
+  household            Household  @relation(fields: [householdId], references: [id])
+  type                 TxType
+  occurredOn           DateTime   @db.Date
+  recordedAt           DateTime   @default(now())
+  accountId            String
+  account              Account    @relation("TxAccount", fields: [accountId], references: [id])
+  counterAccountId     String?
+  counterAccount       Account?   @relation("TxCounterAccount", fields: [counterAccountId], references: [id])
+  amount               BigInt
+  counterAmount        BigInt?
+  baseAmount           BigInt
+  fxRate               Decimal?   @db.Decimal(30, 12)
+  fxRateIsEstimate     Boolean    @default(false)
+  originalAmount       BigInt?
+  originalCurrency     String?
+  categoryId           String?
+  category             Category?  @relation(fields: [categoryId], references: [id])
+  payee                String?
+  note                 String?
+  source               TxSource   @default(MANUAL)
+  rawInput             String?
+  attachmentId         String?
+  attachment           Attachment? @relation(fields: [attachmentId], references: [id])
+  billId               String?
+  goalId               String?
+  tripId               String?
+  installmentPlanId    String?
+  importBatchId        String?
+  counterpartyId       String?
+  counterparty         Counterparty? @relation(fields: [counterpartyId], references: [id])
+  holdingId            String?
+  units                Decimal?   @db.Decimal(30, 10)
+  unitPrice            Decimal?   @db.Decimal(30, 10)
+  feeAmount            BigInt?
+  realizedPnl          BigInt?
+  excludeFromAllowance Boolean    @default(false)
+  isAdjustment         Boolean    @default(false)
+  matchedImport        Boolean    @default(false)
+  createdById          String?
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+  deletedAt            DateTime?
+
+  @@index([householdId, occurredOn])
+  @@index([accountId])
+  @@index([counterAccountId])
+}
+
+model Period {
+  id               String       @id @default(cuid())
+  householdId      String
+  household        Household    @relation(fields: [householdId], references: [id])
+  startDate        DateTime     @db.Date
+  endDate          DateTime?    @db.Date
+  incomeTotal      BigInt       @default(0)
+  savingsAllocated BigInt       @default(0)
+  billsTotal       BigInt       @default(0)
+  poolAmount       BigInt       @default(0)
+  salaryMissing    Boolean      @default(false)
+  status           PeriodStatus @default(OPEN)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  budgets Budget[]
+  bills   Bill[]
+
+  @@unique([householdId, startDate])
+}
+
+model Budget {
+  id          String   @id @default(cuid())
+  periodId    String
+  period      Period   @relation(fields: [periodId], references: [id])
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  limitAmount BigInt
+  isSuggested Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([periodId, categoryId])
+}
+
+model Recurring {
+  id          String        @id @default(cuid())
+  householdId String
+  household   Household     @relation(fields: [householdId], references: [id])
+  name        String
+  template    Json
+  schedule    Json
+  mode        RecurringMode
+  opensPeriod Boolean       @default(false)
+  active      Boolean       @default(true)
+  lastRunOn   DateTime?     @db.Date
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+
+  bills Bill[]
+}
+
+model Bill {
+  id                String     @id @default(cuid())
+  householdId       String
+  household         Household  @relation(fields: [householdId], references: [id])
+  name              String
+  recurringId       String?
+  recurring         Recurring? @relation(fields: [recurringId], references: [id])
+  periodId          String?
+  period            Period?    @relation(fields: [periodId], references: [id])
+  installmentPlanId String?
+  goalId            String?
+  accountId         String?
+  categoryId        String?
+  dueDate           DateTime   @db.Date
+  amount            BigInt
+  status            BillStatus @default(UNPAID)
+  paidTransactionId String?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  deletedAt         DateTime?
+
+  @@index([householdId, dueDate])
+}
+
+model InstallmentPlan {
+  id            String    @id @default(cuid())
+  householdId   String
+  household     Household @relation(fields: [householdId], references: [id])
+  accountId     String
+  account       Account   @relation(fields: [accountId], references: [id])
+  description   String
+  totalAmount   BigInt
+  months        Int
+  monthlyAmount BigInt
+  startDate     DateTime  @db.Date
+  categoryId    String?
+  category      Category? @relation(fields: [categoryId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+}
+
+model Goal {
+  id                  String     @id @default(cuid())
+  householdId         String
+  household           Household  @relation(fields: [householdId], references: [id])
+  name                String
+  targetAmount        BigInt
+  targetDate          DateTime?  @db.Date
+  contributionAmount  BigInt?
+  contributionPercent Decimal?   @db.Decimal(6, 3)
+  contributionMode    String     @default("BILL")
+  isEmergencyFund     Boolean    @default(false)
+  visibility          Visibility @default(SHARED)
+  ownerId             String?
+  status              GoalStatus @default(ACTIVE)
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  deletedAt           DateTime?
+
+  allocations GoalAllocation[]
+}
+
+model GoalAllocation {
+  id        String   @id @default(cuid())
+  goalId    String
+  goal      Goal     @relation(fields: [goalId], references: [id])
+  accountId String
+  account   Account  @relation(fields: [accountId], references: [id])
+  amount    BigInt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([goalId, accountId])
+}
+
+model AssetType {
+  id          String      @id @default(cuid())
+  householdId String
+  household   Household   @relation(fields: [householdId], references: [id])
+  name        String
+  key         String?
+  unitLabel   String
+  valuation   Valuation
+  priceSource PriceSource
+  providerKey String?
+  isSystem    Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deletedAt   DateTime?
+
+  holdings Holding[]
+}
+
+model Holding {
+  id           String    @id @default(cuid())
+  householdId  String
+  household    Household @relation(fields: [householdId], references: [id])
+  accountId    String
+  account      Account   @relation(fields: [accountId], references: [id])
+  assetTypeId  String
+  assetType    AssetType @relation(fields: [assetTypeId], references: [id])
+  name         String
+  symbol       String?
+  currency     String
+  units        Decimal   @default(0) @db.Decimal(30, 10)
+  avgCost      Decimal   @default(0) @db.Decimal(30, 10)
+  avgFxRate    Decimal?  @db.Decimal(30, 12)
+  principal    BigInt?
+  interestRate Decimal?  @db.Decimal(10, 6)
+  startDate    DateTime? @db.Date
+  maturityDate DateTime? @db.Date
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  prices Price[]
+}
+
+model Price {
+  id          String    @id @default(cuid())
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id])
+  holdingId   String?
+  holding     Holding?  @relation(fields: [holdingId], references: [id])
+  symbol      String?
+  date        DateTime  @db.Date
+  price       Decimal   @db.Decimal(30, 10)
+  currency    String
+  source      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([holdingId, date])
+}
+
+model FxRate {
+  id           String    @id @default(cuid())
+  householdId  String
+  household    Household @relation(fields: [householdId], references: [id])
+  date         DateTime  @db.Date
+  fromCurrency String
+  toCurrency   String
+  rate         Decimal   @db.Decimal(30, 12)
+  source       String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([householdId, fromCurrency, toCurrency, date])
+}
+
+model Currency {
+  code      String   @id
+  exponent  Int
+  symbol    String
+  smallDiffThreshold BigInt?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Trip {
+  id              String    @id @default(cuid())
+  householdId     String
+  household       Household @relation(fields: [householdId], references: [id])
+  name            String
+  startDate       DateTime  @db.Date
+  endDate         DateTime? @db.Date
+  defaultCurrency String
+  goalId          String?
+  active          Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+}
+
+model Attachment {
+  id            String    @id @default(cuid())
+  householdId   String
+  household     Household @relation(fields: [householdId], references: [id])
+  path          String
+  mime          String
+  size          Int
+  sha256        String
+  warrantyUntil DateTime? @db.Date
+  label         String?
+  createdById   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  transactions Transaction[]
+  ingestDrafts IngestDraft[]
+}
+
+model IngestDraft {
+  id              String       @id @default(cuid())
+  householdId     String
+  household       Household    @relation(fields: [householdId], references: [id])
+  memberId        String?
+  rawText         String?
+  attachmentId    String?
+  attachment      Attachment?  @relation(fields: [attachmentId], references: [id])
+  status          IngestStatus
+  proposedActions Json?
+  error           String?
+  via             AuditVia     @default(UI)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  deletedAt       DateTime?
+
+  @@index([householdId, status])
+}
+
+model ImportBatch {
+  id           String       @id @default(cuid())
+  householdId  String
+  household    Household    @relation(fields: [householdId], references: [id])
+  accountId    String
+  account      Account      @relation(fields: [accountId], references: [id])
+  attachmentId String?
+  status       ImportStatus
+  rows         Json
+  closingBalance BigInt?
+  matchedCount Int          @default(0)
+  newCount     Int          @default(0)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Rule {
+  id                    String    @id @default(cuid())
+  householdId           String
+  household             Household @relation(fields: [householdId], references: [id])
+  matchField            String
+  matchValue            String
+  setCategoryId         String?
+  setCategory           Category? @relation(fields: [setCategoryId], references: [id])
+  setAccountId          String?
+  createdFromCorrection Boolean   @default(false)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  deletedAt             DateTime?
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  memberId  String
+  member    Member    @relation(fields: [memberId], references: [id])
+  kind      String
+  payload   Json
+  dedupeKey String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([memberId, dedupeKey])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  memberId  String
+  member    Member   @relation(fields: [memberId], references: [id])
+  endpoint  String   @unique
+  keys      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AiConfig {
+  id                   String    @id @default(cuid())
+  householdId          String    @unique
+  household            Household @relation(fields: [householdId], references: [id])
+  endpoint             String
+  model                String
+  visionModel          String?
+  apiKeyEncrypted      String?
+  capabilities         Json      @default("{}")
+  fallbackEndpoint     String?
+  fallbackModel        String?
+  fallbackKeyEncrypted String?
+  consentAt            DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+}
+
+model AuditLog {
+  id          String    @id @default(cuid())
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id])
+  actorId     String?
+  via         AuditVia
+  action      String
+  entity      String
+  entityId    String?
+  before      Json?
+  after       Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([householdId, createdAt])
+}
+
+model WeeklyRecap {
+  id          String    @id @default(cuid())
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id])
+  weekStart   DateTime  @db.Date
+  data        Json
+  text        String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([householdId, weekStart])
+}
+
+model OnboardingDraft {
+  id          String    @id @default(cuid())
+  householdId String    @unique
+  household   Household @relation(fields: [householdId], references: [id])
+  path        String
+  data        Json
+  topics      Json
+  transcript  Json      @default("[]")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

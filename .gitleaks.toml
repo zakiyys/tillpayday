@@ -1,0 +1,14 @@
+title = "repo secret scan"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Example placeholders and lockfile integrity hashes"
+paths = [
+  '''package-lock\.json''',
+  '''public/fonts/.*''',
+]
+regexes = [
+  '''replace-with-[a-z-]+''',
+]

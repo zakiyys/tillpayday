@@ -39,3 +39,6 @@ blob-report/
 *.log
 .vscode/
 .idea/
+
+# generated
+src/generated/

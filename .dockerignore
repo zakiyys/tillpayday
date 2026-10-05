@@ -1,0 +1,15 @@
+node_modules
+.next
+.git
+.env
+.env.*
+!.env.example
+deploy.local
+.tools
+data
+backups
+coverage
+test-results
+playwright-report
+src/generated
+docs/screenshots
