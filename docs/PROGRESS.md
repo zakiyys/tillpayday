@@ -9,7 +9,7 @@ Resume rule: read this file first, then `docs/DECISIONS.md`. Stages follow SPEC 
 | 1 Foundation | done |
 | 2 Ledger core | done |
 | 3 Auth and first install | done |
-| 4 Manual recording | not started |
+| 4 Manual recording | done |
 | 5 Periods and home | not started |
 | 6 Debt, investments, currency | not started |
 | 7 Manual onboarding and demo mode | not started |
@@ -74,6 +74,21 @@ dial ENERGY 1 / RHYTHM 2 / MOTION 1.
 - i18n messages split per namespace in `messages/<locale>/<ns>.json`.
 - Tests: integration scenario 23; Playwright e2e with a Chromium virtual authenticator (setup, passkey register,
   passkey login, password login, CSRF block). Screenshots of login and security reviewed at 390/1360, light/dark.
+
+### Stage 4: Manual recording (done)
+
+- Services in `src/server/ledger/`: accounts (opening balance as an OPENING transaction, debts typed positive are
+  stored negative, one default per institution), transactions (create/edit/soft delete/restore, baseAmount via FX
+  rules, hooks for later stages), categories (create/edit/merge/delete), reconcile (cek saldo, SPEC 5.6).
+- Every query goes through `accountScope`/`txScope` (household + visibility). Every change writes AuditLog with `via`.
+- API: `/api/v1/accounts`, `/api/v1/accounts/:id`, `/api/v1/accounts/:id/reconcile`, `/api/v1/transactions`,
+  `/api/v1/transactions/:id`, `/api/v1/transactions/:id/restore`, `/api/v1/categories`, `.../merge`.
+- Pages: Accounts (grouped by type, base-currency total, archive), account detail (balance, limit left,
+  transactions, cek saldo dialog), Transactions (filters for account, category, date range, type, source, member;
+  search; deleted view with restore; undo after delete). Rows open the edit sheet on phones.
+- Tests: integration (balances, soft delete/restore, audit trail, input validation, household isolation,
+  scenario 24 service level, scenario 9 service level, category merge); e2e with axe and 390 px overflow check.
+  Screenshots reviewed: long transfer titles wrapped instead of truncating, row actions moved into the sheet on phones.
 
 ## Open problems
 

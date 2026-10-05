@@ -129,6 +129,10 @@ export function publicRoute(fn: (req: NextRequest) => Promise<Response>) {
 
 export function toResponse(e: unknown): Response {
   if (e instanceof HttpError) return json({ error: e.code, details: e.details }, { status: e.status });
+  if (e instanceof z.ZodError) {
+    return json({ error: "validation", details: e.issues.map((i) => ({ path: i.path.join("."), message: i.message })) }, { status: 400 });
+  }
+  if (e instanceof SyntaxError) return json({ error: "invalid_json" }, { status: 400 });
   // Never log request bodies: they can hold secrets or financial data.
   console.error("[api] unhandled", e instanceof Error ? `${e.name}: ${e.message}` : "unknown");
   return json({ error: "internal" }, { status: 500 });

@@ -8,9 +8,9 @@ export function cx(...c: Array<string | false | null | undefined>) {
   return c.filter(Boolean).join(" ");
 }
 
-export function Card({ className, children, ...rest }: ComponentProps<"section">) {
+export function Card({ className, children, flush = false, ...rest }: ComponentProps<"section"> & { flush?: boolean }) {
   return (
-    <section className={cx("rounded-card-sm border border-line bg-surface p-4", className)} {...rest}>
+    <section className={cx("rounded-card-sm border border-line bg-surface", flush ? "overflow-hidden" : "p-4", className)} {...rest}>
       {children}
     </section>
   );

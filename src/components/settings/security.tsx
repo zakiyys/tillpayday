@@ -57,7 +57,7 @@ export function SecuritySettings(p: Props) {
       >
         {t("passkeys")}
       </SectionTitle>
-      <Card className="p-0">
+      <Card flush>
         {p.passkeys.length === 0 ? (
           <p className="p-4 text-sm text-muted">{t("noPasskeys")}</p>
         ) : (
@@ -83,7 +83,7 @@ export function SecuritySettings(p: Props) {
       </Card>
 
       <SectionTitle>{t("sessions")}</SectionTitle>
-      <Card className="p-0">
+      <Card flush>
         <ul className="divide-y divide-line">
           {p.sessions.map((s) => (
             <li key={s.id} className="flex items-center justify-between gap-3 px-4 py-3">
