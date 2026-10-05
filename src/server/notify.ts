@@ -45,5 +45,6 @@ export async function notify(memberId: string, kind: NotificationKind, payload: 
     if ((e as { code?: string }).code === "P2002") return; // already sent
     throw e;
   }
+  if (!pushSender) (await import("./push")).installPush();
   if (pushSender) await pushSender(memberId, kind, payload).catch(() => undefined);
 }

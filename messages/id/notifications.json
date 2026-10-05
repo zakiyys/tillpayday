@@ -1,0 +1,32 @@
+{
+  "title": "Notifikasi",
+  "subtitle": "Pilih yang ingin kamu ketahui. Tiap jenis bisa dimatikan.",
+  "push": "Push di perangkat ini",
+  "pushOn": "Nyalakan push",
+  "pushOff": "Matikan push",
+  "pushEnabled": "Push aktif untuk perangkat ini.",
+  "pushDenied": "Browser memblokir notifikasi. Izinkan di setelan browser.",
+  "pushUnsupported": "Browser ini tidak mendukung push. Di iPhone, tambahkan app ke Home Screen dulu.",
+  "kinds": "Jenis",
+  "kind": {
+    "BILL_DUE": "Tagihan mendekati jatuh tempo",
+    "CARD_DUE": "Jatuh tempo kartu kredit",
+    "BUDGET_NEAR": "Budget hampir habis",
+    "BUDGET_OVER": "Budget terlewati",
+    "NO_ENTRIES": "Hari tanpa catatan",
+    "DRAFT_READY": "Catatan yang menunggu selesai diproses",
+    "NEW_DEVICE_LOGIN": "Login dari perangkat baru",
+    "STALE_PRICE": "Harga manual yang sudah lama",
+    "WARRANTY_ENDING": "Garansi mau habis",
+    "WEEKLY_RECAP": "Rekap mingguan",
+    "ALLOCATION_OVER": "Alokasi goal melebihi saldo"
+  },
+  "recapWhen": "Rekap mingguan",
+  "recapDay": "Hari",
+  "recapHour": "Jam",
+  "save": "Simpan",
+  "saved": "Tersimpan.",
+  "inbox": "Terbaru",
+  "inboxEmpty": "Belum ada notifikasi.",
+  "markRead": "Tandai semua sudah dibaca"
+}

@@ -12,8 +12,11 @@ const isActive = (path: string, href: string) => (href === "/" ? path === "/" : 
 
 async function logout() {
   await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
-  // Drop cached pages and offline data from this device after sign-out (SPEC 13).
+  // Drop caches and the offline queue from this device after sign-out (SPEC 13).
   if ("caches" in window) for (const k of await caches.keys()) await caches.delete(k);
+  navigator.serviceWorker?.controller?.postMessage({ type: "logout" });
+  await import("@/lib/offline-queue").then((m) => m.clearOffline()).catch(() => undefined);
+  sessionStorage.clear();
   window.location.assign("/login");
 }
 

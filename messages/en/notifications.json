@@ -1,0 +1,32 @@
+{
+  "title": "Notifications",
+  "subtitle": "Choose what you hear about. Every kind can be turned off.",
+  "push": "Push on this device",
+  "pushOn": "Turn on push",
+  "pushOff": "Turn off push",
+  "pushEnabled": "Push is on for this device.",
+  "pushDenied": "The browser blocked notifications. Allow them in the browser settings.",
+  "pushUnsupported": "This browser does not support push. On iPhone, add the app to the Home Screen first.",
+  "kinds": "Kinds",
+  "kind": {
+    "BILL_DUE": "Bills close to their due date",
+    "CARD_DUE": "Credit card due date",
+    "BUDGET_NEAR": "Budget almost used",
+    "BUDGET_OVER": "Budget exceeded",
+    "NO_ENTRIES": "Day without entries",
+    "DRAFT_READY": "Waiting entry processed",
+    "NEW_DEVICE_LOGIN": "Sign-in from a new device",
+    "STALE_PRICE": "Old manual prices",
+    "WARRANTY_ENDING": "Warranty ending",
+    "WEEKLY_RECAP": "Weekly recap",
+    "ALLOCATION_OVER": "Goal allocations above balance"
+  },
+  "recapWhen": "Weekly recap",
+  "recapDay": "Day",
+  "recapHour": "Hour",
+  "save": "Save",
+  "saved": "Saved.",
+  "inbox": "Recent",
+  "inboxEmpty": "No notifications yet.",
+  "markRead": "Mark all as read"
+}

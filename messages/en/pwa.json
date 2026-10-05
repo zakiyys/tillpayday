@@ -1,0 +1,4 @@
+{
+  "flushed": "{count, plural, one {# entry made offline was sent} other {# entries made offline were sent}} for review.",
+  "review": "Review"
+}
