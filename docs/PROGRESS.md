@@ -8,7 +8,7 @@ Resume rule: read this file first, then `docs/DECISIONS.md`. Stages follow SPEC 
 | --- | --- |
 | 1 Foundation | done |
 | 2 Ledger core | done |
-| 3 Auth and first install | not started |
+| 3 Auth and first install | done |
 | 4 Manual recording | not started |
 | 5 Periods and home | not started |
 | 6 Debt, investments, currency | not started |
@@ -63,6 +63,17 @@ dial ENERGY 1 / RHYTHM 2 / MOTION 1.
   installment schedule).
 - Tests written first: `tests/unit/domain-scenarios.test.ts` covers scenarios 1 to 14 (one describe each),
   `tests/unit/domain-helpers.test.ts` covers edge cases. 53 unit tests pass.
+
+### Stage 3: Auth and first install (done)
+
+- Owner creation only with `SETUP_TOKEN` (advisory lock prevents two concurrent claims), registration closed after.
+- Passkeys (SimpleWebAuthn 14), password (argon2id) + TOTP (encrypted secret), 10 one-time recovery codes,
+  DB sessions with device list and per-session revoke, new-device notification, rate limits with escalating lockout,
+  reauth window (10 min) for sensitive actions with a client `ReauthProvider` that retries after confirmation.
+- Pages: `/setup`, `/login`, `/settings/security`; app shell with sidebar (desktop) and bottom tabs + menu sheet (phone).
+- i18n messages split per namespace in `messages/<locale>/<ns>.json`.
+- Tests: integration scenario 23; Playwright e2e with a Chromium virtual authenticator (setup, passkey register,
+  passkey login, password login, CSRF block). Screenshots of login and security reviewed at 390/1360, light/dark.
 
 ## Open problems
 

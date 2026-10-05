@@ -22,6 +22,7 @@ const csp = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  devIndicators: false,
   serverExternalPackages: ["@node-rs/argon2", "pg-boss", "pg"],
   async headers() {
     return [

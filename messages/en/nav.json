@@ -1,0 +1,20 @@
+{
+  "home": "Home",
+  "transactions": "Transactions",
+  "accounts": "Accounts",
+  "goals": "Goals",
+  "investments": "Investments",
+  "record": "Record",
+  "dashboard": "Dashboard",
+  "debts": "Debts",
+  "budgets": "Budgets",
+  "bills": "Bills and recurring",
+  "import": "Import",
+  "recap": "Weekly recap",
+  "trips": "Trips",
+  "settings": "Settings",
+  "menu": "Menu",
+  "more": "More",
+  "logout": "Sign out",
+  "main": "Main navigation"
+}

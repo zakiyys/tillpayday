@@ -1,0 +1,20 @@
+{
+  "home": "Beranda",
+  "transactions": "Transaksi",
+  "accounts": "Akun",
+  "goals": "Goal",
+  "investments": "Investasi",
+  "record": "Catat",
+  "dashboard": "Dashboard",
+  "debts": "Hutang",
+  "budgets": "Budget",
+  "bills": "Tagihan dan rutin",
+  "import": "Import",
+  "recap": "Rekap mingguan",
+  "trips": "Perjalanan",
+  "settings": "Setelan",
+  "menu": "Menu",
+  "more": "Lainnya",
+  "logout": "Keluar",
+  "main": "Navigasi utama"
+}
