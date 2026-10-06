@@ -72,21 +72,27 @@ if (staged) {
     else if (line.startsWith("+") && !SKIP.test(file)) for (const f of scanLine(file, line.slice(1))) findings.add(f);
   }
 } else {
-  const revs = git("rev-list", "--all").split("\n").filter(Boolean);
-  for (const rev of revs) {
-    const files = git("ls-tree", "-r", "--name-only", rev).split("\n").filter((f) => f && !SKIP.test(f));
-    for (const f of files) {
-      let content;
-      try {
-        content = git("show", `${rev}:${f}`);
-      } catch {
-        continue;
-      }
-      if (content.includes("\u0000")) continue;
-      content.split("\n").forEach((line, i) => {
-        for (const hit of scanLine(`${f}:${i + 1}`, line)) findings.add(hit);
-      });
+  // Each distinct blob is read once: the same file content repeats across commits.
+  const blobs = new Map(); // sha -> first path seen
+  for (const rev of git("rev-list", "--all").split("\n").filter(Boolean)) {
+    for (const entry of git("ls-tree", "-r", rev).split("\n")) {
+      const m = /^\d+ blob ([0-9a-f]+)\t(.+)$/.exec(entry);
+      if (m && !SKIP.test(m[2]) && !blobs.has(m[1])) blobs.set(m[1], m[2]);
     }
+  }
+  // One `git cat-file --batch` process for all blobs instead of one `git show` per file per commit.
+  const out = execFileSync("git", ["cat-file", "--batch"], { input: [...blobs.keys()].join("\n") + "\n", maxBuffer: 1 << 30 });
+  let pos = 0;
+  while (pos < out.length) {
+    const nl = out.indexOf(10, pos);
+    const [sha, type, size] = out.subarray(pos, nl).toString("utf8").split(" ");
+    const body = out.subarray(nl + 1, nl + 1 + Number(size));
+    pos = nl + 1 + Number(size) + 1;
+    if (type !== "blob" || body.includes(0)) continue;
+    const f = blobs.get(sha);
+    body.toString("utf8").split("\n").forEach((line, i) => {
+      for (const hit of scanLine(`${f}:${i + 1}`, line)) findings.add(hit);
+    });
   }
   const meta = git("log", "--all", "--format=%H%x09%an <%ae>%x09%cn <%ce>%x09%B");
   meta.split("\n").forEach((line, i) => {
