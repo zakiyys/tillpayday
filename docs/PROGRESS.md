@@ -443,6 +443,25 @@ and are used exactly as specified, not redrawn.
   background (light canvas/surface, dark canvas/surface, accent tile) and fails below 3:1 against the bright bar.
   Current results: 6.22, 6.73, 4.82, 4.44 and 3.02 to 1. All pass.
 
+**Install on the server (owner request).** TillPayDay now runs on this machine as containers:
+`docker compose` builds `db` (postgres:18) + `app` + `worker` from this repo, published only on
+`127.0.0.1:3070`, with no public hostname and no change to PM2 or cloudflared. The stock named
+volumes are replaced by plain host folders through a gitignored `compose.override.yaml`, so the
+database and the attachments sit in visible paths that cannot be lost to a stray
+`docker compose down -v`. Migrations run on start, `/api/health` answers, and the backup plus
+restore path was exercised for real: a backup restored into an empty database with the same 38
+tables, and a wrong `BACKUP_ENCRYPTION_KEY` was rejected. A UID mismatch between the host folder
+(1000) and the container user `app` (999) made the app crash-loop on `mkdir` of its backups
+folder; fixed with an ACL on the data folder rather than a chown, so the host user can still read the
+encrypted backups.
+
+**Icon bug found by looking at the running app.** The setup screen showed the three-bar mark in a
+32 px tile, but the spec says the app icon always uses the main five-bar form and only a mark drawn
+at 24 px or less uses the small form. `AppIcon` was passing the *inner* size (72% of the tile) to
+`LogoMark`, so a 40 px tile drew a 28.8 px mark, which fell under the 24 px check. The published
+icon files were always correct; only the React tile was wrong. `LogoMark` now takes an explicit
+`variant` and `AppIcon` pins it to the main form.
+
 **README.** Rewritten in English with a short bloat-cat section, a Brand section that documents the logo rules,
 and the "why is there a cat" FAQ entry. `README.id.md` carries the same two additions in Indonesian.
 

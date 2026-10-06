@@ -212,7 +212,9 @@ Five bars of equal height, the middle one highlighted: money split evenly per da
 40% opacity). Below 25 px the three-bar form in `public/logo-small.svg` is used instead, so the mark stays sharp
 in a tab or a launcher.
 
-- App icon: rounded square, corners at 22.5% of the side, accent fill, white mark at 72% of the side.
+- App icon: rounded square, corners at 22.5% of the side, accent fill, **main** five-bar mark at 72% of the
+  side. The icon never uses the small form, whatever its own size: the 24 px rule is about how big the *mark*
+  is drawn, not how big the tile is.
 - Maskable PWA icon: accent fills the whole canvas, mark at 56% so a platform crop cannot clip it.
 - One-colour: the mark in ink (#12211C) on light, in white on dark, no tile, `currentColor` driven.
 - Lockup: icon, then the name from `APP_NAME` in Plus Jakarta Sans 800, tracking -0.02em, capitals about 45%
