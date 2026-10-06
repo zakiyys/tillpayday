@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="public/icons/icon-192.png" alt="TillPayDay logo" width="96" height="96">
+</p>
+
 <h1 align="center">TillPayDay</h1>
 
 <p align="center">
@@ -208,15 +212,21 @@ Runtime dependencies are deliberately few: 18 packages in `dependencies`, no ORM
 
 | You have... | Use | Time |
 | --- | --- | --- |
-| A server or VPS with Docker | [A. Docker Compose](#a-docker-compose-recommended) + a reverse proxy | ~10 min |
-| Just your laptop and want to look around | [B. Try it locally](#b-try-it-on-your-own-computer) | ~5 min |
-| A home server behind NAT, no open ports | [A](#a-docker-compose-recommended) + [C. Tunnel or private network](#c-no-public-ip-tunnel-or-private-network) | ~15 min |
-| A server without Docker | [D. Manual install](#d-manual-install-no-docker) with systemd or PM2 | ~20 min |
+Installing is two decisions: **how to run it** and **who can reach it**.
+
+| How to run it | Use | Time |
+| --- | --- | --- |
+| Any machine with Docker (server, VPS, home box, laptop) | [A. Docker Compose](#a-docker-compose-recommended) | ~10 min |
+| Just looking around on your own computer | [B. Try it locally](#b-try-it-on-your-own-computer) | ~5 min |
+| A machine without Docker | [D. Manual install](#d-manual-install-no-docker) with systemd or PM2 | ~20 min |
 | Plans to change the code | [Development](#development) | ~5 min |
 
-**Requirements for every path:** a machine that stays on (1 CPU and 1 GB RAM are plenty for two people, plus about
-2 GB disk for images and data) and, for daily use, an **HTTPS** address. Passkeys, push notifications and the phone
-install only work over HTTPS or on `localhost`.
+Then pick who can reach it in [C. Choose how to reach it](#c-choose-how-to-reach-it): only this computer, your home
+network, only your own devices, or the whole internet, with or without a domain. It is your call; the app works the
+same in every case.
+
+**Requirements:** a machine that stays on (1 CPU and 1 GB RAM are plenty for two people, plus about 2 GB disk for
+images and data). Passkeys, push notifications and installing on a phone need **HTTPS** or `localhost`.
 
 ### A. Docker Compose (recommended)
 
@@ -229,8 +239,8 @@ cd tillpayday
 # 1. Create .env with fresh random secrets (no Node.js needed on the host)
 docker run --rm -v "$PWD":/w -w /w -u "$(id -u):$(id -g)" node:22-alpine node scripts/gen-secrets.mjs --write
 
-# 2. Set the address you will open in the browser
-#    PUBLIC_URL=https://money.example.com
+# 2. Set the address you will open in the browser (see "C. Choose how to reach it")
+#    PUBLIC_URL=https://money.example.com   or   PUBLIC_URL=http://localhost:3070
 nano .env
 
 # 3. Build and start
@@ -249,18 +259,8 @@ The stack has three services:
 
 Data lives in two Docker volumes: `db-data` (the database) and `app-data` (attachments and backups).
 
-Now put HTTPS in front of it. The simplest option is [Caddy](https://caddyserver.com), which gets a certificate on its
-own. Point a DNS record at your server, then:
-
-```caddy
-money.example.com {
-	encode zstd gzip
-	reverse_proxy 127.0.0.1:3070
-}
-```
-
-Prefer nginx? Use `docs/deploy/nginx.conf.example` (it sets the forwarded headers the app expects and allows 12 MB
-uploads). Then open `PUBLIC_URL` and continue with [First setup](#first-setup).
+Next, decide who can reach it: [C. Choose how to reach it](#c-choose-how-to-reach-it). Then open `PUBLIC_URL` and
+continue with [First setup](#first-setup).
 
 > **Want your data in a visible folder instead of a Docker volume?** Create `compose.override.yaml` next to
 > `compose.yaml`:
@@ -280,7 +280,7 @@ uploads). Then open `PUBLIC_URL` and continue with [First setup](#first-setup).
 
 ### B. Try it on your own computer
 
-Same as path A, but set `PUBLIC_URL=http://localhost:3070` in step 2 and skip the reverse proxy. Open
+Same as path A, with `PUBLIC_URL=http://localhost:3070` in step 2 (option 1 in [C](#c-choose-how-to-reach-it)). Open
 `http://localhost:3070`. Browsers treat `localhost` as secure, so passkeys work there too.
 
 Want sample data? Choose **Try with sample data** during setup. When you are done:
@@ -290,16 +290,59 @@ docker compose down        # stops it, keeps the data
 docker compose down -v     # stops it and DELETES all data
 ```
 
-### C. No public IP: tunnel or private network
+### C. Choose how to reach it
 
-The app only needs to be reachable at the address in `PUBLIC_URL`. Two common setups that need no open ports:
+The app always listens on `127.0.0.1:3070` first, so nothing is exposed until you decide. There is one rule for every
+option: **`PUBLIC_URL` must be exactly the address you type in the browser**, because passkeys, cookies, push and
+invitations are tied to it. Change it later whenever you change your mind, then run `docker compose up -d`.
 
-- **Cloudflare Tunnel:** run `cloudflared` on the server and route a hostname to `http://127.0.0.1:3070`.
-  Set `PUBLIC_URL` to that `https://` hostname.
-- **Tailscale or WireGuard:** keep it private to your devices. With Tailscale, `tailscale serve` gives the machine an HTTPS
-  address inside your tailnet; use that as `PUBLIC_URL`.
+| Option | Who can open it | Domain needed | HTTPS | `PUBLIC_URL` looks like |
+| --- | --- | --- | --- | --- |
+| 1. This computer only | you, on that machine | no | not needed (`localhost` counts as secure) | `http://localhost:3070` |
+| 2. Home network | devices on the same Wi-Fi or LAN | no | no, so passkeys and phone install are off | `http://<LAN IP>:3070` |
+| 3. Your own devices, anywhere | your phone and laptop, through a private network | no | yes | the HTTPS address the private network gives you |
+| 4. Public, with your domain | anyone with the link (sign-up is still closed) | yes | yes | `https://money.example.com` |
+| 5. Public, without a domain | anyone with the link | no | yes | the HTTPS address the service gives you |
 
-Either way, the Android share target and the iPhone Shortcut need to reach the same address.
+**1. This computer only.** Nothing to do. This is the default.
+
+**2. Home network.** In `.env` set `APP_BIND=0.0.0.0` and `PUBLIC_URL=http://<the machine's LAN IP>:3070`, then
+`docker compose up -d`. Sign in with your password and authenticator code; passkeys, push and the phone install need
+HTTPS, so use option 3, 4 or 5 if you want those.
+
+**3. Your own devices, anywhere (no domain, nothing public).** Install [Tailscale](https://tailscale.com) on the
+server and on your phone and laptop, then run `tailscale serve --bg 3070` on the server. It prints an HTTPS address that
+only your devices can open; put it in `PUBLIC_URL`. A WireGuard VPN with your own reverse proxy works the same way.
+
+**4. Public, with your own domain.** Two common ways:
+
+- *The server has a public IP and you can open ports 80 and 443:* point an `A` record at it and put
+  [Caddy](https://caddyserver.com) in front, which gets the certificate on its own:
+
+  ```caddy
+  money.example.com {
+  	encode zstd gzip
+  	reverse_proxy 127.0.0.1:3070
+  }
+  ```
+
+  Prefer nginx? Use `docs/deploy/nginx.conf.example` (forwarded headers and 12 MB uploads are already set) with a
+  certificate from Let's Encrypt.
+- *No public IP, no open ports (home internet, CGNAT, strict firewall):* use a
+  [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/). Add your domain
+  to Cloudflare, create a tunnel, run `cloudflared` on the server and add a public hostname pointing to
+  `http://127.0.0.1:3070`. Cloudflare serves the HTTPS; your router stays closed.
+
+**5. Public, without your own domain.** `tailscale funnel --bg 3070` publishes the same HTTPS address from option 3 to
+the whole internet. A free dynamic DNS name (for example from DuckDNS) plus Caddy and port forwarding works too, if
+your connection has a public IP. Avoid throwaway tunnel URLs that change on every restart: when the address changes,
+passkeys and installed phone apps stop working until you update `PUBLIC_URL`.
+
+Going public is safe by design (see [Security](#security)): the owner is created with `SETUP_TOKEN`, sign-up closes
+right after, and members join only by invitation. Want one more lock? Put an access gateway with single sign-on in
+front of options 4 and 5.
+
+Whatever you pick, the Android share target and the iPhone Shortcut use the same address.
 
 ### D. Manual install (no Docker)
 
@@ -329,7 +372,7 @@ Then run **two** long-lived processes, the web app and the worker:
 - **PM2:** `cp docs/deploy/ecosystem.config.cjs.example ecosystem.config.cjs && pm2 start ecosystem.config.cjs`.
   Run `npm run db:migrate` yourself after every update.
 
-Finish with a reverse proxy as in path A.
+Then pick how people reach it in [C](#c-choose-how-to-reach-it).
 
 ### Environment variables
 
@@ -351,7 +394,7 @@ placeholder.
 | `APP_NAME` | yes | Name shown in the app and on the installed icon. |
 | `BACKUP_COPY_DIR` | no | Second folder that receives a copy of every backup (a mounted remote disk, for example). |
 | `BACKUP_KEEP` | no | How many daily backups to keep (default 14). |
-| `APP_BIND`, `APP_PORT` | no | Compose only: host address and port (default `127.0.0.1:3070`). |
+| `APP_BIND`, `APP_PORT` | no | Compose only: host address and port (default `127.0.0.1:3070`; `0.0.0.0` opens it to your LAN). |
 
 Never commit `.env`. It is in `.gitignore`.
 

@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="public/icons/icon-192.png" alt="Logo TillPayDay" width="96" height="96">
+</p>
+
 <h1 align="center">TillPayDay</h1>
 
 <p align="center">
@@ -208,15 +212,21 @@ Dependensi runtime sengaja sedikit: 18 paket di `dependencies`, tanpa plugin ORM
 
 | Kamu punya... | Pakai | Waktu |
 | --- | --- | --- |
-| Server atau VPS dengan Docker | [A. Docker Compose](#a-docker-compose-disarankan) + reverse proxy | ~10 menit |
-| Cuma laptop dan mau coba-coba | [B. Coba di komputer sendiri](#b-coba-di-komputer-sendiri) | ~5 menit |
-| Server rumahan di balik NAT, tanpa port terbuka | [A](#a-docker-compose-disarankan) + [C. Tunnel atau jaringan privat](#c-tanpa-ip-publik-tunnel-atau-jaringan-privat) | ~15 menit |
-| Server tanpa Docker | [D. Instalasi manual](#d-instalasi-manual-tanpa-docker) dengan systemd atau PM2 | ~20 menit |
+Instalasi itu dua keputusan: **cara menjalankannya** dan **siapa yang bisa membukanya**.
+
+| Cara menjalankan | Pakai | Waktu |
+| --- | --- | --- |
+| Mesin apa pun dengan Docker (server, VPS, mesin rumahan, laptop) | [A. Docker Compose](#a-docker-compose-disarankan) | ~10 menit |
+| Cuma mau coba-coba di komputer sendiri | [B. Coba di komputer sendiri](#b-coba-di-komputer-sendiri) | ~5 menit |
+| Mesin tanpa Docker | [D. Instalasi manual](#d-instalasi-manual-tanpa-docker) dengan systemd atau PM2 | ~20 menit |
 | Niat mengubah kodenya | [Pengembangan](#pengembangan) | ~5 menit |
 
-**Syarat untuk semua jalur:** mesin yang selalu nyala (1 CPU dan 1 GB RAM cukup untuk dua orang, plus sekitar 2 GB
-disk untuk image dan data) dan, untuk pemakaian harian, alamat **HTTPS**. Passkey, notifikasi push, dan pemasangan di
-ponsel hanya jalan lewat HTTPS atau di `localhost`.
+Lalu pilih siapa yang bisa membukanya di [C. Pilih cara mengaksesnya](#c-pilih-cara-mengaksesnya): cuma komputer ini,
+jaringan rumah, cuma perangkat kamu sendiri, atau seluruh internet, pakai domain atau tidak. Terserah kamu; app-nya
+jalan sama di semua pilihan.
+
+**Syarat:** mesin yang selalu nyala (1 CPU dan 1 GB RAM cukup untuk dua orang, plus sekitar 2 GB disk untuk image dan
+data). Passkey, notifikasi push, dan pemasangan di ponsel butuh **HTTPS** atau `localhost`.
 
 ### A. Docker Compose (disarankan)
 
@@ -229,8 +239,8 @@ cd tillpayday
 # 1. Buat .env berisi secret acak baru (tidak perlu Node.js di host)
 docker run --rm -v "$PWD":/w -w /w -u "$(id -u):$(id -g)" node:22-alpine node scripts/gen-secrets.mjs --write
 
-# 2. Isi alamat yang akan kamu buka di browser
-#    PUBLIC_URL=https://uang.example.com
+# 2. Isi alamat yang akan kamu buka di browser (lihat "C. Pilih cara mengaksesnya")
+#    PUBLIC_URL=https://uang.example.com   atau   PUBLIC_URL=http://localhost:3070
 nano .env
 
 # 3. Build dan jalankan
@@ -249,18 +259,8 @@ Stack-nya berisi tiga service:
 
 Data disimpan di dua volume Docker: `db-data` (database) dan `app-data` (lampiran dan backup).
 
-Sekarang pasang HTTPS di depannya. Cara paling gampang pakai [Caddy](https://caddyserver.com), yang mengurus
-sertifikat sendiri. Arahkan record DNS ke server kamu, lalu:
-
-```caddy
-uang.example.com {
-	encode zstd gzip
-	reverse_proxy 127.0.0.1:3070
-}
-```
-
-Lebih suka nginx? Pakai `docs/deploy/nginx.conf.example` (sudah mengatur header forwarded yang dibutuhkan app dan
-mengizinkan unggahan 12 MB). Lalu buka `PUBLIC_URL` dan lanjut ke [Setup pertama](#setup-pertama).
+Berikutnya, tentukan siapa yang bisa membukanya: [C. Pilih cara mengaksesnya](#c-pilih-cara-mengaksesnya). Lalu buka
+`PUBLIC_URL` dan lanjut ke [Setup pertama](#setup-pertama).
 
 > **Mau data di folder yang kelihatan, bukan volume Docker?** Buat `compose.override.yaml` di samping
 > `compose.yaml`:
@@ -280,7 +280,7 @@ mengizinkan unggahan 12 MB). Lalu buka `PUBLIC_URL` dan lanjut ke [Setup pertama
 
 ### B. Coba di komputer sendiri
 
-Sama dengan jalur A, tapi isi `PUBLIC_URL=http://localhost:3070` di langkah 2 dan lewati reverse proxy. Buka
+Sama dengan jalur A, dengan `PUBLIC_URL=http://localhost:3070` di langkah 2 (pilihan 1 di [C](#c-pilih-cara-mengaksesnya)). Buka
 `http://localhost:3070`. Browser menganggap `localhost` aman, jadi passkey juga jalan.
 
 Mau data contoh? Pilih **Coba dengan data contoh** saat setup. Kalau sudah selesai:
@@ -290,16 +290,59 @@ docker compose down        # berhenti, data tetap ada
 docker compose down -v     # berhenti dan MENGHAPUS semua data
 ```
 
-### C. Tanpa IP publik: tunnel atau jaringan privat
+### C. Pilih cara mengaksesnya
 
-App cukup bisa dijangkau di alamat `PUBLIC_URL`. Dua pilihan umum yang tidak butuh port terbuka:
+App selalu mendengarkan di `127.0.0.1:3070` dulu, jadi tidak ada yang terbuka sampai kamu memutuskan. Ada satu aturan
+untuk semua pilihan: **`PUBLIC_URL` harus persis alamat yang kamu ketik di browser**, karena passkey, cookie, push, dan
+undangan terikat padanya. Bisa diganti kapan saja kalau berubah pikiran, lalu jalankan `docker compose up -d`.
 
-- **Cloudflare Tunnel:** jalankan `cloudflared` di server dan arahkan sebuah hostname ke `http://127.0.0.1:3070`.
-  Isi `PUBLIC_URL` dengan hostname `https://` itu.
-- **Tailscale atau WireGuard:** khusus perangkat kamu sendiri. Dengan Tailscale, `tailscale serve` memberi mesin alamat HTTPS
-  di dalam tailnet kamu; pakai itu sebagai `PUBLIC_URL`.
+| Pilihan | Siapa yang bisa membuka | Perlu domain | HTTPS | `PUBLIC_URL` kira-kira |
+| --- | --- | --- | --- | --- |
+| 1. Cuma komputer ini | kamu, di mesin itu | tidak | tidak perlu (`localhost` dianggap aman) | `http://localhost:3070` |
+| 2. Jaringan rumah | perangkat di Wi-Fi atau LAN yang sama | tidak | tidak, jadi passkey dan pasang di ponsel mati | `http://<IP LAN>:3070` |
+| 3. Perangkat sendiri, dari mana saja | ponsel dan laptop kamu, lewat jaringan privat | tidak | ya | alamat HTTPS dari jaringan privat itu |
+| 4. Publik, pakai domain sendiri | siapa pun yang punya link (pendaftaran tetap tertutup) | ya | ya | `https://uang.example.com` |
+| 5. Publik, tanpa domain | siapa pun yang punya link | tidak | ya | alamat HTTPS dari layanannya |
 
-Apa pun pilihannya, share target Android dan Shortcut iPhone harus bisa menjangkau alamat yang sama.
+**1. Cuma komputer ini.** Tidak perlu apa-apa. Ini bawaannya.
+
+**2. Jaringan rumah.** Di `.env` isi `APP_BIND=0.0.0.0` dan `PUBLIC_URL=http://<IP LAN mesin itu>:3070`, lalu
+`docker compose up -d`. Masuk pakai password dan kode autentikator; passkey, push, dan pasang di ponsel butuh HTTPS,
+jadi pakai pilihan 3, 4, atau 5 kalau mau fitur itu.
+
+**3. Perangkat sendiri, dari mana saja (tanpa domain, tidak publik).** Pasang [Tailscale](https://tailscale.com) di
+server, ponsel, dan laptop, lalu jalankan `tailscale serve --bg 3070` di server. Ia mencetak alamat HTTPS yang hanya
+bisa dibuka perangkat kamu; isi itu ke `PUBLIC_URL`. VPN WireGuard dengan reverse proxy sendiri juga bisa.
+
+**4. Publik, pakai domain sendiri.** Dua cara umum:
+
+- *Server punya IP publik dan port 80 dan 443 bisa dibuka:* arahkan record `A` ke server, lalu pasang
+  [Caddy](https://caddyserver.com) di depannya, yang mengurus sertifikat sendiri:
+
+  ```caddy
+  uang.example.com {
+  	encode zstd gzip
+  	reverse_proxy 127.0.0.1:3070
+  }
+  ```
+
+  Lebih suka nginx? Pakai `docs/deploy/nginx.conf.example` (header forwarded dan unggahan 12 MB sudah diatur) dengan
+  sertifikat dari Let's Encrypt.
+- *Tanpa IP publik, tanpa port terbuka (internet rumah, CGNAT, firewall ketat):* pakai
+  [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/). Tambahkan domain
+  ke Cloudflare, buat tunnel, jalankan `cloudflared` di server, dan tambahkan public hostname yang mengarah ke
+  `http://127.0.0.1:3070`. Cloudflare yang melayani HTTPS; router kamu tetap tertutup.
+
+**5. Publik, tanpa domain sendiri.** `tailscale funnel --bg 3070` membuka alamat HTTPS yang sama dari pilihan 3 ke
+seluruh internet. Nama dynamic DNS gratis (misalnya dari DuckDNS) plus Caddy dan port forwarding juga bisa, kalau
+koneksimu punya IP publik. Hindari URL tunnel sekali pakai yang berganti tiap restart: begitu alamatnya berubah,
+passkey dan app yang terpasang di ponsel berhenti jalan sampai `PUBLIC_URL` diperbarui.
+
+Dibuka ke publik itu aman secara desain (lihat [Keamanan](#keamanan)): pemilik dibuat dengan `SETUP_TOKEN`,
+pendaftaran langsung ditutup, dan anggota hanya masuk lewat undangan. Mau satu kunci lagi? Pasang access gateway dengan
+single sign-on di depan pilihan 4 dan 5.
+
+Apa pun pilihannya, share target Android dan Shortcut iPhone memakai alamat yang sama.
 
 ### D. Instalasi manual (tanpa Docker)
 
@@ -329,7 +372,7 @@ Lalu jalankan **dua** proses permanen, web app dan worker:
 - **PM2:** `cp docs/deploy/ecosystem.config.cjs.example ecosystem.config.cjs && pm2 start ecosystem.config.cjs`.
   Jalankan `npm run db:migrate` sendiri setiap habis update.
 
-Terakhir pasang reverse proxy seperti di jalur A.
+Lalu pilih cara mengaksesnya di [C](#c-pilih-cara-mengaksesnya).
 
 ### Variabel environment
 
@@ -351,7 +394,7 @@ atau masih placeholder.
 | `APP_NAME` | ya | Nama yang tampil di app dan di ikon terpasang. |
 | `BACKUP_COPY_DIR` | tidak | Folder kedua yang menerima salinan setiap backup (misalnya disk remote yang di-mount). |
 | `BACKUP_KEEP` | tidak | Berapa backup harian yang disimpan (default 14). |
-| `APP_BIND`, `APP_PORT` | tidak | Khusus Compose: alamat dan port host (default `127.0.0.1:3070`). |
+| `APP_BIND`, `APP_PORT` | tidak | Khusus Compose: alamat dan port host (default `127.0.0.1:3070`; `0.0.0.0` membukanya ke LAN). |
 
 Jangan pernah commit `.env`. Sudah ada di `.gitignore`.
 
