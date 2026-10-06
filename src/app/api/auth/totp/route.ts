@@ -11,7 +11,7 @@ export const GET = route(async ({ session }) => {
     create: { memberId: session.memberId, totpSecretEnc: sealTotp(secret) },
     update: { totpSecretEnc: sealTotp(secret), totpEnabledAt: null },
   });
-  return json({ uri: totpUri(secret, session.email, process.env.APP_NAME ?? "Home Ledger"), secret });
+  return json({ uri: totpUri(secret, session.email, process.env.APP_NAME ?? "TillPayDay"), secret });
 }, { reauth: true });
 
 /** Step 2: confirm with a code to enable. */

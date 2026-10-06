@@ -2,8 +2,8 @@
 
 Readings of the spec where it was ambiguous, and deviations with reasons. Newest at the bottom.
 
-1. **Working name.** The app name is open (spec 18.1). `APP_NAME` defaults to "Home Ledger" in `.env.example`
-   and is shown everywhere the name appears.
+1. **App name.** `APP_NAME=TillPayDay`. Set at the owner's request; the app reads it from the environment
+   everywhere the name appears, including the logo lockup. Change `APP_NAME` to rebrand without touching code.
 2. **Versions.** Next.js 16.3, React 19.3, Prisma 7.10 (8.0 is still a release candidate), TypeScript 5.9
    (TypeScript 7 is the native Go port and `eslint-config-next`/`typescript-eslint` do not support it yet),
    ESLint 9 (pulled by `eslint-config-next`), Zod 4, Tailwind 4, Vitest 5, Playwright 1.63, pg-boss 12.

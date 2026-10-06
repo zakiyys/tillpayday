@@ -1,15 +1,41 @@
-# Home Ledger
+# TillPayDay
+
+> **Satu angka tiap hari: hari ini masih aman belanja berapa sampai gajian.**
 
 App keuangan pribadi yang kamu pasang di server sendiri. Satu orang atau satu pasangan mencatat pemasukan,
 pengeluaran, transfer, tabungan, hutang, dan investasi, dan beranda menjawab satu pertanyaan: hari ini masih aman
 belanja berapa.
 
-`Home Ledger` adalah nama kerja; ganti lewat `APP_NAME`.
+`TillPayDay` adalah nama kerja; ganti lewat `APP_NAME`.
 
 English: [README.md](README.md)
 
 ![Beranda di HP](docs/screenshots/home-390-light.png)
 ![Dashboard di desktop](docs/screenshots/dashboard-1360-dark.png)
+
+## Kucing bloat menyapa 🐈
+
+```
+   /\_/\     selamat datang di
+  ( o.o )    zona bloat
+   > ^ <     ~~~~~~~~~~
+```
+
+Di suatu tempat di dalam anggaran, di antara pos kopi dan dana darurat, tinggal seekor kucing kecil. Dia tidak
+bayar sewa. Dia tidak mengurus pajakmu. Dia cuma duduk di atas spreadsheet dan menilai tumpukan langgananmu.
+
+App ini sengaja dibuat ringkas: tanpa Redis, tanpa kebun microservice, tanpa telemetri yang menelepon pulang,
+tanpa dashboard 40 megabita untuk menampilkan satu angka. Kucing bloat tetap diundang. Dia punya pendapat soal
+langganan streaming ketigamu, dan sebenarnya dia benar.
+
+Kalau kamu suka software yang mengerjakan satu hal dengan baik, kucing bloat ada di pihakmu. Kalau kamu suka
+software yang butuh klaster Kubernetes cuma untuk membuka buku kas, kucing bloat juga masih di pihakmu, cuma dia
+sedikit menertawakan.
+
+**Tiga aturan kucing bloat:**
+1. Kalau sesuatu tidak menghasilkan, membelanjakan, menabung, atau memindahkan uang, ia tidak masuk jalur kritis.
+2. Tiap fitur harus lulus satu pertanyaan jujur: *"apa pemiliknya benar-benar akan membuka ini hari Selasa?"*
+3. Tidur dulu. Optimasi nanti.
 
 ## Fitur
 
@@ -34,17 +60,31 @@ English: [README.md](README.md)
 
 ## Stack
 
-Next.js (App Router, TypeScript strict), PostgreSQL dengan migrasi Prisma, Zod di semua batas, worker pg-boss
+Next.js (App Router, TypeScript strict), PostgreSQL dengan migrasi Prisma, Zod di tiap batas, worker pg-boss
 (tanpa Redis), passkey (WebAuthn) dengan password + TOTP sebagai cadangan, next-intl, Tailwind CSS, Vitest dan
-Playwright. Uang disimpan sebagai bilangan bulat satuan terkecil; unit dan kurs memakai aritmetika desimal.
+Playwright. Uang disimpan dalam satuan minor bilangan bulat; unit dan kurs memakai aritmetika desimal.
+
+## Merek
+
+Logonya lima batang sama tinggi dengan batang tengah disorot: uang dibagi rata per hari, batang terang adalah
+hari ini. SVG di `public/logo.svg` (dan `public/logo-small.svg`, tiga batang, untuk 24 px ke bawah) adalah sumber
+tunggalnya. Semua aset raster dibuat dari situ, jadi mereknya bisa dibuat ulang saat aksen berubah:
+
+```sh
+npm run gen:icons     # logo.svg + logo-small.svg -> favicon, ikon PWA, apple-touch-icon
+npm run check:logo    # kontras batang redup terhadap batang terang di tiap latar asli
+```
+
+Ikon app mengikuti warna aksen yang dipilih pemakai di dalam app; ikon PWA yang terpasang memakai aksen bawaan.
+Lihat [DESIGN.md](DESIGN.md) untuk palet dan skala tipografi.
 
 ## Pasang cepat dengan Docker Compose
 
 Perlu Docker dengan plugin Compose dan reverse proxy yang menangani HTTPS (contoh di `docs/deploy/`).
 
 ```sh
-git clone <repositori ini> home-ledger
-cd home-ledger
+git clone <repositori ini> tillpayday
+cd tillpayday
 docker run --rm -v "$PWD":/w -w /w -u "$(id -u):$(id -g)" node:22-alpine node scripts/gen-secrets.mjs --write
 # ubah .env: isi PUBLIC_URL dengan alamat HTTPS yang akan dibuka, misalnya https://finance.example.invalid
 docker compose up -d --build
@@ -68,7 +108,7 @@ reverse proxy untuk HTTPS.
    ```
 2. Pasang dan setel:
    ```sh
-   git clone <repositori ini> home-ledger && cd home-ledger
+   git clone <repositori ini> tillpayday && cd tillpayday
    npm ci
    node scripts/gen-secrets.mjs --write
    # ubah .env: DATABASE_URL, PUBLIC_URL
@@ -77,7 +117,7 @@ reverse proxy untuk HTTPS.
    npm run build
    ```
 3. Jalankan app dan worker sebagai layanan. Contoh untuk systemd dan PM2 ada di `docs/deploy/`
-   (`home-ledger.service.example`, `home-ledger-worker.service.example`, `ecosystem.config.cjs.example`).
+   (`tillpayday.service.example`, `tillpayday-worker.service.example`, `ecosystem.config.cjs.example`).
 4. Setel reverse proxy (`docs/deploy/Caddyfile.example` atau `nginx.conf.example`).
 
 ## Variabel lingkungan
@@ -188,6 +228,8 @@ baru di Setelan > Masuk dan perangkat.
 
 **Bagaimana melihat dengan data contoh?** Pilih "Coba dengan data contoh" saat setel awal, atau jalankan
 `npm run db:seed-demo -- <e-mail pemilik>` pada household yang belum punya transaksi.
+
+**Kenapa ada kucing di README?** Lihat [Kucing bloat menyapa 🐈](#kucing-bloat-menyapa-). Dia bukan dependensi.
 
 ## Pengembangan
 

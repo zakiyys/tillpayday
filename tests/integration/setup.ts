@@ -20,4 +20,4 @@ process.env.VAPID_PUBLIC_KEY ??= fakeSecret() + fakeSecret();
 process.env.VAPID_PRIVATE_KEY ??= fakeSecret();
 process.env.PUBLIC_URL ??= "http://localhost:3070";
 process.env.DATA_DIR = "./data/test";
-process.env.APP_NAME ??= "Home Ledger";
+process.env.APP_NAME ??= "TillPayDay";

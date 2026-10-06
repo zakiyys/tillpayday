@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 // Web app manifest (SPEC 13): installable, standalone, with a Share Target for text, images and PDF (Android).
 export default function manifest(): MetadataRoute.Manifest {
-  const name = process.env.APP_NAME ?? "Home Ledger";
+  const name = process.env.APP_NAME ?? "TillPayDay";
   return {
     name,
     short_name: name.slice(0, 12),
@@ -15,6 +15,7 @@ export default function manifest(): MetadataRoute.Manifest {
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
       { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+      { src: "/icons/maskable-192.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
       { src: "/icons/maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
     share_target: {

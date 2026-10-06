@@ -14,6 +14,9 @@ const allowedHosts = new Set(
     .filter((l) => l && !l.startsWith("#")),
 );
 const allowedIps = new Set(["127.0.0.1", "0.0.0.0", "255.255.255.255", "10.0.0.0", "192.168.0.0", "172.16.0.0"]);
+// Absolute paths that are placeholders in the shipped examples, not a real server layout. Everything else
+// under /opt, /srv, /data, /home, ... is still a finding.
+const allowedPaths = new Set(["/opt/tillpayday"]);
 
 const extra = existsSync("deploy.local/private-patterns.txt")
   ? readFileSync("deploy.local/private-patterns.txt", "utf8")
@@ -45,7 +48,10 @@ function scanLine(where, line) {
     if (parts.some((p) => p > 255)) continue;
         if (!allowedIps.has(m[0])) hits.push(`ip ${m[0]}`);
   }
-  for (const m of line.matchAll(pathRe)) hits.push(`path ${m[1]}`);
+  for (const m of line.matchAll(pathRe)) {
+    const p = m[1];
+    if (![...allowedPaths].some((a) => p === a || p.startsWith(a + "/"))) hits.push(`path ${p}`);
+  }
   for (const m of line.matchAll(hostRe)) {
     const h = m[1] ?? m[2];
     if (/\.(ts|tsx|js|mjs|json|md|sh|css|yml|yaml|toml|prisma|png|webp|woff2|txt|html|env|io\.ts)$/i.test(h) && !m[1]) continue;

@@ -1,13 +1,13 @@
 # systemd unit for the manual install. Copy to /etc/systemd/system/, adjust User and WorkingDirectory.
 [Unit]
-Description=Home Ledger web app
+Description=TillPayDay web app
 After=network.target postgresql.service
 
 [Service]
 Type=simple
 User=ledger
-WorkingDirectory=/opt/home-ledger
-EnvironmentFile=/opt/home-ledger/.env
+WorkingDirectory=/opt/tillpayday
+EnvironmentFile=/opt/tillpayday/.env
 Environment=NODE_ENV=production
 ExecStartPre=/usr/bin/node --import tsx scripts/check-env.ts
 ExecStartPre=/usr/bin/node --import tsx scripts/backup.ts --pre-migrate

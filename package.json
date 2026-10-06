@@ -1,5 +1,5 @@
 {
-  "name": "self-hosted-finance",
+  "name": "tillpayday",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -22,6 +22,8 @@
     "db:migrate:dev": "prisma migrate dev",
     "db:seed-demo": "node --env-file-if-exists=.env --import tsx scripts/seed-demo.ts",
     "secrets": "node scripts/gen-secrets.mjs",
+    "gen:icons": "node scripts/gen-icons.mjs",
+    "check:logo": "node scripts/check-logo-contrast.mjs",
     "scan:secrets": "sh scripts/scan-secrets.sh",
     "scan:private": "sh scripts/scan-private.sh",
     "backup": "node --env-file-if-exists=.env --import tsx scripts/backup.ts",
@@ -60,6 +62,7 @@
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.8",
     "prisma": "7.10.0",
+    "sharp": "^0.35.4",
     "tailwindcss": "4.3.3",
     "tsx": "4.23.15",
     "typescript": "5.9.3",

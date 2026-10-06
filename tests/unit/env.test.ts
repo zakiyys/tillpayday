@@ -12,12 +12,12 @@ const good = {
   VAPID_PRIVATE_KEY: fakeSecret(),
   PUBLIC_URL: "https://finance.example.invalid",
   DATA_DIR: "./data",
-  APP_NAME: "Home Ledger",
+  APP_NAME: "TillPayDay",
 };
 
 describe("env validation (scenario 27)", () => {
   it("accepts a complete env", () => {
-    expect(parseEnv(good).APP_NAME).toBe("Home Ledger");
+    expect(parseEnv(good).APP_NAME).toBe("TillPayDay");
   });
   it.each(["SETUP_TOKEN", "SESSION_SECRET", "DATA_ENCRYPTION_KEY", "BACKUP_ENCRYPTION_KEY", "VAPID_PRIVATE_KEY"])(
     "refuses to start when %s is empty",

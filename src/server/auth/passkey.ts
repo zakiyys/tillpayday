@@ -11,7 +11,7 @@ import { bad } from "../http";
 
 export function rp() {
   const url = new URL(process.env.PUBLIC_URL ?? "http://localhost:3070");
-  return { rpID: url.hostname, origin: url.origin, rpName: process.env.APP_NAME ?? "Home Ledger" };
+  return { rpID: url.hostname, origin: url.origin, rpName: process.env.APP_NAME ?? "TillPayDay" };
 }
 
 const CHALLENGE_TTL_MS = 5 * 60_000;

@@ -1,6 +1,6 @@
 ---
 version: alpha
-name: Home Ledger
+name: TillPayDay
 description: A calm money tool. Numbers lead; everything else steps back.
 colors:
   primary: "#0B5D4B"
@@ -204,6 +204,23 @@ everywhere: containers soft, controls slightly tighter, the input bar is the onl
   describe the action (camera, send, arrows), never sparkles or robots.
 - States: every data view ships an empty state (what to do next), a loading skeleton matching its shape,
   and an error state with a retry button.
+
+## Logo
+
+Five bars of equal height, the middle one highlighted: money split evenly per day, the bright bar is today.
+`public/logo.svg` is the single source (64x64 canvas, bars 28 tall, 6 wide, 5 apart, 3px radius, dim bars at
+40% opacity). Below 25 px the three-bar form in `public/logo-small.svg` is used instead, so the mark stays sharp
+in a tab or a launcher.
+
+- App icon: rounded square, corners at 22.5% of the side, accent fill, white mark at 72% of the side.
+- Maskable PWA icon: accent fills the whole canvas, mark at 56% so a platform crop cannot clip it.
+- One-colour: the mark in ink (#12211C) on light, in white on dark, no tile, `currentColor` driven.
+- Lockup: icon, then the name from `APP_NAME` in Plus Jakarta Sans 800, tracking -0.02em, capitals about 45%
+  of the icon height, gap 25% of the icon height.
+- Size rule: the mark scales with the icon; the two bars that carry meaning (dim vs bright) must stay
+  distinguishable. `npm run check:logo` measures that against every real background and fails below 3:1.
+- Don't: change the bar count, proportions, radius or opacity; add shadow, gradient, outline or any effect;
+  leave less than one bar of padding around the mark.
 
 ## Do's and Don'ts
 

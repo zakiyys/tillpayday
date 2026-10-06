@@ -6,7 +6,7 @@ import { PwaClient } from "@/components/shell/pwa";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const t = await getTranslations("app");
-  const name = process.env.APP_NAME ?? "Home Ledger";
+  const name = process.env.APP_NAME ?? "TillPayDay";
   return (
     <ReauthProvider>
     <div className="flex min-h-dvh">

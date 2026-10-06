@@ -49,7 +49,7 @@ async function rowsOf(householdId: string, t: Table): Promise<unknown[]> {
 export async function exportAll(actor: Actor) {
   const h = await prisma.household.findUniqueOrThrow({ where: { id: actor.householdId } });
   const out: Record<string, unknown> = {
-    format: "home-ledger-export",
+    format: "tillpayday-export",
     version: 1,
     exportedAt: new Date().toISOString(),
     household: ser({ name: h.name, baseCurrency: h.baseCurrency, timezone: h.timezone, locale: h.locale, paydayRule: h.paydayRule, allowanceUnit: h.allowanceUnit, settings: h.settings }),
@@ -73,7 +73,7 @@ export function toCsv(rows: Array<Record<string, unknown>>) {
   return [cols.join(","), ...rows.map((r) => cols.map((c) => csvCell(r[c])).join(","))].join("\n");
 }
 
-const importSchema = z.object({ format: z.literal("home-ledger-export"), version: z.literal(1) }).passthrough();
+const importSchema = z.object({ format: z.literal("tillpayday-export"), version: z.literal(1) }).passthrough();
 
 /**
  * Re-import an export into an EMPTY household (no transactions yet). Every row gets a fresh id and every

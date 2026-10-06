@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { LogOut, Menu, X } from "lucide-react";
 import { cx } from "@/components/ui";
+import { LogoLockup } from "@/components/brand/logo";
 import { ALL_NAV, PRIMARY, SECONDARY } from "./nav-items";
 
 const isActive = (path: string, href: string) => (href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`));
@@ -25,7 +26,9 @@ export function Sidebar({ appName }: { appName: string }) {
   const path = usePathname();
   return (
     <nav aria-label={t("main")} className="sticky top-0 hidden h-dvh w-[248px] shrink-0 flex-col border-r border-line bg-surface px-3 py-5 lg:flex">
-      <p className="px-3 pb-5 text-sm font-[650] tracking-[-0.01em] text-accent">{appName}</p>
+      <div className="px-3 pb-5">
+        <LogoLockup name={appName} size={28} />
+      </div>
       <ul className="flex flex-1 flex-col gap-0.5 overflow-y-auto">
         {ALL_NAV.map((n) => {
           const active = isActive(path, n.href);

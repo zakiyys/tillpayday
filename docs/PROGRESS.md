@@ -324,7 +324,7 @@ Temporary values are in place so work continues. Nothing here blocks the build.
 
 | # | Question (spec 18) | Temporary value |
 | --- | --- | --- |
-| 1 | App name | `APP_NAME=Home Ledger` (working name) |
+| 1 | App name | `APP_NAME=TillPayDay` (working name) |
 | 2 | License | No LICENSE file. Repo stays private. |
 | 3 | Model provider you use yourself | Tests use a mock OpenAI-compatible model. The real provider must be tested before AI input counts as done for your install. |
 | 4 | Deploy details (domain, proxy, backup location) | Only generic examples in the repo. Your details go in `deploy.local/` (gitignored). Local runs use 127.0.0.1:3070. |
@@ -344,7 +344,7 @@ Temporary values are in place so work continues. Nothing here blocks the build.
 Docker Compose (main path):
 
 ```sh
-git clone <repository> home-ledger && cd home-ledger
+git clone <repository> tillpayday && cd tillpayday
 docker run --rm -v "$PWD":/w -w /w -u "$(id -u):$(id -g)" node:22-alpine node scripts/gen-secrets.mjs --write
 # set PUBLIC_URL in .env to the HTTPS address behind your reverse proxy
 docker compose up -d --build
@@ -411,3 +411,37 @@ Verification (after the changes):
 - `npm run scan:secrets`: no leaks. `npm run scan:private`: clean (full history).
 - Commits: b74af98, 1504e1c, 93da654, 3739e21, 47b7cff, plus this progress note.
 - Nothing is failing.
+
+## Rebrand and logo (owner request)
+
+Done after stage 14, at the owner's request: the app is **TillPayDay**, and it now has a logo.
+
+**Rename.** `APP_NAME` (and every fallback string in code) is `TillPayDay`; so are the package name, the two
+READMEs, `DESIGN.md`, the deploy examples (`tillpayday.service.example`, `tillpayday-worker.service.example`) and
+the exported-JSON format tag. No occurrence of the old name is left in tracked text files. Changing `APP_NAME`
+rebrands everything, including the logo lockup.
+
+**Logo.** Five bars of equal height, the middle one highlighted: money split evenly per day, the bright bar is
+today. `public/logo.svg` (64x64, five bars) and `public/logo-small.svg` (16x16, three bars) are the single source
+and are used exactly as specified, not redrawn.
+
+- `scripts/gen-icons.mjs` (`npm run gen:icons`) renders, from those two SVGs: `favicon.svg`, `favicon.ico`
+  (16 px small form, 32 px main form, PNG frames in an ICO container), `icons/icon-192.png`,
+  `icons/icon-512.png`, `icons/maskable-192.png`, `icons/maskable-512.png` and `icons/apple-touch-icon.png`.
+  Nothing is drawn by hand, so the set can be regenerated when the accent or the mark changes.
+- App icon: rounded square, corners 22.5% of the side, accent fill, white mark at 72% of the side.
+- Maskable: full-bleed accent, mark at 56%, no rounding, so a platform crop cannot clip it.
+- One-colour: the mark is `currentColor` (ink #12211C on light, white on dark) with no tile. In the UI the shape
+  is applied as a CSS mask of the same SVG files, so components never restate the geometry.
+- Lockup (`src/components/brand/logo.tsx`): icon, then the name from `APP_NAME` in Plus Jakarta Sans 800,
+  tracking -0.02em, gap 25% of the icon height. Plus Jakarta Sans has a cap height of 745/1000 em, so the font
+  size is `0.45 / 0.745` of the icon height, which puts the capitals at exactly 45%. Used in the sidebar and on
+  the sign-in screen.
+- Registered in `src/app/manifest.ts` (192/512, normal and maskable) and in the head (`favicon.svg`, `favicon.ico`,
+  the two PNG icons and `apple-touch-icon`).
+- `scripts/check-logo-contrast.mjs` (`npm run check:logo`) composites the dim bars at 40% over each real
+  background (light canvas/surface, dark canvas/surface, accent tile) and fails below 3:1 against the bright bar.
+  Current results: 6.22, 6.73, 4.82, 4.44 and 3.02 to 1. All pass.
+
+**README.** Rewritten in English with a short bloat-cat section, a Brand section that documents the logo rules,
+and the "why is there a cat" FAQ entry. `README.id.md` carries the same two additions in Indonesian.

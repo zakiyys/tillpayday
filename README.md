@@ -1,14 +1,39 @@
-# Home Ledger
+# TillPayDay
+
+> **Every day, one number: how much is still safe to spend until payday.**
 
 A personal finance app you run on your own server. One person or a couple tracks income, spending, transfers,
 savings, debts and investments, and the home screen answers one question: how much is safe to spend today.
 
-`Home Ledger` is a working name; set your own with `APP_NAME`.
+`TillPayDay` is a working name; set your own with `APP_NAME`.
 
 Bahasa Indonesia: [README.id.md](README.id.md)
 
 ![Home on a phone](docs/screenshots/home-390-light.png)
 ![Dashboard on a desktop](docs/screenshots/dashboard-1360-dark.png)
+
+## Bloat cat says hi 🐈
+
+```
+   /\_/\     welcome to the
+  ( o.o )    bloat zone
+   > ^ <     ~~~~~~~~~~
+```
+
+Somewhere in the budget, between the coffee line item and the emergency fund, lives a small cat. It does not
+pay rent. It does not do your taxes. It simply sits on the spreadsheet and judges your subscription stack.
+
+We wrote this app to be lean: no Redis, no microservice zoo, no telemetry phoning home, no 40-megabyte
+dashboard to render one number. The bloat cat was invited anyway. It has opinions about your third streaming
+service, and honestly, it is right.
+
+If you enjoy software that does one thing well, the bloat cat is on your side. If you enjoy software that
+needs a Kubernetes cluster to open a ledger, the bloat cat is still on your side, it is just laughing a little.
+
+**Bloat cat's three rules:**
+1. If it does not earn, spend, save, or move money, it does not belong in the critical path.
+2. Every feature must survive one honest question: *"would the owner actually open this on a Tuesday?"*
+3. Nap first. Optimise later.
 
 ## Features
 
@@ -38,13 +63,27 @@ Next.js (App Router, TypeScript strict), PostgreSQL with Prisma migrations, Zod 
 (no Redis), passkeys (WebAuthn) with password + TOTP as backup, next-intl, Tailwind CSS, Vitest and Playwright.
 Money is stored as integer minor units; units and rates use decimal arithmetic.
 
+## Brand
+
+The logo is five bars of equal height with the middle one highlighted: money split evenly per day, the bright bar
+is today. The SVG in `public/logo.svg` (and `public/logo-small.svg`, three bars, for 24 px and below) is the single
+source. Every raster asset is rendered from it, so the brand can be reproduced when the accent changes:
+
+```sh
+npm run gen:icons     # logo.svg + logo-small.svg -> favicon, PWA icons, apple-touch-icon
+npm run check:logo    # contrast of the dim bars against the bright bar on every real background
+```
+
+The app icon follows the accent the user picks inside the app; the installed PWA icons keep the default accent.
+See [DESIGN.md](DESIGN.md) for the palette and type scale.
+
 ## Quick install with Docker Compose
 
 Needs Docker with the Compose plugin and a reverse proxy that terminates HTTPS (examples in `docs/deploy/`).
 
 ```sh
-git clone <this repository> home-ledger
-cd home-ledger
+git clone <this repository> tillpayday
+cd tillpayday
 docker run --rm -v "$PWD":/w -w /w -u "$(id -u):$(id -g)" node:22-alpine node scripts/gen-secrets.mjs --write
 # edit .env: set PUBLIC_URL to the HTTPS address you will open, e.g. https://finance.example.invalid
 docker compose up -d --build
@@ -68,7 +107,7 @@ proxy for HTTPS.
    ```
 2. Install and configure:
    ```sh
-   git clone <this repository> home-ledger && cd home-ledger
+   git clone <this repository> tillpayday && cd tillpayday
    npm ci
    node scripts/gen-secrets.mjs --write
    # edit .env: DATABASE_URL, PUBLIC_URL
@@ -77,7 +116,7 @@ proxy for HTTPS.
    npm run build
    ```
 3. Run the app and the worker as services. Examples for systemd and PM2 are in `docs/deploy/`
-   (`home-ledger.service.example`, `home-ledger-worker.service.example`, `ecosystem.config.cjs.example`).
+   (`tillpayday.service.example`, `tillpayday-worker.service.example`, `ecosystem.config.cjs.example`).
 4. Configure the reverse proxy (`docs/deploy/Caddyfile.example` or `nginx.conf.example`).
 
 ## Environment variables
@@ -127,7 +166,7 @@ explicit step.
 - On demand: `npm run backup` (manual) or `docker compose exec app node --import tsx scripts/backup.ts`.
 - Restore into an empty database:
   ```sh
-  npm run restore -- /path/to/backup-<time>.dump.enc --target postgresql://user:pass@127.0.0.1:5432/newdb
+  npm run restore -- /path/to/backup-<time>.dump.enc --target postgresql://user:***@127.0.0.1:5432/newdb
   ```
   Restore over an existing database (replaces it) by adding `--yes`. With Compose, stop the app and worker first:
   ```sh
@@ -186,6 +225,8 @@ passkey in Settings > Sign-in and devices.
 
 **How do I see it with sample data?** Choose "Try with sample data" during setup, or run
 `npm run db:seed-demo -- <owner e-mail>` on a household without transactions.
+
+**Why is there a cat in the README?** See [Bloat cat says hi 🐈](#bloat-cat-says-hi-). It is not a dependency.
 
 ## Development
 

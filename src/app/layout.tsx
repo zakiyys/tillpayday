@@ -4,7 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import "./globals.css";
 
-const name = process.env.APP_NAME ?? "Home Ledger";
+const name = process.env.APP_NAME ?? "TillPayDay";
 
 // The <title> is rendered in <head> directly (below), not through metadata: production streams metadata after the
 // shell, and the document must have a title from the first byte (WCAG 2.4.2).
@@ -12,7 +12,15 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   applicationName: name,
   appleWebApp: { capable: true, title: name, statusBarStyle: "default" },
-  icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "16x16 32x32" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/icons/apple-touch-icon.png",
+  },
 };
 
 export const viewport: Viewport = {

@@ -1,0 +1,11 @@
+<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    :root { color: #12211C; }
+    @media (prefers-color-scheme: dark) { :root { color: #FFFFFF; } }
+  </style>
+  <g fill="currentColor">
+    <rect x="3"  y="4" width="2" height="8" rx="1" opacity="0.4"/>
+    <rect x="7"  y="4" width="2" height="8" rx="1"/>
+    <rect x="11" y="4" width="2" height="8" rx="1" opacity="0.4"/>
+  </g>
+</svg>
