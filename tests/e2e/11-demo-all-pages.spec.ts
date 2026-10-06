@@ -53,6 +53,6 @@ test("scenario 31/33/34: demo household, every page", async ({ page }) => {
     await expect(page.locator("h1").first(), path).toBeVisible();
     await expect(page.getByText("Ada yang salah"), path).toHaveCount(0);
     await checkA11y(page);
-    await shoot(page, name, "docs/screenshots");
+    await shoot(page, name, "test-results/screenshots");
   }
 });

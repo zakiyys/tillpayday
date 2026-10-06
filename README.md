@@ -257,7 +257,7 @@ npm run test:int     # needs TEST_DATABASE_URL
 npm run test:e2e     # Playwright, uses TEST_DATABASE_URL and a mock AI server
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md). Product requirements: [docs/SPEC.md](docs/SPEC.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
 Release notes: [CHANGELOG.md](CHANGELOG.md).
 
 ## License

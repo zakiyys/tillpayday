@@ -43,3 +43,9 @@ blob-report/
 
 # generated
 src/generated/
+
+# internal notes, kept on the machine only (not shipped in the repo)
+docs/SPEC.md
+docs/PROGRESS.md
+docs/DECISIONS.md
+docs/PENDING-OWNER.md

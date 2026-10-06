@@ -1,7 +1,7 @@
 # Contributing
 
-Thanks for helping. Please read [docs/SPEC.md](docs/SPEC.md) first: it is the product contract, and section 12
-describes the approved visual direction.
+Thanks for helping. Keep the user-visible behaviour and the visual direction as they are: users depend on both.
+Start from the README to run the app, then open an issue for anything that is unclear or looks wrong.
 
 ## Setup
 

@@ -4,7 +4,7 @@ All notable changes are listed here. Versions follow [Semantic Versioning](https
 
 ## [1.0.0] - 2026-10-06
 
-First complete version, built from `docs/SPEC.md`.
+First complete version of TillPayDay.
 
 ### Added
 

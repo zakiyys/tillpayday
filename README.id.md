@@ -260,7 +260,7 @@ npm run test:int     # perlu TEST_DATABASE_URL
 npm run test:e2e     # Playwright, memakai TEST_DATABASE_URL dan server AI tiruan
 ```
 
-Lihat [CONTRIBUTING.md](CONTRIBUTING.md) dan [SECURITY.md](SECURITY.md). Kebutuhan produk: [docs/SPEC.md](docs/SPEC.md).
+Lihat [CONTRIBUTING.md](CONTRIBUTING.md) dan [SECURITY.md](SECURITY.md).
 Catatan rilis: [CHANGELOG.md](CHANGELOG.md).
 
 ## Lisensi
