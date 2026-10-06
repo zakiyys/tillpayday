@@ -11,7 +11,7 @@
 
 <p align="center">
   <a href="https://github.com/zakiyys/tillpayday/actions/workflows/ci.yml"><img src="https://github.com/zakiyys/tillpayday/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
-  <a href="https://github.com/zakiyys/tillpayday/releases"><img src="https://img.shields.io/github/v/release/zakiyys/tillpayday?style=flat-square&color=0B5D4B" alt="Latest release"></a>
+  <a href="https://github.com/zakiyys/tillpayday/releases"><img src="https://img.shields.io/badge/version-1.0.0-0B5D4B?style=flat-square" alt="Versi 1.0.0"></a>
   <img src="https://img.shields.io/badge/lisensi-MIT-0B5D4B?style=flat-square" alt="Lisensi MIT">
   <img src="https://img.shields.io/badge/self--hosted-servermu-0B5D4B?style=flat-square&logo=docker&logoColor=white" alt="Self-hosted">
   <img src="https://img.shields.io/badge/Next.js-16-0B5D4B?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 16">
@@ -21,6 +21,7 @@
   <img src="https://img.shields.io/badge/AI-opsional-0B5D4B?style=flat-square" alt="AI opsional">
   <img src="https://img.shields.io/badge/login_bank-tidak_perlu-0B5D4B?style=flat-square" alt="Tanpa login bank">
   <img src="https://img.shields.io/badge/bahasa-EN_%C2%B7_ID-0B5D4B?style=flat-square" alt="Inggris dan Bahasa Indonesia">
+  <img src="https://img.shields.io/badge/dibangun_oleh-Miaw-0B5D4B?style=flat-square" alt="Dibangun oleh Miaw">
 </p>
 
 <p align="center">
