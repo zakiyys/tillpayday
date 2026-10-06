@@ -172,6 +172,7 @@ Return ONLY {"actions":[...]} using these intents: record_income, record_expense
 Amounts are plain decimal strings in major units (25000, not 25k; "2,3jt" = 2300000). Dates are YYYY-MM-DD; convert relative dates.
 Use account names exactly as the user wrote them; do not invent accounts. List fields you could not determine in "unknown".
 For "trf ke <name>" where <name> is not one of the user's accounts, use record_transfer with "to" set to that name.
+Money lent to or borrowed from a person ("pinjem", "pinjam", "minjem", "utang", "hutang", "ngutang", "balikin") is record_debt_or_loan with "counterparty" set to that person and "account" set to the user's account. "direction" is exactly one of: LEND (the user gives money someone borrows), BORROW (the user receives a loan), REPAY (the user pays a debt back), REPAID (someone pays the user back). This wins over record_transfer.
 For questions about spending, balances, goals, projections or simulations use intent "query" with one of the allowed functions. Never state numbers yourself.
 User accounts: ${ctx.accounts.map((a) => a.name).join(", ") || "none"}.
 Categories: ${ctx.categories.map((c) => c.name).join(", ")}.
@@ -360,6 +361,12 @@ export async function interpret(actor: Actor, today: ISODate, raw: { text?: stri
     const out = await extractWithFallback(actor.householdId, { system: SYSTEM(ctx), text: text || "(see attached document)", image: raw.image ? { mime: raw.image.mime, base64: raw.image.base64 } : undefined });
     const { actions } = validateActions(stripNulls(out));
     const proposals = await resolveActions(ctx, actions, text);
+    // Nothing usable came back for a sentence with a clear money amount (25k, 1.1jt): open the prefilled form
+    // instead of a dead end. A bare number ("account 999") is not enough, so injected text stays an answer.
+    if (!proposals.length && !raw.image && /\d\s*(?:k|rb|ribu|jt|juta)(?=\s|$|[,.)])/i.test(text)) {
+      const m = manualFrom(ctx, text, today);
+      if (m.amount) return { status: "manual", proposals: [m], reason: "bad_output" };
+    }
     return { status: "proposals", autoSave: await autoSaveFor(actor.householdId, proposals), proposals: proposals.length ? proposals : [{ kind: "answer", text: T(ctx, "Tidak ada yang bisa dicatat dari input ini.", "Nothing to record from this input.") }], usedModel: true };
   } catch (e) {
     if (!(e instanceof AiUnavailable)) throw e;
@@ -368,15 +375,19 @@ export async function interpret(actor: Actor, today: ISODate, raw: { text?: stri
       const d = await prisma.ingestDraft.create({ data: { householdId: actor.householdId, memberId: actor.memberId, rawText: text || null, attachmentId: raw.image.attachmentId, status: "PENDING_AI", error: e.reason, via: actor.via } });
       return { status: "queued", draftId: d.id, reason: e.reason, proposals: [] };
     }
-    // Complex sentence without AI: manual form, amount prefilled, original text in the note.
-    // Prefer an amount with a suffix (100rb), else the last number; date phrases ("2 hari lalu") are removed first.
-    const d = parseDate(text, today);
-    const scan = d ? text.replace(d.match, " ") : text;
-    const toks = [...scan.matchAll(/(\d+(?:[.,]\d+)*\s*(?:k|rb|ribu|jt|juta)?)(?=\s|$|,)/gi)].map((x) => x[1]!.trim());
-    const pick = toks.find((x) => /[a-z]$/i.test(x)) ?? toks[toks.length - 1];
-    const amt = pick ? parseAmountToken(pick, { decimalComma: true, plainThousands: plainThousandsFor(ctx) }) : null;
-    return { status: "manual", proposals: [{ kind: "manual", amount: amt ? toMinorStr(amt.major, ctx.exp(ctx.base)) : null, note: text }], reason: e.reason };
+    return { status: "manual", proposals: [manualFrom(ctx, text, today)], reason: e.reason };
   }
+}
+
+/** Complex sentence without a usable model answer: manual form, amount prefilled, original text in the note. */
+function manualFrom(ctx: IngestContext, text: string, today: ISODate): Extract<Proposal, { kind: "manual" }> {
+  // Prefer an amount with a suffix (100rb), else the last number; date phrases ("2 hari lalu") are removed first.
+  const d = parseDate(text, today);
+  const scan = d ? text.replace(d.match, " ") : text;
+  const toks = [...scan.matchAll(/(\d+(?:[.,]\d+)*\s*(?:k|rb|ribu|jt|juta)?)(?=\s|$|,)/gi)].map((x) => x[1]!.trim());
+  const pick = toks.find((x) => /[a-z]$/i.test(x)) ?? toks[toks.length - 1];
+  const amt = pick ? parseAmountToken(pick, { decimalComma: true, plainThousands: plainThousandsFor(ctx) }) : null;
+  return { kind: "manual", amount: amt ? toMinorStr(amt.major, ctx.exp(ctx.base)) : null, note: text };
 }
 
 // ---------- Queries (SPEC 7.5): fixed functions, numbers from code ----------

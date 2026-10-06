@@ -164,6 +164,13 @@ describe("scenario 18 and 19: model output outside the schema never reaches the 
     await expect(confirmProposals(s.actor, { proposals: [{ kind: "run_sql", query: "x" }] })).rejects.toThrow();
     expect(await prisma.transaction.count()).toBe(before);
   });
+  it("a money sentence the model could not use opens the prefilled form, not a dead end", async () => {
+    const s = await setup();
+    mockState.mode = "garbage";
+    const r = await run(s.actor, "tf uang dari mandiri ke didit (dia pinjem uang) 1.1jt");
+    expect(r.status).toBe("manual");
+    expect(r.proposals[0]).toMatchObject({ kind: "manual", amount: "1100000", note: "tf uang dari mandiri ke didit (dia pinjem uang) 1.1jt" });
+  });
 });
 
 describe("scenario 20: institution with three accounts", () => {

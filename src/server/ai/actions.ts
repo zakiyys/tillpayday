@@ -29,6 +29,27 @@ export type Action = z.infer<typeof actionSchema>;
 
 export const actionsEnvelope = z.object({ actions: z.array(z.unknown()).max(10) });
 
+/**
+ * Undoes harmless spelling differences seen from real models before Zod runs: numbers sent for decimal strings,
+ * a lowercase debt direction or one sent as "type"/"debt_type", "from" for the account, over-long notes in
+ * "unknown". Intents and enum values that are not in the schema are still rejected.
+ */
+const NUMERIC_STRING_KEYS = new Set(["amount", "total", "units", "unit_price", "fee", "balance"]);
+function normalizeAction(a: unknown): unknown {
+  if (!a || typeof a !== "object" || Array.isArray(a)) return a;
+  const o: Record<string, unknown> = { ...(a as Record<string, unknown>) };
+  for (const k of NUMERIC_STRING_KEYS) if (typeof o[k] === "number" && Number.isFinite(o[k]) && (o[k] as number) >= 0) o[k] = String(o[k]);
+  if (o.intent === "record_debt_or_loan") {
+    const dir = o.direction ?? o.type ?? o.debt_type;
+    if (typeof dir === "string") o.direction = dir.trim().toUpperCase();
+    if (o.account == null && typeof o.from === "string") o.account = o.from;
+    // Money comes in on REPAID/BORROW, so "to" is then the user's account; on LEND/REPAY "to" is the person.
+    if (o.account == null && typeof o.to === "string" && (o.direction === "REPAID" || o.direction === "BORROW")) o.account = o.to;
+  }
+  if (Array.isArray(o.unknown)) o.unknown = o.unknown.filter((x) => typeof x === "string").slice(0, 10).map((x) => (x as string).slice(0, 40));
+  return o;
+}
+
 /** Validates model output: keeps valid actions, drops the rest (SPEC 7.1 step 4, scenario 18). */
 export function validateActions(raw: unknown): { actions: Action[]; dropped: number } {
   const env = actionsEnvelope.safeParse(raw);
@@ -36,7 +57,7 @@ export function validateActions(raw: unknown): { actions: Action[]; dropped: num
   const actions: Action[] = [];
   let dropped = 0;
   for (const a of env.data.actions) {
-    const r = actionSchema.safeParse(a);
+    const r = actionSchema.safeParse(normalizeAction(a));
     if (r.success) actions.push(r.data);
     else dropped++;
   }
