@@ -19,7 +19,7 @@ Resume rule: read this file first, then `docs/DECISIONS.md`. Stages follow SPEC 
 | 11 PWA | done |
 | 12 Dashboard and extras | done |
 | 13 Two-person mode | done |
-| 14 Hardening and docs | not started |
+| 14 Hardening and docs | done |
 
 ## Design skills applied
 
@@ -237,6 +237,131 @@ dial ENERGY 1 / RHYTHM 2 / MOTION 1.
 - Tests: integration (single use, expiry, sign-in, privacy of accounts/transactions/attachments, net worth view,
   removal); e2e scenario 24 through pages and API with a second browser context.
 
+
+### Stage 14: Hardening and docs (done)
+
+- Encrypted backups (`scripts/backup.ts`, AES-256-GCM, scrypt key from `BACKUP_ENCRYPTION_KEY`), daily worker job,
+  backup before every migration, `scripts/restore.ts` (refuses non-empty targets without `--yes`, verifies the GCM
+  tag before anything reaches the database). Docker image ships the PostgreSQL 18 client.
+- `scripts/gen-secrets.mjs --write` creates `.env` with fresh secrets without any npm install (runs in a bare Node
+  container). Docker build and runtime fixed for the SWC native addon cache.
+- Rate-limit client address taken from the proxy-appended `X-Forwarded-For` entry; document title rendered in the
+  shell (axe `document-title` in production); card statements bill only installment portions due.
+- README (English) and README.id.md, SECURITY.md, CONTRIBUTING.md, CHANGELOG.md, deploy examples (Caddy, nginx,
+  systemd, PM2) in `docs/deploy/`. Screenshots with demo data in `docs/screenshots/` (24 pages x 390/1360 x light/dark).
+- CI: pg 18 client, migrations for the test DB, full-history checkout for the repo scan test.
+
 ## Open problems
 
-- none yet
+- Lint has 5 warnings, all `window.location.assign` after sign-in/sign-out/setup; deliberate full reloads
+  (docs/DECISIONS.md 14). No lint errors.
+- CI runs lint, typecheck, unit and integration tests, build and both scans, but not the Playwright e2e suite or the
+  Compose install test (they were run locally). CI has never run on GitHub: by instruction there is no remote.
+
+## Final report
+
+### What was built
+
+A self-hosted personal finance PWA (Next.js 16, PostgreSQL 18 via Prisma 7, pg-boss worker) covering every part of
+SPEC.md: account-based ledger with integer money, payday periods and the daily/weekly safe-to-spend figure, budgets,
+recurring entries and bills, card statements and installments, goals with allocations, debts/receivables/splits/loans,
+investments with average cost and price/FX P&L, multi-currency, trips, balance checks, the AI input bar (local parser
+first, OpenAI-compatible adapter, strict action schema, confirmation cards, questions, rules, query functions,
+simulations, full no-AI fallback), CSV/PDF statement import with duplicate matching and transfer pairing, manual and
+AI-assisted onboarding, demo mode, PWA (offline queue, share target, iPhone Shortcut endpoint, Web Push), dashboard,
+projection, weekly recap, notifications, subscription detection, year-end list, export/import, two-person mode,
+passkeys + password/TOTP + recovery codes, scoped API tokens, audit log, encrypted backups with restore, Docker
+Compose install, bilingual UI (id/en), light/dark themes with four accents.
+
+Test totals at the end: 136 unit + integration tests (19 files) pass; 20 Playwright e2e tests pass against the
+production build; the Compose install test passes on a fresh clone; production build exit 0; typecheck clean;
+gitleaks and the private-details scan are clean over the full history (18+ commits).
+
+### Scenarios (SPEC 16)
+
+| # | Result | Evidence and notes |
+| --- | --- | --- |
+| 1 | PASS | unit `domain-scenarios` (230.000 / 167.000 / 4.537.000); also through the real services in `periods.test`. |
+| 2 | PASS | unit; transfers never change expense, pool or net worth. |
+| 3 | PASS | unit and integration `money-flows` (card spend 500.000, payment is a transfer, card back to 0). |
+| 4 | PASS | unit and integration (lend and repaid: no income, no expense). |
+| 5 | PASS | unit and integration (expense 100.000, receivable 200.000). |
+| 6 | PASS | unit and integration (card -12.000.000, allowance unchanged, 1.000.000 bill in the category budget). |
+| 7 | PASS | unit and integration (average 150, realised 750, buy is not an expense). |
+| 8 | PASS | unit and integration (price change moves net worth only). |
+| 9 | PASS | unit and integration (-700 suggests admin fee; balance equals reported; large diff not recorded). |
+| 10 | PASS | unit and integration (back-dated entry changes the old period and the balance, not the current pool). |
+| 11 | PASS | unit and integration (base amount fixed at the funding rate; current value follows the reference rate). |
+| 12 | PASS | unit and integration `import` (estimated amount replaced by the statement amount, no duplicate). |
+| 13 | PASS | unit and integration (allocation above balance refused; withdrawal into allocated money asks for goals). |
+| 14 | PASS | unit and integration (period starts on the salary date inside the window, else on schedule, flagged). |
+| 15 | PASS | integration `ingest` covers every row of the SPEC 7.4 table with a mock model; e2e against a mock HTTP model. Not tested with a real provider (owner question 3). |
+| 16 | PASS | unit `parse` and integration: simple patterns produce proposals with zero model calls. |
+| 17 | PASS | integration: simple entry saves with the model down, complex text opens a prefilled form, photo queued then processed by the draft job; e2e "record without AI". |
+| 18 | PASS | integration: invalid actions dropped by Zod; confirm rejects anything outside the proposal schema; no rows written. |
+| 19 | PASS | integration: an obeying model returning injected instructions produces no actions and no rows. |
+| 20 | PASS | unit and integration: institution name picks the default of three accounts and the card shows it; without a default the app asks. |
+| 21 | PASS | integration (manual entries matched, re-importing the same file adds nothing) and e2e. |
+| 22 | PASS | integration: OUT row in one statement and IN row in another become one TRANSFER. |
+| 23 | PASS | integration `setup-owner` (wrong/empty token, concurrent claims, closed afterwards) and e2e. |
+| 24 | PASS | integration `ledger`, `members` and e2e `10-members` (second member, pages and API). Streamed pages show the not-found UI with HTTP 200 instead of 404 (Next behaviour, DECISIONS 20); no private data is in the response, API returns 404. |
+| 25 | PASS | e2e `08-pwa` (SUMMARY_READ cannot ingest, INGEST cannot read, hashes only, revoke). |
+| 26 | PASS | e2e `12-security` (401 without session, files not reachable as static paths) and integration for member access. |
+| 27 | PASS | unit `env` and integration `startup` (process exits on empty or missing secrets). |
+| 28 | PASS | `npm run scan:secrets` over full history clean; also an integration test. |
+| 29 | PASS | `npm run scan:private` over full history (files, messages, authors) clean, with owner patterns from `deploy.local/`. |
+| 30 | PASS | fresh `git clone`, `gen-secrets.mjs --write` in a bare Node container, `docker compose up -d --build` (unique project, port 3170), then Playwright: setup token, owner, manual setup, first transaction; torn down afterwards. Tested on this machine only, not on another Linux host, and with HTTP on localhost instead of HTTPS. |
+| 31 | PASS | e2e `11-demo-all-pages`: demo data, 24 pages render without the error state; integration checks demo plausibility. |
+| 32 | PASS | integration `backup`: encrypted dump, restore into an empty database, identical balances; tampered file refused. |
+| 33 | PASS | axe (WCAG 2.0/2.1 A and AA rules) clean and no horizontal scroll at 390 px on all 24 pages, plus dialogs in other specs. Automated checks only; full WCAG conformance needs manual testing with assistive technology. |
+| 34 | PASS, with a limit | 96 screenshots (24 pages x 2 widths x 2 themes) in `docs/screenshots/`. I reviewed every page as it was built (390 and 1360, light and dark) and fixed what I found; for the final demo set I reviewed a representative sample (home, dashboard, record, budgets, investments, debts, bills, goals, settings), not each of the 96 images individually. |
+
+### Contents of docs/PENDING-OWNER.md
+
+# Waiting for the owner
+
+Temporary values are in place so work continues. Nothing here blocks the build.
+
+| # | Question (spec 18) | Temporary value |
+| --- | --- | --- |
+| 1 | App name | `APP_NAME=Home Ledger` (working name) |
+| 2 | License | No LICENSE file. Repo stays private. |
+| 3 | Model provider you use yourself | Tests use a mock OpenAI-compatible model. The real provider must be tested before AI input counts as done for your install. |
+| 4 | Deploy details (domain, proxy, backup location) | Only generic examples in the repo. Your details go in `deploy.local/` (gitignored). Local runs use 127.0.0.1:3070. |
+| 5 | When to make the repo public | Not public. Before publishing, rerun `npm run scan:secrets` and `npm run scan:private` on the full history. |
+| 6 | Section 11 features to drop | None dropped; all are being built. |
+
+### Other honest limits
+
+- Passkeys are tested with Chromium's virtual authenticator, not on physical phones. Web Push sending is wired and
+  subscriptions are stored, but no real push service delivery was tested. Background Sync and the iPhone Shortcut
+  were not tried on devices.
+- No automatic price or FX provider ships (no verified source); interfaces exist and prices/rates are manual.
+- CSP allows `'unsafe-inline'` scripts because of Next.js bootstrap scripts (DECISIONS 7).
+
+### How to run
+
+Docker Compose (main path):
+
+```sh
+git clone <repository> home-ledger && cd home-ledger
+docker run --rm -v "$PWD":/w -w /w -u "$(id -u):$(id -g)" node:22-alpine node scripts/gen-secrets.mjs --write
+# set PUBLIC_URL in .env to the HTTPS address behind your reverse proxy
+docker compose up -d --build
+# open PUBLIC_URL, enter SETUP_TOKEN from .env, create the owner, finish setup
+```
+
+Development and tests on this machine:
+
+```sh
+npm ci
+npm run db:migrate                       # dev database from .env
+npm run dev                              # http://127.0.0.1:3070
+npm run worker                           # background jobs
+npm run test:unit && npm run test:int    # integration uses TEST_DATABASE_URL
+node_modules/.bin/next build && E2E_PROD=1 node_modules/.bin/playwright test
+npm run scan:secrets && npm run scan:private
+npm run backup                           # encrypted dump into DATA_DIR/backups
+npm run restore -- <file.dump.enc> --target <empty database url>
+npm run db:seed-demo -- <owner e-mail>   # demo data into an empty household
+```
