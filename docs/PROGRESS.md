@@ -448,7 +448,10 @@ and the "why is there a cat" FAQ entry. `README.id.md` carries the same two addi
 
 **Illustrations.** The README images are tidy now: `docs/illustrations/readme-hero.png` and `readme-dark.png` are
 composited device frames (a 390x844 phone next to a 1360x848 desktop crop, rounded, thin hairline border), so the
-page no longer stretches a full-page capture down the screen. Two Blotcat illustrations
-(`blotcat-lean.png`, `blotcat-one-number.png`) were generated with the `blotcat-illustrations` skill and pass its
-QA checklist: pure white background, thin hand-drawn line art, 3-5 short English labels, Blotcat doing the core
-action rather than decorating, no top-left title, no PPT or mascot look.
+page no longer stretches a full-page capture down the screen. Three Blotcat illustrations from the
+`blotcat-illustrations` skill, each tied to a real part of this app rather than a generic theme:
+`blotcat-lean.png` (the unused scale: a feature earns, spends, saves or moves money or it is cut),
+`blotcat-payday.png` (the badge idea: payday money poured into equal daily cups, today's cup lit) and
+`blotcat-input-bar.png` (the one input bar and the confirmation card). All pass the skill's QA checklist: pure
+white background, thin wobbly hand-drawn line art, a handful of short English labels, exactly one Blotcat doing
+the core action rather than decorating, no top-left title, no PPT or mascot look.

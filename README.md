@@ -43,7 +43,7 @@ needs a Kubernetes cluster to open a ledger, the bloat cat is still on your side
 ## Features
 
 <p align="center">
-  <img src="docs/illustrations/blotcat-one-number.png" alt="Blotcat cranking one messy sentence into a single confirmed number" width="760">
+  <img src="docs/illustrations/blotcat-payday.png" alt="Blotcat pouring payday money into equal small cups, with today's cup lit up" width="760">
 </p>
 
 - **One input bar.** Type `coffee 25k wallet`, send a receipt photo or share a screenshot. Simple entries are read
@@ -190,6 +190,10 @@ explicit step.
   tokens or attachments.
 
 ## Setting up AI (optional)
+
+<p align="center">
+  <img src="docs/illustrations/blotcat-input-bar.png" alt="Blotcat pushing a short typed sentence into one round input bar, and a card coming out to confirm" width="760">
+</p>
 
 Settings > AI accepts any endpoint compatible with the OpenAI chat-completions format: a hosted provider or a model
 on your own machine (for example Ollama or LM Studio, which expose `http://<host>:<port>/v1`). Enter the base URL

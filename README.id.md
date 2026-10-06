@@ -45,7 +45,7 @@ sedikit menertawakan.
 ## Fitur
 
 <p align="center">
-  <img src="docs/illustrations/blotcat-one-number.png" alt="Blotcat memutar satu kalimat berantakan jadi satu angka yang dikonfirmasi" width="760">
+  <img src="docs/illustrations/blotcat-payday.png" alt="Blotcat menuang uang gajian ke cangkir-cangkir kecil yang sama, cangkir hari ini yang menyala" width="760">
 </p>
 
 - **Satu bar input.** Ketik `kopi 25k gopay`, kirim foto struk, atau bagikan screenshot. Pola sederhana dibaca
@@ -192,6 +192,10 @@ data tanpa langkah eksplisit.
   kunci, token, atau lampiran.
 
 ## Menyetel AI (opsional)
+
+<p align="center">
+  <img src="docs/illustrations/blotcat-input-bar.png" alt="Blotcat mendorong satu kalimat pendek ke satu bar input bulat, lalu keluar kartu untuk dikonfirmasi" width="760">
+</p>
 
 Setelan > AI menerima endpoint apa pun yang kompatibel dengan format chat completions OpenAI: penyedia hosted atau
 model di mesinmu sendiri (misalnya Ollama atau LM Studio, yang menyediakan `http://<host>:<port>/v1`). Isi URL dasar
