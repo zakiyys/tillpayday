@@ -21,7 +21,7 @@
     "db:migrate": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:seed-demo": "node --env-file-if-exists=.env --import tsx scripts/seed-demo.ts",
-    "secrets": "tsx scripts/gen-secrets.ts",
+    "secrets": "node scripts/gen-secrets.mjs",
     "scan:secrets": "sh scripts/scan-secrets.sh",
     "scan:private": "sh scripts/scan-private.sh",
     "backup": "node --env-file-if-exists=.env --import tsx scripts/backup.ts",

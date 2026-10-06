@@ -1,5 +1,5 @@
 # Primary install path: app + worker + PostgreSQL.
-# Usage: cp .env.example .env, fill secrets (npm run secrets or scripts/gen-secrets.sh), then
+# Usage: node scripts/gen-secrets.mjs --write (creates .env), set PUBLIC_URL, then
 #   docker compose up -d --build
 services:
   db:

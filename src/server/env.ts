@@ -4,7 +4,7 @@ import { z } from "zod";
 const secret = (name: string) =>
   z
     .string({ error: `${name} is required` })
-    .min(32, `${name} must be at least 32 characters (run: npm run secrets)`)
+    .min(32, `${name} must be at least 32 characters (run: node scripts/gen-secrets.mjs)`)
     .refine((v) => new Set(v).size >= 10, `${name} looks weak (too few distinct characters)`)
     .refine((v) => !/^(change.?me|secret|password|example)/i.test(v), `${name} is a placeholder value`);
 
@@ -14,8 +14,8 @@ export const envSchema = z.object({
   SESSION_SECRET: secret("SESSION_SECRET"),
   DATA_ENCRYPTION_KEY: secret("DATA_ENCRYPTION_KEY"),
   BACKUP_ENCRYPTION_KEY: secret("BACKUP_ENCRYPTION_KEY"),
-  VAPID_PUBLIC_KEY: z.string().min(40, "VAPID_PUBLIC_KEY is required (run: npm run secrets)"),
-  VAPID_PRIVATE_KEY: z.string().min(20, "VAPID_PRIVATE_KEY is required (run: npm run secrets)"),
+  VAPID_PUBLIC_KEY: z.string().min(40, "VAPID_PUBLIC_KEY is required (run: node scripts/gen-secrets.mjs)"),
+  VAPID_PRIVATE_KEY: z.string().min(20, "VAPID_PRIVATE_KEY is required (run: node scripts/gen-secrets.mjs)"),
   PUBLIC_URL: z.string().url(),
   DATA_DIR: z.string().min(1),
   APP_NAME: z.string().min(1).max(40),
