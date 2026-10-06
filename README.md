@@ -210,8 +210,6 @@ Runtime dependencies are deliberately few: 18 packages in `dependencies`, no ORM
 
 ### Pick your path
 
-| You have... | Use | Time |
-| --- | --- | --- |
 Installing is two decisions: **how to run it** and **who can reach it**.
 
 | How to run it | Use | Time |

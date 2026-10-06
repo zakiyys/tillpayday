@@ -210,8 +210,6 @@ Dependensi runtime sengaja sedikit: 18 paket di `dependencies`, tanpa plugin ORM
 
 ### Pilih jalurmu
 
-| Kamu punya... | Pakai | Waktu |
-| --- | --- | --- |
 Instalasi itu dua keputusan: **cara menjalankannya** dan **siapa yang bisa membukanya**.
 
 | Cara menjalankan | Pakai | Waktu |
