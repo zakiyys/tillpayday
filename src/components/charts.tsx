@@ -126,7 +126,7 @@ export function Line({ points, title, desc, intl, zeroLine = false, emptyText }:
           <circle cx={x(i)} cy={y(p.v)} r={hover === i ? 5 : 3} fill="var(--surface)" stroke="var(--accent)" strokeWidth={2} />
           <rect x={x(i) - 8} y={pad.t} width={16} height={H - pad.t - pad.b} fill="transparent" />
           {i % every === 0 || i === points.length - 1 ? (
-            <text x={x(i)} y={H - 8} textAnchor="middle" fontSize={13} fill="var(--ink-muted)">
+            <text x={x(i)} y={H - 8} textAnchor={i === 0 ? "start" : i === points.length - 1 ? "end" : "middle"} fontSize={13} fill="var(--ink-muted)">
               {p.label}
             </text>
           ) : null}
