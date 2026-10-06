@@ -41,4 +41,13 @@ export const JOBS: JobDef[] = [
     cron: "15 1 * * *",
     run: async () => (await import("../reports/jobs")).notificationJob(),
   },
+  {
+    // Daily encrypted backup (SPEC 14). Uses pg_dump from the image; copies to BACKUP_COPY_DIR when set.
+    name: "backup",
+    cron: "30 19 * * *",
+    run: async () => {
+      const { backup } = await import("../../../scripts/backup");
+      await backup();
+    },
+  },
 ];

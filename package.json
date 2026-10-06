@@ -24,8 +24,8 @@
     "secrets": "tsx scripts/gen-secrets.ts",
     "scan:secrets": "sh scripts/scan-secrets.sh",
     "scan:private": "sh scripts/scan-private.sh",
-    "backup": "tsx scripts/backup.ts",
-    "restore": "tsx scripts/restore.ts",
+    "backup": "node --env-file-if-exists=.env --import tsx scripts/backup.ts",
+    "restore": "node --env-file-if-exists=.env --import tsx scripts/restore.ts",
     "prepare": "git config core.hooksPath .githooks || true"
   },
   "dependencies": {
