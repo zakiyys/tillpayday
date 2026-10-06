@@ -11,7 +11,7 @@
 
 <p align="center">
   <a href="https://github.com/zakiyys/tillpayday/actions/workflows/ci.yml"><img src="https://github.com/zakiyys/tillpayday/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
-  <a href="https://github.com/zakiyys/tillpayday/releases"><img src="https://img.shields.io/badge/version-1.0.0-0B5D4B?style=flat-square" alt="Version 1.0.0"></a>
+  <a href="https://github.com/zakiyys/tillpayday/releases"><img src="https://img.shields.io/github/v/release/zakiyys/tillpayday?style=flat-square&color=0B5D4B" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/license-MIT-0B5D4B?style=flat-square" alt="MIT license">
   <img src="https://img.shields.io/badge/self--hosted-your_server-0B5D4B?style=flat-square&logo=docker&logoColor=white" alt="Self-hosted">
   <img src="https://img.shields.io/badge/Next.js-16-0B5D4B?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 16">
@@ -21,7 +21,7 @@
   <img src="https://img.shields.io/badge/AI-optional-0B5D4B?style=flat-square" alt="AI is optional">
   <img src="https://img.shields.io/badge/bank_logins-none-0B5D4B?style=flat-square" alt="No bank logins">
   <img src="https://img.shields.io/badge/languages-EN_%C2%B7_ID-0B5D4B?style=flat-square" alt="English and Bahasa Indonesia">
-  <img src="https://img.shields.io/badge/builder-Miaw-0B5D4B?style=flat-square" alt="Built by Miaw">
+  <img src="https://img.shields.io/badge/builder-Miaw-0B5D4B?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI%2BPHBhdGggZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNNCAzbDUgNHEzLS44IDYgMGw1LTQgLjYgOS41cTAgOC04LjYgOFQzLjQgMTIuNXpNNy43IDExLjVhMS4zIDEuMyAwIDEgMCAyLjYgMGExLjMgMS4zIDAgMSAwLTIuNiAwek0xMy43IDExLjVhMS4zIDEuMyAwIDEgMCAyLjYgMGExLjMgMS4zIDAgMSAwLTIuNiAwek0xMiAxNGwxLjQgMS41aC0yLjh6Ii8%2BPC9zdmc%2B" alt="Built by Miaw">
 </p>
 
 <p align="center">
