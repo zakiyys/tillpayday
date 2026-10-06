@@ -96,3 +96,29 @@ describe("account detection", () => {
     await expect(createBatch(s.actor, { attachmentId: none.id })).rejects.toMatchObject({ code: "import_account_unknown" });
   });
 });
+
+describe("PDF statements through the model", () => {
+  it("reads rows from the mock model and matches like CSV; without AI it says so", async () => {
+    const { setProviderFactory, AiUnavailable } = await import("@/server/ai/provider");
+    const s = await setup();
+    const pdf = await saveAttachment(s.actor.householdId, s.actor.memberId, Buffer.from("%PDF-1.4\nstatement"), "application/pdf");
+    await expect(createBatch(s.actor, { attachmentId: pdf.id, accountId: s.bank.id })).rejects.toMatchObject({ code: "import_needs_ai" });
+    await prisma.aiConfig.create({ data: { householdId: s.actor.householdId, endpoint: "http://mock.invalid/v1", model: "m", capabilities: { ok: true, vision: true } } });
+    setProviderFactory(() => ({
+      async extract() {
+        return { accountNumber: "0001111", closingBalance: "975000", rows: [{ date: "2026-01-06", description: "KOPI", amount: "25000", direction: "OUT" }, { date: "2026-01-07", description: "DROP TABLE", amount: "-1", direction: "OUT" }] };
+      },
+    }));
+    try {
+      await expect(createBatch(s.actor, { attachmentId: pdf.id })).rejects.toMatchObject({ code: "import_unreadable" });
+      setProviderFactory(() => ({ async extract() { return { accountNumber: "0001111", closingBalance: "975000", rows: [{ date: "2026-01-06", description: "KOPI", amount: "25000", direction: "OUT" }] }; } }));
+      const b = await createBatch(s.actor, { attachmentId: pdf.id });
+      expect(b.accountId).toBe(s.bank.id);
+      const r = await commitBatch(s.actor, b.batchId, {});
+      expect(r).toMatchObject({ created: 1, check: { kind: "MATCH" } });
+    } finally {
+      setProviderFactory(null);
+      void AiUnavailable;
+    }
+  });
+});
