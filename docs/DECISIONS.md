@@ -60,10 +60,11 @@ Readings of the spec where it was ambiguous, and deviations with reasons. Newest
     ignore the absence of the flag: they answer with `text/event-stream`, and this client, which reads one complete
     JSON body, reported "the model did not answer" even though the model was healthy. Sending the flag explicitly
     makes the intent part of the request rather than an assumption about the server.
-25. **Model calls allow up to 60 s, not 8 s.** A self-hosted router can be a chain: `model-gemini` on the owner's
-    router is a combo of seven upstreams, so one call may spend ~30 s falling through a slow model before a fast one
-    answers. The old budget (8 s normal, 15 s connection test) turned a working setup into "the model did not
-    answer". The default is a ceiling, not a target: a healthy model still returns in a couple of seconds.
+25. **Model calls allow up to 90 s, not 8 s.** A self-hosted router can be a chain: `model-gemini` on the owner's
+    router is a combo of seven upstreams, and one combo call was measured at 23 s, 33 s and once 60 s depending on
+    which upstream answered, so a 60 s ceiling still lost races. The budget is 90 s, deliberately under the reverse
+    proxy's own limit (~100 s through a Cloudflare Tunnel). The default is a ceiling, not a target: a healthy single
+    model still answers in a couple of seconds.
 26. **The vision probe sends a real image (64x64), not a 1x1 pixel.** Some providers reject a single-pixel test image
     as invalid even when the model sees images perfectly well, so the old probe recorded "no image support" on a
     capable model and silently disabled receipt photos. The probe image only has to be large enough to be accepted.

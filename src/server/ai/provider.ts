@@ -53,9 +53,10 @@ export function openAiCompatible(cfg: ProviderConfig): LlmProvider {
         response_format: cfg.structured === false ? { type: "json_object" } : { type: "json_schema", json_schema: { name: "actions", strict: true, schema: actionJsonSchema() } },
       };
       const ctl = new AbortController();
-      // 60 s default: a self-hosted router can chain several upstreams before one answers, so a
-      // call that should take 3 s may spend 30 s falling through a slow model first.
-      const timer = setTimeout(() => ctl.abort(), cfg.timeoutMs ?? 60000);
+      // 90 s default. A self-hosted router can chain several upstreams before one answers, so a single
+      // call may spend a minute falling through slow models (observed: 23 s, 33 s, 60 s on one combo).
+      // The ceiling stays below the reverse proxy's own limit (~100 s for a Cloudflare Tunnel).
+      const timer = setTimeout(() => ctl.abort(), cfg.timeoutMs ?? 90000);
       let res: Response;
       try {
         res = await fetch(url, {
@@ -198,12 +199,12 @@ export async function testConnection(householdId: string): Promise<Capabilities>
   const system = 'Return {"actions":[{"intent":"clarify","question":"ok","options":[],"unknown":[]}]}.';
   const caps: Capabilities = { testedAt: new Date().toISOString(), ok: false, structured: false, vision: false };
   try {
-    await make({ endpoint: c.endpoint, model: c.model, apiKey: key, structured: true, timeoutMs: 60000 }).extract({ system, text: "ping" });
+    await make({ endpoint: c.endpoint, model: c.model, apiKey: key, structured: true, timeoutMs: 90000 }).extract({ system, text: "ping" });
     caps.structured = true;
     caps.ok = true;
   } catch {
     try {
-      await make({ endpoint: c.endpoint, model: c.model, apiKey: key, structured: false, timeoutMs: 60000 }).extract({ system, text: "ping" });
+      await make({ endpoint: c.endpoint, model: c.model, apiKey: key, structured: false, timeoutMs: 90000 }).extract({ system, text: "ping" });
       caps.ok = true;
     } catch {
       caps.ok = false;
@@ -211,7 +212,7 @@ export async function testConnection(householdId: string): Promise<Capabilities>
   }
   if (caps.ok) {
     try {
-      await make({ endpoint: c.endpoint, model: c.model, visionModel: c.visionModel, apiKey: key, structured: caps.structured, timeoutMs: 60000 }).extract({ system, text: "ping", image: { mime: "image/png", base64: PROBE_PNG } });
+      await make({ endpoint: c.endpoint, model: c.model, visionModel: c.visionModel, apiKey: key, structured: caps.structured, timeoutMs: 90000 }).extract({ system, text: "ping", image: { mime: "image/png", base64: PROBE_PNG } });
       caps.vision = true;
     } catch {
       caps.vision = false;
