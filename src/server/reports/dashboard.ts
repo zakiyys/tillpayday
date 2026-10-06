@@ -62,9 +62,21 @@ export async function dashboardData(actor: Actor, today: ISODate) {
 
   // Category trend: EXPENSE per category for the last six periods.
   const catTotals = new Map<string, { name: string; values: bigint[] }>();
+  // Same rule as budgets (SPEC 6.3): installment purchases count by their monthly portion, not the full price.
+  const instBills = await prisma.bill.findMany({ where: { householdId: actor.householdId, deletedAt: null, kind: "INSTALLMENT", status: { not: "SKIPPED" }, dueDate: { gte: dbDate(from) } } });
+  const catNames = new Map((await prisma.category.findMany({ where: { householdId: actor.householdId } })).map((c) => [c.id, c.name]));
   six.forEach((p, i) => {
+    for (const b of instBills) {
+      if (!b.categoryId) continue;
+      const d = b.dueDate.toISOString().slice(0, 10);
+      if (d < p.start || d > p.end) continue;
+      const e = catTotals.get(b.categoryId) ?? { name: catNames.get(b.categoryId) ?? "", values: six.map(() => 0n) };
+      e.values[i]! += b.amount;
+      catTotals.set(b.categoryId, e);
+    }
     for (const r of rows) {
       if (r.type !== "EXPENSE" || !r.categoryId) continue;
+      if (r.installmentPlanId && r.excludeFromAllowance) continue;
       const d = r.occurredOn.toISOString().slice(0, 10);
       if (d < p.start || d > p.end) continue;
       const e = catTotals.get(r.categoryId) ?? { name: r.category?.name ?? "", values: six.map(() => 0n) };

@@ -196,7 +196,15 @@ export async function syncHousehold(householdId: string, today: ISODate) {
         for (const s of statementDates(c.statementDay!, c.dueDay, from, today)) {
           const key = `card:${c.id}:${s.statement}`;
           if (await db.bill.findUnique({ where: { householdId_key: { householdId, key } } })) continue;
-          const owed = -((await balancesFor(db, householdId, [c.id], s.statement)).get(c.id) ?? 0n);
+          let owed = -((await balancesFor(db, householdId, [c.id], s.statement)).get(c.id) ?? 0n);
+          // Installment purchases are billed per portion (SPEC 5.2): leave the not-yet-due part out of the statement.
+          for (const pl of plans.filter((x) => x.accountId === c.id)) {
+            const due = installmentDueDates(isoOf(pl.startDate), pl.months);
+            const amounts = installmentScheduleSafe(pl.totalAmount, pl.months);
+            const billed = due.reduce((sum, d, i) => (d <= s.due ? sum + amounts[i]! : sum), 0n);
+            const bought = await db.transaction.count({ where: { installmentPlanId: pl.id, deletedAt: null, occurredOn: { lte: dbDate(s.statement) } } });
+            if (bought) owed -= pl.totalAmount - billed;
+          }
           if (owed <= 0n) continue;
           await db.bill.create({
             data: { householdId, key, name: c.name, kind: "CARD_STATEMENT", accountId: c.id, periodId: periodOf(periods, s.due)?.id ?? null, dueDate: dbDate(s.due), amount: owed },

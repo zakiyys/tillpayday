@@ -29,9 +29,14 @@ export function json(data: unknown, init?: ResponseInit) {
   });
 }
 
+/**
+ * Client address for rate limits. The left side of X-Forwarded-For is whatever the client sent, so it is not
+ * trusted; the right-most entry is the one appended by the reverse proxy in front of the app.
+ */
 export function clientIp(req: Request): string {
   const f = req.headers.get("x-forwarded-for");
-  return (f?.split(",")[0] ?? req.headers.get("x-real-ip") ?? "local").trim();
+  const last = f?.split(",").map((x) => x.trim()).filter(Boolean).pop();
+  return (last ?? req.headers.get("x-real-ip") ?? "local").trim();
 }
 
 /** CSRF: state-changing requests with a session cookie must come from our own origin. */

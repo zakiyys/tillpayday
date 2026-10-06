@@ -133,3 +133,14 @@ describe("settings from SPEC 2.2", () => {
     expect(carry.pool).toBe(6_000_000n);
   });
 });
+
+describe("card statements and installments", () => {
+  it("bill only the installment portions due, not the whole purchase", async () => {
+    const s = await setup();
+    await createInstallmentPurchase(s.actor, { accountId: s.card.id, description: "Laptop", totalAmount: "12000000", months: 12, startDate: "2026-02-05", purchaseDate: "2026-01-10", categoryId: s.shopping });
+    await createTransaction(s.actor, { type: "EXPENSE", occurredOn: "2026-01-12", accountId: s.card.id, amount: "300000", categoryId: s.food });
+    await syncHousehold(s.actor.householdId, "2026-01-25");
+    const stmt = await prisma.bill.findFirstOrThrow({ where: { householdId: s.actor.householdId, kind: "CARD_STATEMENT" } });
+    expect(stmt.amount).toBe(300_000n + 1_000_000n); // other spending plus the first portion due 5 Feb
+  });
+});

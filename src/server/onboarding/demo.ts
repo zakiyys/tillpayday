@@ -53,15 +53,15 @@ export async function seedDemo(actor: Actor, today: string) {
   const places: Array<[string, string, string, number, number]> = [
     [L("Kedai Kopi Contoh", "Sample Coffee"), food, wallet.id, 22000, 45000],
     [L("Warung Makan Contoh", "Sample Diner"), food, cash.id, 18000, 55000],
-    [L("Pasar Swalayan Contoh", "Sample Supermarket"), groceries, bankA.id, 120000, 420000],
+    [L("Pasar Swalayan Contoh", "Sample Supermarket"), groceries, bankA.id, 80000, 260000],
     [L("Ojek Daring", "Ride app"), transport, wallet.id, 12000, 48000],
     [L("SPBU Contoh", "Fuel station"), transport, card.id, 100000, 250000],
-    [L("Toko Daring Contoh", "Online shop"), shopping, card.id, 80000, 650000],
+    [L("Toko Daring Contoh", "Online shop"), shopping, card.id, 60000, 300000],
     [L("Bioskop Contoh", "Cinema"), entertainment, card.id, 50000, 120000],
     [L("Apotek Contoh", "Pharmacy"), health, cash.id, 25000, 180000],
   ];
   for (let d = start; d <= today; d = addDays(d, 1)) {
-    const n = 1 + Math.floor(rnd() * 3);
+    const n = rnd() > 0.35 ? 1 : 2;
     for (let k = 0; k < n; k++) {
       const p = places[Math.floor(rnd() * places.length)]!;
       const amount = Math.round((p[3] + rnd() * (p[4] - p[3])) / 500) * 500;
@@ -69,7 +69,7 @@ export async function seedDemo(actor: Actor, today: string) {
     }
     if (parts(d).day === 3) await createTransaction(actor, { type: "EXPENSE", occurredOn: d, accountId: card.id, amount: "54990", categoryId: entertainment, payee: L("Layanan Streaming Contoh", "Sample Streaming") });
     if (parts(d).day === 8) await createTransaction(actor, { type: "TRANSFER", occurredOn: d, accountId: bankA.id, counterAccountId: wallet.id, amount: "500000" });
-    if (parts(d).day === 15) await createTransaction(actor, { type: "TRANSFER", occurredOn: d, accountId: bankA.id, counterAccountId: cash.id, amount: "400000" });
+    if (parts(d).day === 1 || parts(d).day === 15) await createTransaction(actor, { type: "TRANSFER", occurredOn: d, accountId: bankA.id, counterAccountId: cash.id, amount: "500000" });
   }
 
   await recordDebt(actor, { direction: "LEND", counterparty: L("Teman A", "Friend A"), accountId: bankA.id, amount: "300000", occurredOn: addDays(today, -20) });
@@ -89,6 +89,11 @@ export async function seedDemo(actor: Actor, today: string) {
   await createTransaction(actor, { type: "TRANSFER", occurredOn: addDays(today, -30), accountId: bankA.id, counterAccountId: yen.id, amount: "1100000", counterAmount: "10000" });
 
   await syncHousehold(h.id, today);
+  // Card statements that are already due are paid in full from Bank A, like a careful owner would.
+  const stmts = await prisma.bill.findMany({ where: { householdId: h.id, kind: "CARD_STATEMENT", status: "UNPAID", dueDate: { lte: new Date(`${today}T00:00:00Z`) } }, orderBy: { dueDate: "asc" } });
+  for (const b of stmts) {
+    await createTransaction(actor, { type: "TRANSFER", occurredOn: addDays(b.dueDate.toISOString().slice(0, 10), -2), accountId: bankA.id, counterAccountId: card.id, amount: b.amount, billId: b.id, payee: b.name });
+  }
   // Goal deposits for each period so far.
   const goalBills = await prisma.bill.findMany({ where: { householdId: h.id, kind: "GOAL", status: "UNPAID", dueDate: { lte: new Date(`${today}T00:00:00Z`) } } });
   for (const b of goalBills) {

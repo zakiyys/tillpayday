@@ -53,3 +53,5 @@ Readings of the spec where it was ambiguous, and deviations with reasons. Newest
 21. **Net worth "ALL" view** changes only the member's total; account lists and details keep the visibility rules.
 22. **Attachments in two-person mode** are readable by the uploader, or by members who can see a transaction the file
     is attached to.
+23. **Client address for rate limits** is the right-most `X-Forwarded-For` entry (added by the reverse proxy), not
+    the left-most one a client can set. Without a proxy, all requests share one bucket, which errs on the safe side.

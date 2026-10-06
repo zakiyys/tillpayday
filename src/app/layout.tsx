@@ -6,8 +6,9 @@ import "./globals.css";
 
 const name = process.env.APP_NAME ?? "Home Ledger";
 
+// The <title> is rendered in <head> directly (below), not through metadata: production streams metadata after the
+// shell, and the document must have a title from the first byte (WCAG 2.4.2).
 export const metadata: Metadata = {
-  title: name,
   manifest: "/manifest.webmanifest",
   applicationName: name,
   appleWebApp: { capable: true, title: name, statusBarStyle: "default" },
@@ -40,6 +41,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       suppressHydrationWarning
     >
       <head>
+        <title>{name}</title>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
