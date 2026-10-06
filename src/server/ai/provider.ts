@@ -43,6 +43,9 @@ export function openAiCompatible(cfg: ProviderConfig): LlmProvider {
       const body = {
         model,
         temperature: 0,
+        // Sent explicitly: the OpenAI default is false, but some self-hosted routers stream unless asked not to,
+        // and this client reads one complete JSON body rather than a stream.
+        stream: false,
         messages: [
           { role: "system", content: system },
           { role: "user", content },

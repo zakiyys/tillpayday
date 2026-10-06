@@ -55,3 +55,8 @@ Readings of the spec where it was ambiguous, and deviations with reasons. Newest
     is attached to.
 23. **Client address for rate limits** is the right-most `X-Forwarded-For` entry (added by the reverse proxy), not
     the left-most one a client can set. Without a proxy, all requests share one bucket, which errs on the safe side.
+24. **`stream: false` is sent on every model request.** The OpenAI default is already false, so this changes nothing
+    against a standard server, but some self-hosted routers (the owner's 9router, for one) stream by default and
+    ignore the absence of the flag: they answer with `text/event-stream`, and this client, which reads one complete
+    JSON body, reported "the model did not answer" even though the model was healthy. Sending the flag explicitly
+    makes the intent part of the request rather than an assumption about the server.
