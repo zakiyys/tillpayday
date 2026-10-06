@@ -53,7 +53,9 @@ export function openAiCompatible(cfg: ProviderConfig): LlmProvider {
         response_format: cfg.structured === false ? { type: "json_object" } : { type: "json_schema", json_schema: { name: "actions", strict: true, schema: actionJsonSchema() } },
       };
       const ctl = new AbortController();
-      const timer = setTimeout(() => ctl.abort(), cfg.timeoutMs ?? 8000);
+      // 60 s default: a self-hosted router can chain several upstreams before one answers, so a
+      // call that should take 3 s may spend 30 s falling through a slow model first.
+      const timer = setTimeout(() => ctl.abort(), cfg.timeoutMs ?? 60000);
       let res: Response;
       try {
         res = await fetch(url, {
@@ -182,8 +184,11 @@ export async function extractWithFallback(householdId: string, input: Parameters
   }
 }
 
-// 1x1 white PNG for the vision capability probe.
-const PROBE_PNG = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=";
+// 64x64 white PNG for the vision capability probe. A real image, not a 1x1 one: some providers
+// reject a single-pixel image as invalid ("unable to process input image") even when they can see
+// perfectly well, which would turn a working vision model into a "no image support" verdict.
+const PROBE_PNG =
+  "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAAS0lEQVR42u3PMQ0AAAwDoPo33UrYvQQckD4XAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAYHLAMpT0sIcNbcEAAAAAElFTkSuQmCC";
 
 /** Connection test (SPEC 7.6): one text request with structured output, one image request; records capabilities. */
 export async function testConnection(householdId: string): Promise<Capabilities> {
@@ -193,12 +198,12 @@ export async function testConnection(householdId: string): Promise<Capabilities>
   const system = 'Return {"actions":[{"intent":"clarify","question":"ok","options":[],"unknown":[]}]}.';
   const caps: Capabilities = { testedAt: new Date().toISOString(), ok: false, structured: false, vision: false };
   try {
-    await make({ endpoint: c.endpoint, model: c.model, apiKey: key, structured: true, timeoutMs: 15000 }).extract({ system, text: "ping" });
+    await make({ endpoint: c.endpoint, model: c.model, apiKey: key, structured: true, timeoutMs: 60000 }).extract({ system, text: "ping" });
     caps.structured = true;
     caps.ok = true;
   } catch {
     try {
-      await make({ endpoint: c.endpoint, model: c.model, apiKey: key, structured: false, timeoutMs: 15000 }).extract({ system, text: "ping" });
+      await make({ endpoint: c.endpoint, model: c.model, apiKey: key, structured: false, timeoutMs: 60000 }).extract({ system, text: "ping" });
       caps.ok = true;
     } catch {
       caps.ok = false;
@@ -206,7 +211,7 @@ export async function testConnection(householdId: string): Promise<Capabilities>
   }
   if (caps.ok) {
     try {
-      await make({ endpoint: c.endpoint, model: c.model, visionModel: c.visionModel, apiKey: key, structured: caps.structured, timeoutMs: 20000 }).extract({ system, text: "ping", image: { mime: "image/png", base64: PROBE_PNG } });
+      await make({ endpoint: c.endpoint, model: c.model, visionModel: c.visionModel, apiKey: key, structured: caps.structured, timeoutMs: 60000 }).extract({ system, text: "ping", image: { mime: "image/png", base64: PROBE_PNG } });
       caps.vision = true;
     } catch {
       caps.vision = false;
