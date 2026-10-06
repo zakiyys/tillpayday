@@ -1,0 +1,7 @@
+// PM2 alternative to the systemd units. Start with: pm2 start ecosystem.config.cjs
+module.exports = {
+  apps: [
+    { name: "home-ledger", script: "node_modules/next/dist/bin/next", args: "start -H 127.0.0.1 -p 3070", node_args: "--env-file=.env", env: { NODE_ENV: "production" } },
+    { name: "home-ledger-worker", script: "src/server/worker/main.ts", node_args: "--env-file=.env --import tsx", env: { NODE_ENV: "production" } },
+  ],
+};

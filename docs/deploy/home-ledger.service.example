@@ -1,0 +1,22 @@
+# systemd unit for the manual install. Copy to /etc/systemd/system/, adjust User and WorkingDirectory.
+[Unit]
+Description=Home Ledger web app
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=ledger
+WorkingDirectory=/opt/home-ledger
+EnvironmentFile=/opt/home-ledger/.env
+Environment=NODE_ENV=production
+ExecStartPre=/usr/bin/node --import tsx scripts/check-env.ts
+ExecStartPre=/usr/bin/node --import tsx scripts/backup.ts --pre-migrate
+ExecStartPre=/usr/bin/node node_modules/prisma/build/index.js migrate deploy
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start -H 127.0.0.1 -p 3070
+Restart=on-failure
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

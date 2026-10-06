@@ -1,0 +1,19 @@
+# systemd unit for the background worker (recurring entries, bills, recap, notifications, backups).
+[Unit]
+Description=Home Ledger worker
+After=network.target postgresql.service home-ledger.service
+
+[Service]
+Type=simple
+User=ledger
+WorkingDirectory=/opt/home-ledger
+EnvironmentFile=/opt/home-ledger/.env
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node --import tsx src/server/worker/main.ts
+Restart=on-failure
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

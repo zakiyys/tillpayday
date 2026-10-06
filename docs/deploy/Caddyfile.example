@@ -1,0 +1,5 @@
+# Reverse proxy with automatic HTTPS (Caddy). Replace the host name with yours.
+finance.example.invalid {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:3070
+}
