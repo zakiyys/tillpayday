@@ -10,8 +10,16 @@ const WORDMARK_EM = 0.45 / 0.745;
 const GAP = 0.25;
 
 /** The mark alone, in `currentColor`. 24 px and below uses the small three-bar form to stay sharp. */
-export function LogoMark({ size = 24, className }: { size?: number; className?: string }) {
-  const src = size <= 24 ? "/logo-small.svg" : "/logo.svg";
+export function LogoMark({
+  size = 24,
+  variant,
+  className,
+}: {
+  size?: number;
+  variant?: "small" | "main";
+  className?: string;
+}) {
+  const src = (variant ?? (size <= 24 ? "small" : "main")) === "small" ? "/logo-small.svg" : "/logo.svg";
   const mask: CSSProperties = {
     width: size,
     height: size,
@@ -27,7 +35,7 @@ export function LogoMark({ size = 24, className }: { size?: number; className?: 
   return <span aria-hidden className={cx("inline-block shrink-0 bg-current", className)} style={mask} />;
 }
 
-/** The app icon: rounded tile (22.5% of the side) in the accent, mark in the accent's text colour at 72%. */
+/** The app icon: rounded tile (22.5% of the side) in the accent, main mark in the accent's text colour at 72%. */
 export function AppIcon({ size = 40, className }: { size?: number; className?: string }) {
   return (
     <span
@@ -35,7 +43,8 @@ export function AppIcon({ size = 40, className }: { size?: number; className?: s
       className={cx("inline-grid shrink-0 place-items-center bg-accent text-on-accent", className)}
       style={{ width: size, height: size, borderRadius: size * 0.225 }}
     >
-      <LogoMark size={size * 0.72} className="text-current" />
+      {/* The icon always uses the main five-bar form: only a mark drawn at 24 px or less uses the small form. */}
+      <LogoMark size={size * 0.72} variant="main" className="text-current" />
     </span>
   );
 }
