@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Check } from "lucide-react";
 import { Select } from "@/components/form";
 import { btn, Card, cx } from "@/components/ui";
 
@@ -33,10 +34,12 @@ export function Appearance({ locale, theme, accent }: { locale: string; theme: s
         <legend className="mb-1.5 text-sm font-[550] text-ink">{t("accent")}</legend>
         <div className="flex flex-wrap gap-2">
           {ACCENTS.map(([k, c]) => (
-            <label key={k} className={cx("flex min-h-11 cursor-pointer items-center gap-2 rounded-btn border px-3 text-sm", ac === k ? "border-accent bg-accent-soft text-on-accent-soft" : "border-line text-ink")}>
+            <label key={k} className={cx("flex min-h-11 cursor-pointer items-center gap-2 rounded-btn border px-3 text-sm", ac === k ? "border-accent bg-accent-soft font-[600] text-on-accent-soft" : "border-line text-ink")}>
               <input type="radio" name="accent" className="sr-only" checked={ac === k} onChange={() => setAc(k)} />
               <span aria-hidden className="size-4 rounded-full" style={{ background: c }} />
               {t(k)}
+              {/* Selection shown by a check mark, not colour alone; the native radio carries the checked state for AT. */}
+              {ac === k ? <Check size={16} strokeWidth={2} aria-hidden className="shrink-0" /> : null}
             </label>
           ))}
         </div>

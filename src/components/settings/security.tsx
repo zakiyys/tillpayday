@@ -70,7 +70,7 @@ export function SecuritySettings(p: Props) {
                 </div>
                 <button
                   type="button"
-                  className="grid size-11 place-items-center rounded-btn text-muted hover:bg-surface-2"
+                  className="grid size-11 place-items-center rounded-btn border border-warning/60 text-warning hover:bg-warning-soft"
                   aria-label={t("removePasskey", { label: k.label })}
                   onClick={() => act(() => api("/api/auth/sessions", { method: "DELETE", body: { id: k.id, kind: "passkey" } }))}
                 >
@@ -100,7 +100,7 @@ export function SecuritySettings(p: Props) {
               {!s.current ? (
                 <button
                   type="button"
-                  className={btn.ghost}
+                  className={btn.danger}
                   aria-label={t("revokeLabel", { device: s.device })}
                   onClick={() => act(() => api("/api/auth/sessions", { method: "DELETE", body: { id: s.id } }))}
                 >
@@ -179,7 +179,7 @@ export function SecuritySettings(p: Props) {
               </ul>
             </>
           ) : null}
-          <button type="button" className={btn.secondary} onClick={() => act(async () => setCodes((await api<{ codes: string[] }>("/api/auth/recovery", { body: {} })).codes))}>
+          <button type="button" className={btn.danger} onClick={() => act(async () => setCodes((await api<{ codes: string[] }>("/api/auth/recovery", { body: {} })).codes))}>
             {t("recoveryNew")}
           </button>
         </div>
