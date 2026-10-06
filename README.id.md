@@ -261,3 +261,8 @@ npm run test:e2e     # Playwright, memakai TEST_DATABASE_URL dan server AI tirua
 ```
 
 Lihat [CONTRIBUTING.md](CONTRIBUTING.md) dan [SECURITY.md](SECURITY.md). Kebutuhan produk: [docs/SPEC.md](docs/SPEC.md).
+Catatan rilis: [CHANGELOG.md](CHANGELOG.md).
+
+## Lisensi
+
+MIT. Lihat [LICENSE](LICENSE).

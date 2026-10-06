@@ -2,7 +2,7 @@
 
 All notable changes are listed here. Versions follow [Semantic Versioning](https://semver.org/).
 
-## [0.1.0] - unreleased
+## [1.0.0] - 2026-10-06
 
 First complete version, built from `docs/SPEC.md`.
 
