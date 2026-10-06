@@ -3,10 +3,10 @@ import { prisma } from "../db";
 import type { Actor } from "../ledger/scope";
 import { createAccount } from "../ledger/accounts";
 import { createTransaction } from "../ledger/transactions";
-import { createGoal, createInstallmentPurchase, createRecurring } from "../ledger/planning";
+import { createGoal, createInstallmentPurchase, createRecurring, setBudget } from "../ledger/planning";
 import { createHolding, setPrice, trade } from "../ledger/assets";
 import { recordDebt, recordSplit, setFxRate } from "../ledger/debts";
-import { syncHousehold } from "../ledger/periods";
+import { budgetView, ensurePeriods, syncHousehold } from "../ledger/periods";
 import { bad } from "../http";
 
 /**
@@ -101,4 +101,14 @@ export async function seedDemo(actor: Actor, today: string) {
     await createTransaction(actor, { type: "TRANSFER", occurredOn: b.dueDate.toISOString().slice(0, 10), accountId: bankA.id, counterAccountId: target, amount: b.amount, goalId: b.goalId, billId: b.id, payee: b.name });
   }
   void trip;
+
+  // Budgets for the current period, sized from actual spend so the screen shows every state: the biggest
+  // spender near its limit (about 92%), the second over it (about 115%), the rest comfortably on track.
+  const periods = await ensurePeriods(prisma, h.id, today);
+  const spenders = (await budgetView(actor, periods, periods.length - 1)).filter((r) => r.spent > 0n).sort((x, y) => (y.spent > x.spent ? 1 : y.spent < x.spent ? -1 : 0));
+  const k = 1000n;
+  for (const [i, r] of spenders.entries()) {
+    const limit = i === 0 ? ((r.spent * 100n) / 92n / k + 1n) * k : i === 1 ? ((r.spent * 100n) / 115n / k) * k : ((r.spent * 3n) / 2n / k + 1n) * k;
+    await setBudget(actor, periods.at(-1)!.id, r.categoryId, limit);
+  }
 }
