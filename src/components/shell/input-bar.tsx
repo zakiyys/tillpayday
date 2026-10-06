@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { InputRow } from "@/components/conversation";
+import { holdPhoto } from "@/lib/pending-photo";
 
 /**
  * Input bar on every page (SPEC 10). Sends the text to Record, which runs the parser and shows the card.
@@ -14,6 +15,7 @@ export function InputBar({ aiState }: { aiState: "off" | "ok" | "down" | "novisi
   const path = usePathname();
   const router = useRouter();
   const [v, setV] = useState("");
+  const file = useRef<HTMLInputElement>(null);
   if (path.startsWith("/record") || path.startsWith("/onboarding") || path.startsWith("/settings")) return null;
   return (
     <form
@@ -26,7 +28,22 @@ export function InputBar({ aiState }: { aiState: "off" | "ok" | "down" | "novisi
       }}
       aria-label={t("inputLabel")}
     >
-      <InputRow value={v} onChange={setV} onPhoto={() => router.push("/record")} photoDisabled={aiState === "off" || aiState === "novision"} />
+      <InputRow value={v} onChange={setV} onPhoto={() => file.current?.click()} onChat={() => router.push("/record")} photoDisabled={aiState === "off" || aiState === "novision"} />
+      <input
+        ref={file}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,application/pdf"
+        className="sr-only"
+        tabIndex={-1}
+        aria-hidden
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          e.target.value = "";
+          if (!f) return;
+          holdPhoto(f);
+          router.push("/record");
+        }}
+      />
       {aiState !== "ok" ? <p className="mt-1 px-3 text-xs text-muted">{aiState === "off" ? t("aiOff") : aiState === "down" ? t("aiDown") : t("noVision")}</p> : null}
     </form>
   );

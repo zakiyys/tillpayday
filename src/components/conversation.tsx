@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Camera, Check, Send, X } from "lucide-react";
+import { Camera, Check, MessageSquare, Send, X } from "lucide-react";
 import { api, ApiError } from "@/lib/api-client";
 import { longDate, money, minorToInput, parseMajor, majorStrToMinor } from "@/lib/format";
 import { missingFields, type Proposal } from "@/lib/proposals";
@@ -10,6 +10,7 @@ import type { FormOptions } from "@/server/ui-data";
 import { useErrorText } from "./form";
 import { Chip, Notice, btn, cx } from "./ui";
 import { enqueueOffline } from "@/lib/offline-queue";
+import { takePhoto } from "@/lib/pending-photo";
 
 type Opts = Pick<FormOptions, "accounts" | "categories" | "currencies">;
 
@@ -65,6 +66,12 @@ export function Conversation({ opts, intl, today, base, aiState, initialText, dr
       window.removeEventListener("online", on);
       window.removeEventListener("offline", on);
     };
+  }, []);
+  useEffect(() => {
+    // A photo picked from the input bar on another page lands here, waiting for a note.
+    const f = takePhoto();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time handover from the previous page
+    if (f) setPending(f);
   }, []);
   useEffect(() => {
     sessionStorage.setItem(STORE, JSON.stringify(turns.slice(-30)));
@@ -237,13 +244,18 @@ export function Conversation({ opts, intl, today, base, aiState, initialText, dr
   );
 }
 
-export function InputRow({ value, onChange, onPhoto, photoDisabled, canSend, placeholder }: { value: string; onChange: (v: string) => void; onPhoto: () => void; photoDisabled?: boolean; canSend?: boolean; placeholder?: string }) {
+export function InputRow({ value, onChange, onPhoto, photoDisabled, canSend, placeholder, onChat }: { value: string; onChange: (v: string) => void; onPhoto: () => void; photoDisabled?: boolean; canSend?: boolean; placeholder?: string; onChat?: () => void }) {
   const t = useTranslations("record");
   return (
     <div className="flex items-center gap-1 rounded-full border border-line bg-surface p-1 shadow-float">
       <button type="button" onClick={onPhoto} disabled={photoDisabled} aria-label={t("photo")} title={photoDisabled ? t("noVision") : undefined} className="grid size-11 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 disabled:opacity-40">
         <Camera size={20} strokeWidth={1.75} aria-hidden />
       </button>
+      {onChat ? (
+        <button type="button" onClick={onChat} aria-label={t("openChat")} className="grid size-11 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2">
+          <MessageSquare size={20} strokeWidth={1.75} aria-hidden />
+        </button>
+      ) : null}
       <label className="min-w-0 flex-1">
         <span className="sr-only">{t("inputLabel")}</span>
         <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder ?? t("placeholder")} className="h-11 w-full bg-transparent px-1 text-base text-ink placeholder:text-muted focus-visible:outline-none" enterKeyHint="send" autoComplete="off" />

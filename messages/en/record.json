@@ -4,6 +4,7 @@
   "inputLabel": "Type a transaction",
   "send": "Send",
   "photo": "Photo or file",
+  "openChat": "Open chat",
   "photoCaption": "Add a note if you like, then send.",
   "photoPlaceholder": "e.g. I only bought the fried rice, add the tax",
   "photoRemove": "Remove photo",
