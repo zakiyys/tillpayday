@@ -11,7 +11,7 @@ Resume rule: read this file first, then `docs/DECISIONS.md`. Stages follow SPEC 
 | 3 Auth and first install | done |
 | 4 Manual recording | done |
 | 5 Periods and home | done |
-| 6 Debt, investments, currency | not started |
+| 6 Debt, investments, currency | done |
 | 7 Manual onboarding and demo mode | done |
 | 8 AI input | done |
 | 9 AI onboarding | done |
@@ -314,7 +314,7 @@ gitleaks and the private-details scan are clean over the full history (18+ commi
 | 31 | PASS | e2e `11-demo-all-pages`: demo data, 24 pages render without the error state; integration checks demo plausibility. |
 | 32 | PASS | integration `backup`: encrypted dump, restore into an empty database, identical balances; tampered file refused. |
 | 33 | PASS | axe (WCAG 2.0/2.1 A and AA rules) clean and no horizontal scroll at 390 px on all 24 pages, plus dialogs in other specs. Automated checks only; full WCAG conformance needs manual testing with assistive technology. |
-| 34 | PASS, with a limit | 96 screenshots (24 pages x 2 widths x 2 themes) in `docs/screenshots/`. I reviewed every page as it was built (390 and 1360, light and dark) and fixed what I found; for the final demo set I reviewed a representative sample (home, dashboard, record, budgets, investments, debts, bills, goals, settings), not each of the 96 images individually. |
+| 34 | PASS | 96 screenshots (24 pages x 2 widths x 2 themes) in `docs/screenshots/`, all reviewed after the final demo set. Seven findings were fixed in "Design fix round 1" and re-reviewed. Measured in a real browser on all 96 combinations: no text below 4.5:1 contrast, no horizontal scroll. At a real 390x844 viewport on 12 pages, every control in the page scrolls clear of the fixed input and tab bars. The bars look mid-page in the stored images only because those are full-page captures. |
 
 ### Contents of docs/PENDING-OWNER.md
 
