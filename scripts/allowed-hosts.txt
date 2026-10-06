@@ -37,3 +37,4 @@ lucide.dev
 playwright.dev
 vitest.dev
 schema.org
+shields.io

@@ -10,6 +10,20 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/zakiyys/tillpayday/actions/workflows/ci.yml"><img src="https://github.com/zakiyys/tillpayday/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
+  <a href="https://github.com/zakiyys/tillpayday/releases"><img src="https://img.shields.io/github/v/release/zakiyys/tillpayday?style=flat-square&color=0B5D4B" alt="Latest release"></a>
+  <img src="https://img.shields.io/badge/lisensi-MIT-0B5D4B?style=flat-square" alt="Lisensi MIT">
+  <img src="https://img.shields.io/badge/self--hosted-servermu-0B5D4B?style=flat-square&logo=docker&logoColor=white" alt="Self-hosted">
+  <img src="https://img.shields.io/badge/Next.js-16-0B5D4B?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 16">
+  <img src="https://img.shields.io/badge/PostgreSQL-18-0B5D4B?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL 18">
+  <img src="https://img.shields.io/badge/Node-%E2%89%A522.12-0B5D4B?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node 22.12 atau lebih baru">
+  <img src="https://img.shields.io/badge/PWA-bisa_diinstal-0B5D4B?style=flat-square&logo=pwa&logoColor=white" alt="PWA bisa_diinstal">
+  <img src="https://img.shields.io/badge/AI-opsional-0B5D4B?style=flat-square" alt="AI opsional">
+  <img src="https://img.shields.io/badge/login_bank-tidak_perlu-0B5D4B?style=flat-square" alt="Tanpa login bank">
+  <img src="https://img.shields.io/badge/bahasa-EN_%C2%B7_ID-0B5D4B?style=flat-square" alt="Inggris dan Bahasa Indonesia">
+</p>
+
+<p align="center">
   <a href="#instalasi">Instalasi</a> ·
   <a href="#cara-kerjanya">Cara kerja</a> ·
   <a href="#fitur">Fitur</a> ·

@@ -10,6 +10,20 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/zakiyys/tillpayday/actions/workflows/ci.yml"><img src="https://github.com/zakiyys/tillpayday/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
+  <a href="https://github.com/zakiyys/tillpayday/releases"><img src="https://img.shields.io/github/v/release/zakiyys/tillpayday?style=flat-square&color=0B5D4B" alt="Latest release"></a>
+  <img src="https://img.shields.io/badge/license-MIT-0B5D4B?style=flat-square" alt="MIT license">
+  <img src="https://img.shields.io/badge/self--hosted-your_server-0B5D4B?style=flat-square&logo=docker&logoColor=white" alt="Self-hosted">
+  <img src="https://img.shields.io/badge/Next.js-16-0B5D4B?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 16">
+  <img src="https://img.shields.io/badge/PostgreSQL-18-0B5D4B?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL 18">
+  <img src="https://img.shields.io/badge/Node-%E2%89%A522.12-0B5D4B?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node 22.12 or newer">
+  <img src="https://img.shields.io/badge/PWA-installable-0B5D4B?style=flat-square&logo=pwa&logoColor=white" alt="PWA installable">
+  <img src="https://img.shields.io/badge/AI-optional-0B5D4B?style=flat-square" alt="AI is optional">
+  <img src="https://img.shields.io/badge/bank_logins-none-0B5D4B?style=flat-square" alt="No bank logins">
+  <img src="https://img.shields.io/badge/languages-EN_%C2%B7_ID-0B5D4B?style=flat-square" alt="English and Bahasa Indonesia">
+</p>
+
+<p align="center">
   <a href="#install">Install</a> ·
   <a href="#how-it-works">How it works</a> ·
   <a href="#features">Features</a> ·
