@@ -13,23 +13,26 @@ function YearTable({ title, rows, base, intl }: { title: string; rows: Row[]; ba
   return (
     <section className="mt-6 break-inside-avoid">
       <h2 className="mb-2 text-lg font-[650] text-ink">{title}</h2>
-      <div className="relative overflow-x-auto" role="region" aria-label={title} tabIndex={0}>
-        <table className="w-full min-w-[520px] text-sm">
-          <tbody className="divide-y divide-line">
-            {rows.map((r, i) => (
-              <tr key={i}>
-                <th scope="row" className="py-1.5 pr-3 text-left font-[550] text-ink">
-                  {r.name}
-                </th>
-                <td className="py-1.5 pr-3 text-muted">{r.type}</td>
-                <td className="num py-1.5 pr-3 text-right text-ink">{r.units ?? ""}</td>
-                <td className="num py-1.5 pr-3 text-right text-ink">{fmt(r.amount, r.currency)}</td>
-                <td className="num py-1.5 text-right text-ink">{r.currency !== base ? fmt(r.base, base) : ""}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Two columns (name + detail, amounts) so every amount fits a phone and a printed page without scrolling. */}
+      <table className="w-full text-sm">
+        <tbody className="divide-y divide-line">
+          {rows.map((r, i) => (
+            <tr key={i} className="align-top">
+              <th scope="row" className="py-1.5 pr-3 text-left font-[550] text-ink">
+                {r.name}
+                <span className="block text-xs font-[450] text-muted">
+                  {r.type}
+                  {r.units ? <span className="num"> · {r.units}</span> : null}
+                </span>
+              </th>
+              <td className="num py-1.5 text-right whitespace-nowrap text-ink">
+                {fmt(r.amount, r.currency)}
+                {r.currency !== base ? <span className="block text-xs text-muted">{fmt(r.base, base)}</span> : null}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </section>
   );
 }

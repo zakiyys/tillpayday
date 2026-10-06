@@ -59,7 +59,7 @@ export default async function AccountsPage({ searchParams }: { searchParams: Pro
                               {a.name}
                               {a.last4 ? <span className="num ml-1.5 text-sm font-[450] text-muted">•{a.last4}</span> : null}
                             </p>
-                            <p className="truncate text-xs text-muted">
+                            <p className="line-clamp-2 text-xs text-muted">
                               {a.archivedAt ? `${t("archived")} · ` : ""}
                               {a.institution ? `${a.institution} · ` : ""}
                               {a.lastReconciledAt ? t("reconciled", { when: dateTime(a.lastReconciledAt, ctx.intl, ctx.household.timezone) }) : t("neverReconciled")}

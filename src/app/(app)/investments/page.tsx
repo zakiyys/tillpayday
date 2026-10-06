@@ -26,6 +26,23 @@ export default async function InvestmentsPage() {
   const total = rows.reduce((s, r) => s + (r.valueBase ?? 0n), 0n);
   const gainBase = rows.reduce((s, r) => s + (r.pnl == null ? 0n : r.holding.currency === base ? r.pnl : (r.pnlSplit?.fromPrice ?? 0n) + (r.pnlSplit?.fromFx ?? 0n)), 0n);
   const tone = (v: bigint | null) => (v == null || v === 0n ? "text-ink" : v > 0n ? "text-accent" : "text-warning");
+  const priceText = (p: (typeof rows)[number]["price"], c: string) => (p ? `${new Intl.NumberFormat(ctx.intl, { maximumFractionDigits: 6 }).format(p.toString() as unknown as number)} ${c}` : "");
+  const actions = (r: (typeof rows)[number]) => {
+    const h = r.holding;
+    const fixed = h.assetType.valuation === "FIXED_PLUS_INTEREST";
+    const ref = { id: h.id, name: h.name, currency: h.currency, unitLabel: h.assetType.unitLabel, accountId: h.accountId };
+    return (
+      <>
+        {!fixed ? (
+          <>
+            <TradeButton side="BUY" holding={ref} opts={opts} today={ctx.today} />
+            <TradeButton side="SELL" holding={ref} opts={opts} today={ctx.today} />
+          </>
+        ) : null}
+        {h.assetType.priceSource !== "FIXED" ? <PriceButton holding={{ id: h.id, name: h.name, unitLabel: h.assetType.unitLabel }} today={ctx.today} appraised={h.assetType.valuation === "APPRAISED"} /> : null}
+      </>
+    );
+  };
 
   return (
     <>
@@ -44,7 +61,58 @@ export default async function InvestmentsPage() {
       {rows.length === 0 ? (
         <EmptyState title={t("empty")} body={t("emptyBody")} />
       ) : (
-        <Card flush>
+        <>
+          {/* Phones: one stacked card per holding so every figure and action stays on screen. */}
+          <ul className="space-y-3 md:hidden" aria-label={t("title")}>
+            {rows.map((r) => {
+              const h = r.holding;
+              const fixed = h.assetType.valuation === "FIXED_PLUS_INTEREST";
+              return (
+                <li key={h.id}>
+                  <Card>
+                    <p className="font-[600] text-ink">{h.name}</p>
+                    <p className="text-xs text-muted">
+                      {h.assetType.name}
+                      {h.symbol ? ` · ${h.symbol}` : ""} · {h.account.name}
+                    </p>
+                    <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
+                      {!fixed ? (
+                        <div>
+                          <dt className="text-xs text-muted">{t("units")}</dt>
+                          <dd className="num text-ink">{`${h.units.toString()} ${h.assetType.unitLabel}`}</dd>
+                        </div>
+                      ) : null}
+                      <div>
+                        <dt className="text-xs text-muted">{t("price")}</dt>
+                        <dd className="num text-ink">{priceText(r.price, h.currency)}</dd>
+                        <dd className="text-xs text-muted">
+                          {r.priceDate ? t("updated", { date: shortDate(r.priceDate, ctx.intl) }) : fixed ? "" : t("noPrice")}
+                          {r.stale ? <Chip className="ml-1.5 bg-warning-soft text-warning">{t("stale")}</Chip> : null}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs text-muted">{t("value")}</dt>
+                        <dd className="num font-[600] text-ink">{r.value == null ? "" : fmt(r.value, h.currency)}</dd>
+                        {h.currency !== base && r.valueBase != null ? <dd className="num text-xs text-muted">≈ {fmt(r.valueBase, base)}</dd> : null}
+                      </div>
+                      <div>
+                        <dt className="text-xs text-muted">{t("pnl")}</dt>
+                        <dd className={cx("num font-[600]", tone(r.pnl))}>{r.pnl == null ? "" : fmt(r.pnl, h.currency, true)}</dd>
+                        {r.pnlSplit ? (
+                          <>
+                            <dd className="num text-xs text-muted">{t("fromPrice")} {fmt(r.pnlSplit.fromPrice, base, true)}</dd>
+                            <dd className="num text-xs text-muted">{t("fromFx")} {fmt(r.pnlSplit.fromFx, base, true)}</dd>
+                          </>
+                        ) : null}
+                      </div>
+                    </dl>
+                    <div className="mt-3 flex flex-wrap gap-2">{actions(r)}</div>
+                  </Card>
+                </li>
+              );
+            })}
+          </ul>
+          <Card flush className="hidden md:block">
           <div className="relative overflow-x-auto" role="region" aria-label={t("title")} tabIndex={0}>
             <table className="w-full min-w-[760px] text-sm">
               <thead className="border-b border-line text-left text-xs uppercase tracking-[0.04em] text-muted">
@@ -75,7 +143,7 @@ export default async function InvestmentsPage() {
                         </p>
                       </td>
                       <td className="num px-3 py-3 text-right text-ink">{fixed ? "" : `${h.units.toString()} ${h.assetType.unitLabel}`}</td>
-                      <td className="num px-3 py-3 text-right text-ink">{r.price ? `${new Intl.NumberFormat(ctx.intl, { maximumFractionDigits: 6 }).format(r.price.toString() as unknown as number)} ${h.currency}` : ""}</td>
+                      <td className="num px-3 py-3 text-right text-ink">{priceText(r.price, h.currency)}</td>
                       <td className="num px-3 py-3 text-right">
                         <p className="font-[600] text-ink">{r.value == null ? "" : fmt(r.value, h.currency)}</p>
                         {h.currency !== base && r.valueBase != null ? <p className="text-xs text-muted">≈ {fmt(r.valueBase, base)}</p> : null}
@@ -89,15 +157,7 @@ export default async function InvestmentsPage() {
                         ) : null}
                       </td>
                       <td className="px-4 py-2">
-                        <div className="flex justify-end gap-1">
-                          {!fixed ? (
-                            <>
-                              <TradeButton side="BUY" holding={{ id: h.id, name: h.name, currency: h.currency, unitLabel: h.assetType.unitLabel, accountId: h.accountId }} opts={opts} today={ctx.today} />
-                              <TradeButton side="SELL" holding={{ id: h.id, name: h.name, currency: h.currency, unitLabel: h.assetType.unitLabel, accountId: h.accountId }} opts={opts} today={ctx.today} />
-                            </>
-                          ) : null}
-                          {h.assetType.priceSource !== "FIXED" ? <PriceButton holding={{ id: h.id, name: h.name, unitLabel: h.assetType.unitLabel }} today={ctx.today} appraised={h.assetType.valuation === "APPRAISED"} /> : null}
-                        </div>
+                        <div className="flex justify-end gap-1">{actions(r)}</div>
                       </td>
                     </tr>
                   );
@@ -106,6 +166,7 @@ export default async function InvestmentsPage() {
             </table>
           </div>
         </Card>
+        </>
       )}
       <SectionTitle action={<AssetTypeButton />}>{t("types")}</SectionTitle>
       <p className="mb-2 text-sm text-muted">{t("typesBody")} {t("noProvider")}</p>
