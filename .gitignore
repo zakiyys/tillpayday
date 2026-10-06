@@ -21,6 +21,7 @@ deploy.local/
 # local tools and data
 .tools/
 data/
+compose.override.yaml
 backups/
 uploads/
 *.dump
