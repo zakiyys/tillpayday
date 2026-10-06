@@ -9,10 +9,15 @@ savings, debts and investments, and the home screen answers one question: how mu
 
 Bahasa Indonesia: [README.id.md](README.id.md)
 
-![Home on a phone](docs/screenshots/home-390-light.png)
-![Dashboard on a desktop](docs/screenshots/dashboard-1360-dark.png)
+<p align="center">
+  <img src="docs/illustrations/readme-hero.png" alt="TillPayDay on a phone and on a desktop" width="880">
+</p>
 
 ## Bloat cat says hi 🐈
+
+<p align="center">
+  <img src="docs/illustrations/blotcat-lean.png" alt="Blotcat weighing features on a scale and cutting the heavy ones" width="760">
+</p>
 
 ```
    /\_/\     welcome to the
@@ -36,6 +41,10 @@ needs a Kubernetes cluster to open a ledger, the bloat cat is still on your side
 3. Nap first. Optimise later.
 
 ## Features
+
+<p align="center">
+  <img src="docs/illustrations/blotcat-one-number.png" alt="Blotcat cranking one messy sentence into a single confirmed number" width="760">
+</p>
 
 - **One input bar.** Type `coffee 25k wallet`, send a receipt photo or share a screenshot. Simple entries are read
   by the server without any AI. Harder ones go to a model you configure. You always see a confirmation
@@ -194,6 +203,10 @@ Only what you type or attach, plus the names of your accounts and categories, is
 Without AI, simple entries still work, complex sentences open a prefilled form, and photos wait in a queue.
 
 ## Using it on a phone
+
+<p align="center">
+  <img src="docs/illustrations/readme-dark.png" alt="TillPayDay in dark mode on a phone and on a desktop" width="720">
+</p>
 
 - **Android:** open the app in Chrome, menu > Install app. It then appears in the Share menu for text, images and PDF.
 - **iPhone:** Safari > Share > Add to Home Screen. iOS does not offer a share target for web apps; Settings > API

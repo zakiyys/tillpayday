@@ -445,3 +445,10 @@ and are used exactly as specified, not redrawn.
 
 **README.** Rewritten in English with a short bloat-cat section, a Brand section that documents the logo rules,
 and the "why is there a cat" FAQ entry. `README.id.md` carries the same two additions in Indonesian.
+
+**Illustrations.** The README images are tidy now: `docs/illustrations/readme-hero.png` and `readme-dark.png` are
+composited device frames (a 390x844 phone next to a 1360x848 desktop crop, rounded, thin hairline border), so the
+page no longer stretches a full-page capture down the screen. Two Blotcat illustrations
+(`blotcat-lean.png`, `blotcat-one-number.png`) were generated with the `blotcat-illustrations` skill and pass its
+QA checklist: pure white background, thin hand-drawn line art, 3-5 short English labels, Blotcat doing the core
+action rather than decorating, no top-left title, no PPT or mascot look.

@@ -10,10 +10,15 @@ belanja berapa.
 
 English: [README.md](README.md)
 
-![Beranda di HP](docs/screenshots/home-390-light.png)
-![Dashboard di desktop](docs/screenshots/dashboard-1360-dark.png)
+<p align="center">
+  <img src="docs/illustrations/readme-hero.png" alt="TillPayDay di HP dan di desktop" width="880">
+</p>
 
 ## Kucing bloat menyapa 🐈
+
+<p align="center">
+  <img src="docs/illustrations/blotcat-lean.png" alt="Blotcat menimbang fitur di neraca dan memotong yang berat" width="760">
+</p>
 
 ```
    /\_/\     selamat datang di
@@ -38,6 +43,10 @@ sedikit menertawakan.
 3. Tidur dulu. Optimasi nanti.
 
 ## Fitur
+
+<p align="center">
+  <img src="docs/illustrations/blotcat-one-number.png" alt="Blotcat memutar satu kalimat berantakan jadi satu angka yang dikonfirmasi" width="760">
+</p>
 
 - **Satu bar input.** Ketik `kopi 25k gopay`, kirim foto struk, atau bagikan screenshot. Pola sederhana dibaca
   server tanpa AI. Yang lebih rumit dikirim ke model yang kamu setel. Kartu konfirmasi selalu muncul dulu, dan
@@ -196,6 +205,10 @@ sebagai data. Yang dikirim ke penyedia hanya yang kamu ketik atau lampirkan, dit
 Tanpa AI, pola sederhana tetap jalan, kalimat rumit membuka formulir yang sudah terisi, dan foto menunggu di antrean.
 
 ## Memasang di HP
+
+<p align="center">
+  <img src="docs/illustrations/readme-dark.png" alt="TillPayDay mode gelap di HP dan di desktop" width="720">
+</p>
 
 - **Android:** buka app di Chrome, menu > Install app. Setelah itu app muncul di menu Share untuk teks, gambar, PDF.
 - **iPhone:** Safari > Share > Add to Home Screen. iOS tidak menyediakan Share Target untuk web app; Setelan > Token
