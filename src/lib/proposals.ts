@@ -9,6 +9,8 @@ const minor = z.string().regex(/^-?\d+$/).max(30);
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const text = z.string().max(500);
 
+const receiptLine = z.object({ name: z.string().max(120), amount: minor });
+
 export const txProposal = z.object({
   kind: z.literal("tx"),
   type: z.enum(["INCOME", "EXPENSE", "TRANSFER"]),
@@ -21,6 +23,8 @@ export const txProposal = z.object({
   payee: text.nullable(),
   date,
   note: text.nullable().optional(),
+  /** Breakdown of a receipt the user only partly shares; shown on the card, computed by code. */
+  receipt: z.object({ picked: z.array(receiptLine).max(60), skipped: z.array(receiptLine).max(60), tax: minor, service: minor, discount: minor }).optional(),
   billId: id.nullable().optional(),
   originalAmount: minor.nullable().optional(),
   originalCurrency: z.string().length(3).nullable().optional(),

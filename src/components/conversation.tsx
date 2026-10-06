@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Camera, Check, Send } from "lucide-react";
+import { Camera, Check, Send, X } from "lucide-react";
 import { api, ApiError } from "@/lib/api-client";
 import { longDate, money, minorToInput, parseMajor, majorStrToMinor } from "@/lib/format";
 import { missingFields, type Proposal } from "@/lib/proposals";
@@ -39,6 +39,10 @@ export function Conversation({ opts, intl, today, base, aiState, initialText, dr
   const [text, setText] = useState("");
   const [online, setOnline] = useState(true);
   const file = useRef<HTMLInputElement>(null);
+  // A chosen photo waits here so the user can add a note (what they bought, split, tax) before sending.
+  const [pending, setPending] = useState<File | null>(null);
+  const preview = useMemo(() => (pending && pending.type.startsWith("image/") ? URL.createObjectURL(pending) : null), [pending]);
+  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
   const end = useRef<HTMLDivElement>(null);
   const started = useRef(false);
 
@@ -187,12 +191,34 @@ export function Conversation({ opts, intl, today, base, aiState, initialText, dr
         onSubmit={(e) => {
           e.preventDefault();
           const v = text.trim();
+          if (pending) {
+            const f = pending;
+            setPending(null);
+            setText("");
+            void submit(v, f);
+            return;
+          }
           if (!v) return;
           setText("");
           void submit(v);
         }}
       >
-        <InputRow value={text} onChange={setText} onPhoto={() => file.current?.click()} photoDisabled={aiState === "novision" || aiState === "off"} />
+        {pending ? (
+          <div className="mb-2 flex items-center gap-3 rounded-btn border border-line bg-surface p-2">
+            {preview ? (
+              // eslint-disable-next-line @next/next/no-img-element -- local blob preview, not optimisable
+              <img src={preview} alt="" className="size-14 shrink-0 rounded-md object-cover" />
+            ) : null}
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-[600] text-ink">{pending.name}</p>
+              <p className="text-xs text-muted">{t("photoCaption")}</p>
+            </div>
+            <button type="button" onClick={() => setPending(null)} aria-label={t("photoRemove")} className="grid size-11 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2">
+              <X size={18} strokeWidth={1.75} aria-hidden />
+            </button>
+          </div>
+        ) : null}
+        <InputRow value={text} onChange={setText} onPhoto={() => file.current?.click()} photoDisabled={aiState === "novision" || aiState === "off"} canSend={!!pending || !!text.trim()} placeholder={pending ? t("photoPlaceholder") : undefined} />
         <input
           ref={file}
           type="file"
@@ -203,8 +229,7 @@ export function Conversation({ opts, intl, today, base, aiState, initialText, dr
           onChange={(e) => {
             const f = e.target.files?.[0];
             e.target.value = "";
-            if (f) void submit(text.trim(), f);
-            setText("");
+            if (f) setPending(f);
           }}
         />
       </form>
@@ -212,7 +237,7 @@ export function Conversation({ opts, intl, today, base, aiState, initialText, dr
   );
 }
 
-export function InputRow({ value, onChange, onPhoto, photoDisabled }: { value: string; onChange: (v: string) => void; onPhoto: () => void; photoDisabled?: boolean }) {
+export function InputRow({ value, onChange, onPhoto, photoDisabled, canSend, placeholder }: { value: string; onChange: (v: string) => void; onPhoto: () => void; photoDisabled?: boolean; canSend?: boolean; placeholder?: string }) {
   const t = useTranslations("record");
   return (
     <div className="flex items-center gap-1 rounded-full border border-line bg-surface p-1 shadow-float">
@@ -221,9 +246,9 @@ export function InputRow({ value, onChange, onPhoto, photoDisabled }: { value: s
       </button>
       <label className="min-w-0 flex-1">
         <span className="sr-only">{t("inputLabel")}</span>
-        <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={t("placeholder")} className="h-11 w-full bg-transparent px-1 text-base text-ink placeholder:text-muted focus-visible:outline-none" enterKeyHint="send" autoComplete="off" />
+        <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder ?? t("placeholder")} className="h-11 w-full bg-transparent px-1 text-base text-ink placeholder:text-muted focus-visible:outline-none" enterKeyHint="send" autoComplete="off" />
       </label>
-      <button type="submit" aria-label={t("send")} className="press grid size-11 shrink-0 place-items-center rounded-full bg-accent text-on-accent disabled:opacity-50" disabled={!value.trim()}>
+      <button type="submit" aria-label={t("send")} className="press grid size-11 shrink-0 place-items-center rounded-full bg-accent text-on-accent disabled:opacity-50" disabled={canSend === undefined ? !value.trim() : !canSend}>
         <Send size={18} strokeWidth={1.75} aria-hidden />
       </button>
     </div>
@@ -353,6 +378,23 @@ function ReplyCard({
                   </div>
                   {p.interpretedThousands ? <p className="mt-1 text-xs text-muted">{t("readAs", { raw: String(Number(p.amount) / 1000), amount: fmt(p.amount, p.currency) })}</p> : null}
                   {p.originalAmount && p.originalCurrency ? <p className="num mt-1 text-xs text-muted">{fmt(p.originalAmount, p.originalCurrency)}</p> : null}
+                  {p.receipt ? (
+                    <ul className="mt-2 space-y-0.5 text-xs text-muted">
+                      {p.receipt.picked.map((l, k) => (
+                        <li key={k} className="flex justify-between gap-3">
+                          <span className="min-w-0 truncate">{l.name}</span>
+                          <span className="num shrink-0">{fmt(l.amount, p.currency)}</span>
+                        </li>
+                      ))}
+                      {([["receiptTax", p.receipt.tax], ["receiptService", p.receipt.service], ["receiptDiscount", p.receipt.discount]] as const).filter(([, v]) => BigInt(v) > 0n).map(([k, v]) => (
+                        <li key={k} className="flex justify-between gap-3">
+                          <span>{t(k)}</span>
+                          <span className="num shrink-0">{k === "receiptDiscount" ? "\u2212" : ""}{fmt(v, p.currency)}</span>
+                        </li>
+                      ))}
+                      {p.receipt.skipped.length ? <li>{t("receiptSkipped", { names: p.receipt.skipped.map((l) => l.name).join(", ") })}</li> : null}
+                    </ul>
+                  ) : null}
                 </div>
               )
             ) : p.kind === "manual" ? (

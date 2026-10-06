@@ -154,6 +154,7 @@ pertama.
 **Sehari-hari**
 
 - **Satu kolom input** untuk semuanya: teks, foto struk, screenshot yang dibagikan, atau PDF mutasi rekening.
+- **Struk plus keterangan.** Pilih foto, tulis misalnya *"aku cuma beli nasi goreng, hitung pajaknya"*, dan kartunya menampilkan item milikmu saja plus bagian pajak dan service-nya. Model cuma membaca struk; hitungannya dikerjakan aplikasi.
 - **Aman dibelanjakan hari ini**, dengan periode mengikuti gajian dan jatah harian atau mingguan.
 - **Kartu konfirmasi** sebelum menyimpan; app belajar aturan dari koreksi kamu.
 - **Tanya langsung** di kolom yang sama: "makan bulan ini habis berapa?", "kuat nggak beli HP 6 juta cicil 3 kali?"

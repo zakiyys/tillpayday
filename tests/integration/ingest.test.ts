@@ -173,6 +173,19 @@ describe("scenario 18 and 19: model output outside the schema never reaches the 
   });
 });
 
+describe("receipt with a note: only the items the user bought, plus their share of tax", () => {
+  it("builds one expense from the chosen items and shows the breakdown", async () => {
+    const s = await setup();
+    const r = await run(s.actor, "aku cuma beli nasi goreng, hitung pajaknya");
+    const t = tx(r.proposals);
+    expect(t).toHaveLength(1);
+    expect(t[0]!.amount).toBe("38500");
+    expect(t[0]!.receipt).toMatchObject({ tax: "3500", service: "0", discount: "0" });
+    expect(t[0]!.receipt!.picked.map((l) => l.name)).toEqual(["Nasi goreng"]);
+    expect(t[0]!.receipt!.skipped.map((l) => l.name)).toEqual(["Es teh", "Ayam bakar"]);
+  });
+});
+
 describe("scenario 20: institution with three accounts", () => {
   it("naming the institution picks its default account and the card shows it", async () => {
     const s = await setup();

@@ -18,6 +18,7 @@ const TABLE: Array<[RegExp, unknown[]]> = [
   [/patungan bertiga/i, [{ intent: "split_bill", total: "300000", account: "bca", people: 3, payee: "makan", category: "Makan dan minum", unknown: [] }]],
   [/kopi tadi harusnya/i, [{ intent: "correct_last", target: "kopi", field: "amount", value: "35000", unknown: [] }]],
   [/makan habis berapa/i, [{ intent: "query", function: "spend_by_category", args: { category: "makan" }, unknown: [] }]],
+  [/nasi goreng/i, [{ intent: "record_receipt", payee: "Warung Contoh", items: [{ name: "Nasi goreng", price: "35000", mine: true }, { name: "Es teh", price: "8000", mine: false }, { name: "Ayam bakar", price: "50000", mine: false }], subtotal: "93000", tax: "9300", unknown: ["account"] }]],
   [/struk/i, [{ intent: "record_expense", amount: "47500", payee: "Toko Contoh", category: "Belanja harian", unknown: ["account"] }]],
 ];
 

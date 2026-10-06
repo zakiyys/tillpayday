@@ -154,6 +154,7 @@ serves a single request.
 **Everyday**
 
 - **One input bar** for everything: text, a receipt photo, a shared screenshot or a PDF statement.
+- **Receipts with a note.** Pick a photo, add a line like *"I only bought the fried rice, add the tax"*, and the card lists just your items plus your share of tax and service. The model only reads the receipt; the app does the arithmetic.
 - **Safe to spend today**, with periods that follow your payday and a daily or weekly allowance.
 - **Confirmation cards** before anything is saved; the app learns rules from your corrections.
 - **Ask questions** in the same bar: "how much on food this month?", "can I afford a 6 million phone in 3 installments?"

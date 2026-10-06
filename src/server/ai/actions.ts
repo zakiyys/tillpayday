@@ -14,6 +14,7 @@ export const QUERY_FUNCTIONS = ["spend_by_category", "account_balance", "goal_pr
 export const actionSchema = z.discriminatedUnion("intent", [
   z.object({ intent: z.literal("record_income"), amount, account: name.nullable().optional(), category: name.nullable().optional(), payee: name.nullable().optional(), date: date.nullable().optional(), currency: z.string().length(3).nullable().optional(), unknown }),
   z.object({ intent: z.literal("record_expense"), amount, account: name.nullable().optional(), category: name.nullable().optional(), payee: name.nullable().optional(), date: date.nullable().optional(), currency: z.string().length(3).nullable().optional(), unknown }),
+  z.object({ intent: z.literal("record_receipt"), items: z.array(z.object({ name, price: amount, mine: z.boolean().default(true) })).min(1).max(60), subtotal: amount.nullable().optional(), tax: amount.nullable().optional(), service: amount.nullable().optional(), discount: amount.nullable().optional(), account: name.nullable().optional(), category: name.nullable().optional(), payee: name.nullable().optional(), date: date.nullable().optional(), currency: z.string().length(3).nullable().optional(), unknown }),
   z.object({ intent: z.literal("record_transfer"), amount, from_account: name.nullable().optional(), to: name.nullable().optional(), date: date.nullable().optional(), unknown }),
   z.object({ intent: z.literal("record_debt_or_loan"), direction: z.enum(["BORROW", "LEND", "REPAY", "REPAID"]), counterparty: name, amount, account: name.nullable().optional(), date: date.nullable().optional(), unknown }),
   z.object({ intent: z.literal("split_bill"), total: amount, account: name.nullable().optional(), people: z.number().int().min(2).max(50).nullable().optional(), counterparties: z.array(name).max(49).nullable().optional(), payee: name.nullable().optional(), category: name.nullable().optional(), date: date.nullable().optional(), unknown }),
@@ -34,7 +35,7 @@ export const actionsEnvelope = z.object({ actions: z.array(z.unknown()).max(10) 
  * a lowercase debt direction or one sent as "type"/"debt_type", "from" for the account, over-long notes in
  * "unknown". Intents and enum values that are not in the schema are still rejected.
  */
-const NUMERIC_STRING_KEYS = new Set(["amount", "total", "units", "unit_price", "fee", "balance"]);
+const NUMERIC_STRING_KEYS = new Set(["amount", "total", "units", "unit_price", "fee", "balance", "subtotal", "tax", "service", "discount"]);
 function normalizeAction(a: unknown): unknown {
   if (!a || typeof a !== "object" || Array.isArray(a)) return a;
   const o: Record<string, unknown> = { ...(a as Record<string, unknown>) };
@@ -45,6 +46,15 @@ function normalizeAction(a: unknown): unknown {
     if (o.account == null && typeof o.from === "string") o.account = o.from;
     // Money comes in on REPAID/BORROW, so "to" is then the user's account; on LEND/REPAY "to" is the person.
     if (o.account == null && typeof o.to === "string" && (o.direction === "REPAID" || o.direction === "BORROW")) o.account = o.to;
+  }
+  if (Array.isArray(o.items)) {
+    o.items = o.items.map((it) => {
+      if (!it || typeof it !== "object") return it;
+      const i: Record<string, unknown> = { ...(it as Record<string, unknown>) };
+      if (typeof i.price === "number" && Number.isFinite(i.price) && i.price >= 0) i.price = String(i.price);
+      if (typeof i.name === "string") i.name = i.name.trim().slice(0, 120);
+      return i;
+    });
   }
   if (Array.isArray(o.unknown)) o.unknown = o.unknown.filter((x) => typeof x === "string").slice(0, 10).map((x) => (x as string).slice(0, 40));
   return o;
@@ -71,10 +81,12 @@ export function validateActions(raw: unknown): { actions: Action[]; dropped: num
 export function actionJsonSchema() {
   const str = { type: ["string", "null"] };
   const props: Record<string, unknown> = {
-    intent: { type: "string", enum: ["record_income", "record_expense", "record_transfer", "record_debt_or_loan", "split_bill", "asset_buy", "asset_sell", "pay_bill", "balance_check", "correct_last", "query", "clarify"] },
+    intent: { type: "string", enum: ["record_income", "record_expense", "record_receipt", "record_transfer", "record_debt_or_loan", "split_bill", "asset_buy", "asset_sell", "pay_bill", "balance_check", "correct_last", "query", "clarify"] },
     amount: str, total: str, account: str, from_account: str, to: str, category: str, payee: str, date: str, currency: str,
     direction: { type: ["string", "null"], enum: ["BORROW", "LEND", "REPAY", "REPAID", null] },
     counterparty: str, people: { type: ["integer", "null"] }, counterparties: { type: ["array", "null"], items: { type: "string" } },
+    subtotal: str, tax: str, service: str, discount: str,
+    items: { type: ["array", "null"], items: { type: "object", additionalProperties: false, properties: { name: { type: "string" }, price: { type: "string" }, mine: { type: ["boolean", "null"] } }, required: ["name", "price", "mine"] } },
     asset: str, units: str, unit_price: str, fee: str, bill: str, balance: str, target: str, field: str, value: str,
     function: { type: ["string", "null"], enum: [...QUERY_FUNCTIONS, null] },
     args: { type: ["object", "null"], additionalProperties: false, properties: { category: str, account: str, goal: str, from: str, to: str, days: { type: ["integer", "null"] }, amount: str, months: { type: ["integer", "null"] } }, required: ["category", "account", "goal", "from", "to", "days", "amount", "months"] },

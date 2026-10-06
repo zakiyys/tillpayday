@@ -2,6 +2,7 @@ import { z } from "zod";
 import { type ISODate, addDays, todayIn } from "@/domain/dates";
 import { hintCategory, localParse, matchAccount, parseAmountToken, parseDate, type AliasTarget } from "@/domain/parse";
 import { majorToMinor, Decimal } from "@/domain/money";
+import { receiptShare } from "@/domain/receipt";
 import { computeAllowance } from "@/domain/allowance";
 import { estimateReachDate, goalTotal } from "@/domain/goals";
 import { projectBalance, type Flow } from "@/domain/projection";
@@ -168,11 +169,12 @@ async function txFromSimple(ctx: IngestContext, e: { kind: "INCOME" | "EXPENSE";
 }
 
 const SYSTEM = (ctx: IngestContext) => `You convert personal finance notes into JSON actions. Today is ${ctx.today}. Base currency ${ctx.base}.
-Return ONLY {"actions":[...]} using these intents: record_income, record_expense, record_transfer, record_debt_or_loan, split_bill, asset_buy, asset_sell, pay_bill, balance_check, correct_last, query, clarify.
+Return ONLY {"actions":[...]} using these intents: record_income, record_expense, record_receipt, record_transfer, record_debt_or_loan, split_bill, asset_buy, asset_sell, pay_bill, balance_check, correct_last, query, clarify.
 Amounts are plain decimal strings in major units (25000, not 25k; "2,3jt" = 2300000). Dates are YYYY-MM-DD; convert relative dates.
 Use account names exactly as the user wrote them; do not invent accounts. List fields you could not determine in "unknown".
 For "trf ke <name>" where <name> is not one of the user's accounts, use record_transfer with "to" set to that name.
 Money lent to or borrowed from a person ("pinjem", "pinjam", "minjem", "utang", "hutang", "ngutang", "balikin") is record_debt_or_loan with "counterparty" set to that person and "account" set to the user's account. "direction" is exactly one of: LEND (the user gives money someone borrows), BORROW (the user receives a loan), REPAY (the user pays a debt back), REPAID (someone pays the user back). This wins over record_transfer.
+For a receipt or bill with several lines use record_receipt: list every line item as {name, price, mine}. "mine" is true only for the items the user says they bought or shared in, and true for all items when the user says nothing. Copy subtotal, tax, service and discount exactly as printed and omit what is not printed. Never compute shares or totals yourself; the app does.
 For questions about spending, balances, goals, projections or simulations use intent "query" with one of the allowed functions. Never state numbers yourself.
 User accounts: ${ctx.accounts.map((a) => a.name).join(", ") || "none"}.
 Categories: ${ctx.categories.map((c) => c.name).join(", ")}.
@@ -191,6 +193,24 @@ async function resolveActions(ctx: IngestContext, actions: Action[], rawText: st
         const plain = parseAmountToken(a.amount, { decimalComma: false, plainThousands: false });
         if (!plain) break;
         await txFromSimple(ctx, { kind: a.intent === "record_income" ? "INCOME" : "EXPENSE", description: a.payee ?? a.category ?? rawText.slice(0, 60), major: plain.major, currency: a.currency ?? null, accountId: r.id, ambiguous: r.ambiguous, date, interpretedThousands: false, categoryName: a.category }, idx, out);
+        break;
+      }
+      case "record_receipt": {
+        const r = resolveAccount(ctx, a.account);
+        const cur = a.currency ?? accCurrency(ctx, r.id) ?? ctx.tripCurrency ?? ctx.base;
+        const exp = ctx.exp(cur);
+        const minorOf = (v?: string | null) => (v ? majorToMinor(v, exp) : 0n);
+        const s = receiptShare(a.items.map((l) => ({ name: l.name, price: majorToMinor(l.price, exp), mine: l.mine })), { subtotal: a.subtotal ? majorToMinor(a.subtotal, exp) : null, tax: minorOf(a.tax), service: minorOf(a.service), discount: minorOf(a.discount) });
+        if (s.total <= 0n) break;
+        const major = new Decimal(s.total.toString()).div(new Decimal(10).pow(exp)).toFixed(exp);
+        const before = out.length;
+        await txFromSimple(ctx, { kind: "EXPENSE", description: a.payee ?? s.picked[0]?.name ?? rawText.slice(0, 60), major, currency: a.currency ?? null, accountId: r.id, ambiguous: r.ambiguous, date, interpretedThousands: false, categoryName: a.category }, idx, out);
+        const p = out[before];
+        if (p?.kind === "tx") {
+          const line = (l: { name: string; price: bigint }) => ({ name: l.name, amount: l.price.toString() });
+          p.receipt = { picked: s.picked.map(line), skipped: s.skipped.map(line), tax: s.tax.toString(), service: s.service.toString(), discount: s.discount.toString() };
+          p.note = `${s.picked.map((l) => l.name).join(", ")}${s.tax > 0n ? ` + ${T(ctx, "pajak", "tax")}` : ""}${s.service > 0n ? ` + service` : ""}`.slice(0, 500);
+        }
         break;
       }
       case "record_transfer": {
