@@ -91,11 +91,11 @@ export default async function TransactionsPage({ searchParams }: { searchParams:
             </select>
           </label>
         ) : null}
-        <label>
+        <label className="min-w-0">
           <span className="text-xs text-muted">{t("fields.fromDate")}</span>
           <input type="date" name="from" defaultValue={sp.from ?? ""} className={sel} />
         </label>
-        <label>
+        <label className="min-w-0">
           <span className="text-xs text-muted">{t("fields.toDate")}</span>
           <input type="date" name="to" defaultValue={sp.to ?? ""} className={sel} />
         </label>

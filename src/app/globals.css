@@ -150,6 +150,14 @@ button, a, input, select, textarea {
   position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
 }
 .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+/* Mobile browsers give date inputs an intrinsic minimum width, so in a narrow grid cell they overflow. */
+input[type="date"], input[type="datetime-local"], input[type="month"], input[type="time"] {
+  min-width: 0;
+  max-width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input::-webkit-date-and-time-value { text-align: left; min-height: 1.5em; }
 @media print {
   .no-print { display: none !important; }
   html, body { background: #fff; color: #000; }
