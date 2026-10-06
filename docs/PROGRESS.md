@@ -462,6 +462,23 @@ at 24 px or less uses the small form. `AppIcon` was passing the *inner* size (72
 icon files were always correct; only the React tile was wrong. `LogoMark` now takes an explicit
 `variant` and `AppIcon` pins it to the main form.
 
+**Public HTTPS hostname.** The install was first reachable only on loopback, then the owner asked for a
+public address. It is now published through the owner's existing Cloudflare Tunnel, added the sanctioned
+way: one entry in the server's service ledger (`services.yaml`, name `tillpayday`, port 3070), then the
+ledger's `apply.sh`, which renders the tunnel config, validates it, backs it up, restarts cloudflared and
+verifies every hostname, rolling back automatically if any stop answering. All 23 other hostnames stayed
+up (the four showing 502 or 000 are the four the ledger already marked `status: down`). The DNS record is
+a proxied CNAME to the tunnel, matching the pattern of the hostnames already in place. `cloudflared tunnel
+route dns` could not be used: the server's `cert.pem` holds only an Argo tunnel token, not an origin
+certificate, so the record was created through the Cloudflare API instead. `PUBLIC_URL` in `.env` was then
+switched to the HTTPS hostname and app plus worker recreated, so cookies, passkey options, invite links and
+push use the real origin. Public checks: page 200 in about a second, setup page 200, brand assets 200,
+HSTS with CSP and frame-deny present, and a wrong setup token still refused with 403 from the public origin.
+
+**First owner account.** The owner completed the setup page over the public hostname, which closed
+registration automatically (`/setup` now redirects to the login page). The install has one OWNER member and
+an unfinished household, so onboarding is the next step for the owner.
+
 **README.** Rewritten in English with a short bloat-cat section, a Brand section that documents the logo rules,
 and the "why is there a cat" FAQ entry. `README.id.md` carries the same two additions in Indonesian.
 
