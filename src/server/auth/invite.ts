@@ -56,6 +56,7 @@ export async function removeMember(actor: Actor, memberId: string) {
   await prisma.$transaction([
     prisma.member.update({ where: { id: m.id }, data: { deletedAt: new Date(), email: `removed-${m.id}@example.invalid` } }),
     prisma.session.updateMany({ where: { memberId: m.id }, data: { revokedAt: new Date() } }),
+    prisma.trustedDevice.updateMany({ where: { memberId: m.id }, data: { revokedAt: new Date() } }),
     prisma.apiToken.updateMany({ where: { memberId: m.id }, data: { revokedAt: new Date() } }),
     prisma.pushSubscription.deleteMany({ where: { memberId: m.id } }),
     prisma.passkey.deleteMany({ where: { memberId: m.id } }),

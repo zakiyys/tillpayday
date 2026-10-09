@@ -14,8 +14,11 @@ export function deviceLabelFrom(ua: string | null): string {
   return `${br} on ${os}`;
 }
 
-/** Creates a DB session and sets the cookie. Notifies the member when the device is new. */
-export async function createSession(memberId: string) {
+/**
+ * Creates a DB session and sets the cookie. Notifies the member when the device is new. A password or passkey
+ * sign-in also counts as a fresh confirmation for sensitive actions; a PIN sign-in does not (`reauth: false`).
+ */
+export async function createSession(memberId: string, opts: { reauth?: boolean } = {}) {
   const h = await headers();
   const ua = h.get("user-agent");
   const label = deviceLabelFrom(ua);
@@ -24,7 +27,7 @@ export async function createSession(memberId: string) {
   const token = randomToken();
   const expiresAt = new Date(Date.now() + SESSION_DAYS * 86_400_000);
   await prisma.session.create({
-    data: { id: sha256(token), memberId, deviceLabel: label, deviceHash, expiresAt, reauthAt: new Date() },
+    data: { id: sha256(token), memberId, deviceLabel: label, deviceHash, expiresAt, reauthAt: opts.reauth === false ? null : new Date() },
   });
   const jar = await cookies();
   jar.set(SESSION_COOKIE, token, {
@@ -50,8 +53,15 @@ export interface SessionInfo {
 
 export async function readSession(token: string | undefined): Promise<SessionInfo | null> {
   if (!token) return null;
-  const s = await prisma.session.findUnique({ where: { id: sha256(token) }, include: { member: true } });
+  const s = await prisma.session.findUnique({ where: { id: sha256(token) }, include: { member: { include: { credential: { select: { lockAfterMinutes: true, pinHash: true } } } } } });
   if (!s || s.revokedAt || s.expiresAt < new Date() || s.member.deletedAt) return null;
+  // Auto-lock: a session idle longer than the member's limit ends, and the next visit asks for the PIN.
+  // lastSeenAt is refreshed every 5 minutes, so the shortest limit offered is 15.
+  const lock = s.member.credential?.pinHash ? s.member.credential.lockAfterMinutes : null;
+  if (lock && Date.now() - s.lastSeenAt.getTime() > lock * 60_000) {
+    await prisma.session.update({ where: { id: s.id }, data: { revokedAt: new Date() } });
+    return null;
+  }
   if (Date.now() - s.lastSeenAt.getTime() > 5 * 60_000) {
     await prisma.session.update({ where: { id: s.id }, data: { lastSeenAt: new Date() } });
   }

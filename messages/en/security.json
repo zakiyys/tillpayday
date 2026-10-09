@@ -1,6 +1,6 @@
 {
   "title": "Sign-in and devices",
-  "subtitle": "Passkeys, backup sign-in and active sessions.",
+  "subtitle": "Passkeys, PIN, backup sign-in and active sessions.",
   "passkeys": "Passkeys",
   "noPasskeys": "No passkey yet. Add one to sign in without a password.",
   "addPasskey": "Add passkey",

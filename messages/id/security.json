@@ -1,6 +1,6 @@
 {
   "title": "Masuk dan perangkat",
-  "subtitle": "Passkey, cara masuk cadangan, dan sesi aktif.",
+  "subtitle": "Passkey, PIN, cara masuk cadangan, dan sesi aktif.",
   "passkeys": "Passkey",
   "noPasskeys": "Belum ada passkey. Tambahkan supaya bisa masuk tanpa password.",
   "addPasskey": "Tambah passkey",

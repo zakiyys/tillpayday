@@ -183,6 +183,7 @@ model Member {
   credential        Credential?
   passkeys          Passkey[]
   sessions          Session[]
+  trustedDevices    TrustedDevice[]
   apiTokens         ApiToken[]
   notifications     Notification[]
   pushSubscriptions PushSubscription[]
@@ -199,6 +200,11 @@ model Credential {
   passwordHash       String?
   totpSecretEnc      String?
   totpEnabledAt      DateTime?
+  /// Argon2 hash of the quick-unlock PIN; null when no PIN is set.
+  pinHash            String?
+  pinSetAt           DateTime?
+  /// Sign out sessions idle for this many minutes, so the next visit asks for the PIN. Null: never.
+  lockAfterMinutes   Int?
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 }
@@ -243,6 +249,22 @@ model Session {
   revokedAt   DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@index([memberId])
+}
+
+/// A browser where the member may sign in with the PIN instead of the password. The id is the SHA-256 of the
+/// random token kept in the httpOnly "dev" cookie on that device.
+model TrustedDevice {
+  id          String    @id
+  memberId    String
+  member      Member    @relation(fields: [memberId], references: [id])
+  label       String
+  failedPins  Int       @default(0)
+  lastUsedAt  DateTime  @default(now())
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
 
   @@index([memberId])
 }

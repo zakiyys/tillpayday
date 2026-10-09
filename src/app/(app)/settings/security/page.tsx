@@ -3,6 +3,7 @@ import { prisma } from "@/server/db";
 import { requirePage } from "@/server/context";
 import { PageHeader } from "@/components/ui";
 import { SecuritySettings } from "@/components/settings/security";
+import { PinSettings } from "@/components/settings/pin";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +18,9 @@ export default async function SecurityPage() {
   return (
     <>
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
+      <div className="mb-2 max-w-2xl">
+        <PinSettings intl={ctx.intl} timeZone={ctx.household.timezone} />
+      </div>
       <SecuritySettings
         intl={ctx.intl}
         timeZone={ctx.household.timezone}

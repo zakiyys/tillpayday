@@ -167,3 +167,12 @@ input::-webkit-date-and-time-value { text-align: left; min-height: 1.5em; }
   .no-print { display: none !important; }
   html, body { background: #fff; color: #000; }
 }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-[shake"] { animation: none !important; }
+}
