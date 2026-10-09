@@ -67,5 +67,6 @@
   },
   "glance": "At a glance",
   "recentEmpty": "Type your first expense in the bar below, for example \"coffee 25k\".",
-  "recordIncome": "Record salary"
+  "recordIncome": "Record salary",
+  "cupsTitle": "Daily share this period"
 }

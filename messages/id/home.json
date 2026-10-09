@@ -67,5 +67,6 @@
   },
   "glance": "Sekilas",
   "recentEmpty": "Ketik pengeluaran pertamamu di kolom di bawah, misalnya \"kopi 25k\".",
-  "recordIncome": "Catat gaji"
+  "recordIncome": "Catat gaji",
+  "cupsTitle": "Jatah per hari di periode ini"
 }

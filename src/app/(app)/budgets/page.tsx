@@ -2,7 +2,8 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { requirePage } from "@/server/context";
 import { actorFrom } from "@/server/ledger/scope";
-import { budgetView, ensurePeriods } from "@/server/ledger/periods";
+import { budgetView, ensurePeriods, periodSummary } from "@/server/ledger/periods";
+import { DayCups } from "@/components/day-cups";
 import { prisma } from "@/server/db";
 import { budgetRatio, budgetStatus } from "@/domain/budget";
 import { shortDate } from "@/lib/format";
@@ -15,6 +16,7 @@ export default async function BudgetsPage({ searchParams }: { searchParams: Prom
   const ctx = await requirePage();
   const sp = await searchParams;
   const t = await getTranslations("budgets");
+  const tHome = await getTranslations("home");
   const actor = actorFrom(ctx);
   const periods = await ensurePeriods(prisma, ctx.householdId, ctx.today);
   const curIdx = periods.length - 1;
@@ -35,6 +37,8 @@ export default async function BudgetsPage({ searchParams }: { searchParams: Prom
   const cmp = (x: bigint, y: bigint) => (x > y ? -1 : x < y ? 1 : 0);
   data.sort((a, b) => Number(!!b.limit) - Number(!!a.limit) || cmp(BigInt(a.spent), BigInt(b.spent)));
   const history = periods.slice(0, curIdx).reverse().slice(0, 6);
+  // The open period shows its day cups above the categories: the same daily view as Home, next to the limits.
+  const summary = p.open ? await periodSummary(actor, ctx.today) : null;
   return (
     <>
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
@@ -42,6 +46,12 @@ export default async function BudgetsPage({ searchParams }: { searchParams: Prom
         {t("period", { from: shortDate(p.start, ctx.intl), to: shortDate(p.end, ctx.intl) })}
         {p.open ? <StatusPill tone="ok">{t("current")}</StatusPill> : null}
       </p>
+      {summary && summary.cups.length ? (
+        <section aria-label={tHome("cupsTitle")} className="on-hero glaze mb-4 rounded-card p-4 text-on-hero md:p-5">
+          <p className="mb-3 text-sm font-[650]">{tHome("cupsTitle")}</p>
+          <DayCups cups={summary.cups.map((c) => ({ date: c.date, share: c.share.toString(), spent: c.spent.toString(), when: c.when }))} currency={ctx.household.baseCurrency} intl={ctx.intl} />
+        </section>
+      ) : null}
       {data.length ? (
         <BudgetEditor periodId={p.id} rows={data} currency={ctx.household.baseCurrency} exp={cur?.exponent ?? 0} intl={ctx.intl} editable={p.open} />
       ) : (
