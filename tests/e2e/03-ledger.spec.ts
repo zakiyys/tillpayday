@@ -20,7 +20,7 @@ test("accounts: add, record, delete with undo, check balance", async ({ page }) 
 
   await page.getByRole("button", { name: "Tambah akun" }).first().click();
   await dlg.getByLabel("Nama", { exact: true }).fill("Dompet Digital");
-  await dlg.getByLabel("Jenis").selectOption("EWALLET");
+  await dlg.getByRole("radio", { name: "E-wallet" }).check({ force: true });
   await dlg.getByRole("button", { name: "Simpan" }).click();
   await expect(page.getByRole("link", { name: /Dompet Digital/ })).toBeVisible();
 

@@ -31,7 +31,7 @@ test("debts, split, investments, trips and currencies pages", async ({ page }) =
   await page.getByRole("button", { name: "Tambah akun" }).first().click();
   const a = page.getByRole("dialog", { name: "Tambah akun" });
   await a.getByLabel("Nama", { exact: true }).fill("Sekuritas Contoh");
-  await a.getByLabel("Jenis").selectOption("INVESTMENT");
+  await a.getByRole("radio", { name: "Investasi" }).check({ force: true });
   await a.getByLabel("Saldo pada tanggal mulai").fill("10.000.000");
   await a.getByRole("button", { name: "Simpan" }).click();
   await expect(page.getByRole("link", { name: /Sekuritas Contoh/ })).toBeVisible();

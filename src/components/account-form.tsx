@@ -6,7 +6,10 @@ import { useTranslations } from "next-intl";
 import { api } from "@/lib/api-client";
 import { Checkbox, Select, TextInput, useErrorText } from "./form";
 import { MoneyInput } from "./money-input";
-import { btn, Notice } from "./ui";
+import { btn, cx, Notice } from "./ui";
+import { ChevronDown } from "lucide-react";
+import { AccountLogo } from "./account-logo";
+import { InstitutionPicker } from "./institution-picker";
 import { currencyLabel } from "@/lib/currency";
 
 export interface CurrencyOpt {
@@ -33,6 +36,7 @@ export interface AccountFormValue {
   loanTerms: { principal: string; annualRatePct: string; months: number; startDate: string } | null;
 }
 
+const TYPES = ["BANK", "EWALLET", "CASH", "CREDIT_CARD", "PAYLATER", "INVESTMENT", "LOAN", "RECEIVABLE", "PERSONAL_DEBT"] as const;
 const ASSET = ["BANK", "EWALLET", "CASH", "INVESTMENT", "RECEIVABLE"];
 const CARD = ["CREDIT_CARD", "PAYLATER"];
 
@@ -56,6 +60,7 @@ export function AccountForm({
   const errText = useErrorText("accounts");
   const router = useRouter();
   const [type, setType] = useState(initial?.type ?? "BANK");
+  const [name, setName] = useState(initial?.name ?? "");
   const [currency, setCurrency] = useState(initial?.currency ?? baseCurrency);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -68,7 +73,7 @@ export function AccountForm({
     const f = new FormData(e.currentTarget);
     const num = (k: string) => (f.get(k) ? Number(f.get(k)) : null);
     const body: Record<string, unknown> = {
-      name: f.get("name"),
+      name: name.trim(),
       type,
       institution: f.get("institution") || null,
       last4: f.get("last4") || null,
@@ -101,25 +106,29 @@ export function AccountForm({
   }
 
   return (
-    <form onSubmit={submit} className="space-y-4">
+    <form onSubmit={submit} className="space-y-5">
       {error ? <Notice tone="warn">{error}</Notice> : null}
-      <TextInput label={t("fields.name")} name="name" defaultValue={initial?.name} required maxLength={80} />
-      <div className="grid grid-cols-2 gap-3">
-        <Select label={t("fields.type")} name="type" value={type} onChange={(e) => setType(e.target.value)}>
-          {["BANK", "EWALLET", "CASH", "INVESTMENT", "CREDIT_CARD", "PAYLATER", "LOAN", "RECEIVABLE", "PERSONAL_DEBT"].map((k) => (
-            <option key={k} value={k}>
+      <fieldset>
+        <legend className="mb-2 text-sm font-[550] text-ink">{t("fields.type")}</legend>
+        <div className="grid grid-cols-3 gap-1.5">
+          {TYPES.map((k) => (
+            <label
+              key={k}
+              className={cx(
+                "press flex min-h-[4.25rem] cursor-pointer flex-col items-center justify-center gap-1 rounded-btn border px-1 py-2 text-center text-xs font-[600] leading-tight",
+                type === k ? "border-accent bg-accent-soft text-on-accent-soft" : "border-line bg-surface text-ink hover:border-line-strong",
+              )}
+            >
+              <input type="radio" name="type" value={k} checked={type === k} onChange={() => setType(k)} className="sr-only" />
+              <AccountLogo type={k} size={26} className="!bg-transparent" />
               {t(`type.${k}`)}
-            </option>
+            </label>
           ))}
-        </Select>
-        <Select label={t("fields.currency")} name="currency" value={currency} onChange={(e) => setCurrency(e.target.value)}>
-          {currencies.map((c) => (
-            <option key={c.code} value={c.code}>
-              {currencyLabel(c.code)}
-            </option>
-          ))}
-        </Select>
-      </div>
+        </div>
+        <p className="mt-2 text-xs text-muted">{t(`typeHelp.${type}`)}</p>
+      </fieldset>
+      <InstitutionPicker key={type} type={type} defaultValue={initial?.institution} onPick={(i) => setName((n) => (n.trim() ? n : i.name))} />
+      <TextInput label={t("fields.name")} help={t("fields.nameHelp")} name="name" value={name} onChange={(e) => setName(e.target.value)} required maxLength={80} />
       {["BANK", "EWALLET", "CASH"].includes(type) ? (
         <Select label={t("role.label")} name="role" defaultValue={initial?.role ?? "DAILY"} help={t("role.help")}>
           {["DAILY", "SAVINGS", "NONE"].map((r) => (
@@ -129,12 +138,6 @@ export function AccountForm({
           ))}
         </Select>
       ) : null}
-      <div className="grid grid-cols-2 gap-3">
-        <TextInput label={t("fields.institution")} name="institution" defaultValue={initial?.institution ?? ""} maxLength={80} />
-        <TextInput label={t("fields.last4")} name="last4" defaultValue={initial?.last4 ?? ""} inputMode="numeric" pattern="\d{4}" maxLength={4} />
-      </div>
-      <TextInput label={t("fields.aliases")} help={t("fields.aliasesHelp")} name="aliases" defaultValue={initial?.aliases.join(", ") ?? ""} />
-      <Checkbox label={t("fields.isDefault")} help={t("fields.isDefaultHelp")} name="isDefault" defaultChecked={initial?.isDefaultForInstitution} />
       <div className="grid grid-cols-2 gap-3">
         <MoneyInput key={currency} label={isDebt ? t("fields.openingDebt") : t("fields.opening")} name="opening" exp={exp} currency={currency} defaultMinor={opening} allowNegative={!isDebt} />
         <TextInput label={t("fields.openingDate")} name="openingDate" type="date" defaultValue={initial?.openingDate ?? today} required />
@@ -154,6 +157,26 @@ export function AccountForm({
           <TextInput label={t("fields.loanStart")} name="loanStart" type="date" defaultValue={initial?.loanTerms?.startDate ?? today} />
         </div>
       ) : null}
+      <details className="group rounded-btn border border-line bg-surface-2/60 px-3 py-2" open={!!initial && (initial.currency !== baseCurrency || initial.aliases.length > 0 || !!initial.last4)}>
+        <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between text-sm font-[600] text-ink">
+          {t("fields.more")}
+          <ChevronDown size={18} strokeWidth={1.75} aria-hidden className="text-muted transition-transform group-open:rotate-180" />
+        </summary>
+        <div className="space-y-4 pb-2 pt-2">
+          <div className="grid grid-cols-2 gap-3">
+            <Select label={t("fields.currency")} name="currency" value={currency} onChange={(e) => setCurrency(e.target.value)}>
+              {currencies.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {currencyLabel(c.code)}
+                </option>
+              ))}
+            </Select>
+            <TextInput label={t("fields.last4")} name="last4" defaultValue={initial?.last4 ?? ""} inputMode="numeric" pattern="\d{4}" maxLength={4} />
+          </div>
+          <TextInput label={t("fields.aliases")} help={t("fields.aliasesHelp")} name="aliases" defaultValue={initial?.aliases.join(", ") ?? ""} />
+          <Checkbox label={t("fields.isDefault")} help={t("fields.isDefaultHelp")} name="isDefault" defaultChecked={initial?.isDefaultForInstitution} />
+        </div>
+      </details>
       {showVisibility ? (
         <Select label={t("fields.visibility")} name="visibility" defaultValue={initial?.visibility ?? "SHARED"}>
           <option value="SHARED">{t("fields.SHARED")}</option>

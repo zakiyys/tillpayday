@@ -8,6 +8,7 @@ import { baseValuer } from "@/server/ledger/valuation";
 import { formOptions } from "@/server/ui-data";
 import { Amount, Card, EmptyState, PageHeader, SectionTitle, cx } from "@/components/ui";
 import { AddAccountButton } from "@/components/account-buttons";
+import { AccountLogo } from "@/components/account-logo";
 import { dateTime, money } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -54,6 +55,7 @@ export default async function AccountsPage({ searchParams }: { searchParams: Pro
                     {group.map((a) => (
                       <li key={a.id}>
                         <Link href={`/accounts/${a.id}`} className="flex min-h-16 items-center gap-3 px-4 py-3 hover:bg-surface-2">
+                          <AccountLogo type={a.type} institution={a.institution} name={a.name} />
                           <div className="min-w-0 flex-1">
                             <p className={cx("truncate font-[600] text-ink", a.archivedAt && "text-muted")}>
                               {a.name}

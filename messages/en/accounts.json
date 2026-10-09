@@ -58,7 +58,11 @@
     "loanPrincipal": "Loan amount",
     "loanRate": "Interest per year (%)",
     "loanMonths": "Term (months)",
-    "loanStart": "First installment date"
+    "loanStart": "First installment date",
+    "nameHelp": "A name you recognise, such as \"BCA Salary\" or \"GoPay\".",
+    "institutionHelp": "Pick from the list to show its logo, or type your own.",
+    "institutionPick": "Pick a bank or provider",
+    "more": "More settings (currency, last 4 digits, other names)"
   },
   "reconciled": "Checked {when}",
   "neverReconciled": "Never checked",
@@ -88,5 +92,16 @@
   "account_has_transactions": "This account has transactions. Archive it instead.",
   "currency_locked": "The currency cannot change once the account has transactions.",
   "unknown_currency": "Add this currency in Settings first.",
-  "large_difference": "The difference is too large for a category. Adjust instead."
+  "large_difference": "The difference is too large for a category. Adjust instead.",
+  "typeHelp": {
+    "BANK": "A savings or current account at a bank.",
+    "EWALLET": "A digital wallet such as GoPay, OVO, DANA or PayPal.",
+    "CASH": "Cash in your wallet or at home.",
+    "CREDIT_CARD": "Spend now, pay when the card statement arrives.",
+    "PAYLATER": "Buy-now-pay-later from shopping and wallet apps.",
+    "INVESTMENT": "A brokerage, fund, gold or crypto account.",
+    "LOAN": "A loan with principal and interest, such as a mortgage.",
+    "RECEIVABLE": "Money someone else borrowed from you.",
+    "PERSONAL_DEBT": "Money you borrowed from friends or family."
+  }
 }

@@ -58,7 +58,11 @@
     "loanPrincipal": "Pokok pinjaman",
     "loanRate": "Bunga per tahun (%)",
     "loanMonths": "Tenor (bulan)",
-    "loanStart": "Tanggal cicilan pertama"
+    "loanStart": "Tanggal cicilan pertama",
+    "nameHelp": "Nama yang kamu kenali, misalnya \"BCA Gaji\" atau \"GoPay\".",
+    "institutionHelp": "Pilih dari daftar supaya logonya muncul, atau ketik sendiri.",
+    "institutionPick": "Pilih bank atau penyedia",
+    "more": "Pengaturan lain (mata uang, 4 digit, nama lain)"
   },
   "reconciled": "Dicocokkan {when}",
   "neverReconciled": "Belum pernah dicocokkan",
@@ -88,5 +92,16 @@
   "account_has_transactions": "Akun ini punya transaksi. Arsipkan saja.",
   "currency_locked": "Mata uang tidak bisa diubah setelah akun punya transaksi.",
   "unknown_currency": "Tambahkan mata uang ini di Setelan dulu.",
-  "large_difference": "Selisihnya terlalu besar untuk kategori. Pakai penyesuaian."
+  "large_difference": "Selisihnya terlalu besar untuk kategori. Pakai penyesuaian.",
+  "typeHelp": {
+    "BANK": "Rekening tabungan atau giro di bank.",
+    "EWALLET": "Dompet digital seperti GoPay, OVO, DANA, ShopeePay.",
+    "CASH": "Uang tunai di dompet atau di rumah.",
+    "CREDIT_CARD": "Belanja sekarang, bayar saat tagihan kartu datang.",
+    "PAYLATER": "Cicilan atau bayar nanti dari aplikasi belanja dan e-wallet.",
+    "INVESTMENT": "Rekening saham, reksa dana, emas, atau kripto.",
+    "LOAN": "Pinjaman dengan pokok dan bunga, misalnya KPR atau KTA.",
+    "RECEIVABLE": "Uang yang dipinjam orang lain darimu.",
+    "PERSONAL_DEBT": "Uang yang kamu pinjam dari teman atau keluarga."
+  }
 }
