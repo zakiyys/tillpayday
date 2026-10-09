@@ -8,7 +8,7 @@ import { money } from "@/lib/format";
 import type { Draft, Topic, TopicState } from "@/server/onboarding/draft";
 import { Checkbox, Select, TextInput, useErrorText } from "./form";
 import { MoneyInput } from "./money-input";
-import { btn, Card, Notice, cx } from "./ui";
+import { btn, Card, Notice, cx, Progress } from "./ui";
 import { currencyLabel } from "@/lib/currency";
 
 const TOPICS: Topic[] = ["basics", "payday", "accounts", "wallets", "debts", "assets", "bills", "goals"];
@@ -98,8 +98,11 @@ export function Wizard({ initial, topics: initialTopics, currencies, assetTypes,
         {topic ? (
           <>
             <div>
-              <p className="text-xs font-[600] uppercase tracking-[0.04em] text-muted">{t("progress", { n: step + 1, total: TOPICS.length })}</p>
-              <h2 className="mt-1 text-xl font-[650] text-ink">{t(`topics.${topic}`)}</h2>
+              <h2 className="text-xl font-[700] tracking-[-0.01em] text-ink">{t(`topics.${topic}`)}</h2>
+              <div className="mt-2 flex items-center gap-3">
+                <Progress ratio={(step + 1) / TOPICS.length} label={t("progress", { n: step + 1, total: TOPICS.length })} />
+                <p className="num shrink-0 text-xs font-[650] text-muted">{t("progress", { n: step + 1, total: TOPICS.length })}</p>
+              </div>
             </div>
 
             {topic === "basics" ? (

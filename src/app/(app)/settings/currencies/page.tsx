@@ -1,6 +1,4 @@
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { ChevronLeft } from "lucide-react";
 import { requirePage } from "@/server/context";
 import { prisma } from "@/server/db";
 import { isoOf } from "@/server/ledger/fx";
@@ -19,11 +17,7 @@ export default async function CurrenciesPage() {
   ]);
   return (
     <>
-      <Link href="/settings" className="mb-2 inline-flex min-h-11 items-center gap-1 text-sm font-[600] text-muted hover:text-ink">
-        <ChevronLeft size={18} strokeWidth={1.75} aria-hidden />
-        {t("title")}
-      </Link>
-      <PageHeader title={t("currencies.title")} actions={<RateButton currencies={currencies.map((c) => c.code)} base={ctx.household.baseCurrency} today={ctx.today} />} />
+      <PageHeader back={{ href: "/settings", label: t("title") }} title={t("currencies.title")} actions={<RateButton currencies={currencies.map((c) => c.code)} base={ctx.household.baseCurrency} today={ctx.today} />} />
       <div className="max-w-3xl">
         <SectionTitle>{t("currencies.rates")}</SectionTitle>
         <p className="mb-2 text-sm text-muted">

@@ -4,7 +4,7 @@
     "household": "Household dan anggota",
     "householdBody": "Nama, mata uang dasar, zona waktu, gajian, jatah, anggota, dan undangan.",
     "security": "Masuk dan perangkat",
-    "securityBody": "Passkey, password, verifikasi dua langkah, sesi.",
+    "securityBody": "PIN, passkey, password, verifikasi dua langkah, dan perangkat yang masuk.",
     "tokens": "Token API",
     "tokensBody": "Token untuk Shortcut iPhone dan endpoint ringkas.",
     "ai": "AI",
@@ -42,5 +42,10 @@
     "exponent_locked": "Jumlah desimal tidak bisa diubah selama ada akun yang memakai mata uang ini.",
     "same_currency": "Pilih dua mata uang yang berbeda.",
     "rate_positive": "Kurs harus lebih dari nol."
-  }
+  },
+  "subtitle": "Semua pengaturan household dan perangkat ini.",
+  "groupHousehold": "Household",
+  "groupSecurity": "Keamanan dan tampilan",
+  "groupConnect": "Sambungan",
+  "groupData": "Data"
 }

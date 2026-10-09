@@ -23,14 +23,15 @@ export function Dialog({ open, onClose, title, children, wide = false }: { open:
       onClose={onClose}
       aria-label={title}
       className={
-        "m-0 mt-auto max-h-[92dvh] w-full max-w-none overflow-y-auto rounded-t-[20px] border border-line bg-surface p-0 text-ink shadow-float backdrop:bg-black/40 " +
+        "m-0 mt-auto max-h-[92dvh] w-full max-w-none overflow-y-auto rounded-t-[24px] border border-line bg-surface p-0 text-ink shadow-float backdrop:bg-ink/45 " +
         (wide ? "md:m-auto md:max-w-2xl md:rounded-card" : "md:m-auto md:max-w-lg md:rounded-card")
       }
     >
       {open ? (
         <>
-          <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-line bg-surface px-5 py-3">
-            <h2 className="text-lg font-[650]">{title}</h2>
+          <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-line bg-surface px-5 pb-3 pt-4">
+            <span aria-hidden className="absolute left-1/2 top-1.5 h-1 w-10 -translate-x-1/2 rounded-full bg-line md:hidden" />
+            <h2 className="text-lg font-[700] tracking-[-0.01em]">{title}</h2>
             <button type="button" onClick={onClose} className="grid size-11 place-items-center rounded-btn hover:bg-surface-2" aria-label={tc("close")}>
               <X size={20} strokeWidth={1.75} aria-hidden />
             </button>

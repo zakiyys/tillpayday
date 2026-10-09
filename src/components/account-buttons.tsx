@@ -9,9 +9,9 @@ import { AccountForm, type AccountFormValue, type CurrencyOpt } from "./account-
 import { Dialog } from "./dialog";
 import { btn } from "./ui";
 
-export function AddAccountButton(p: { currencies: CurrencyOpt[]; baseCurrency: string; today: string; showVisibility: boolean; variant?: "primary" | "secondary" }) {
+export function AddAccountButton({ autoOpen, ...p }: { currencies: CurrencyOpt[]; baseCurrency: string; today: string; showVisibility: boolean; variant?: "primary" | "secondary"; autoOpen?: boolean }) {
   const t = useTranslations("accounts");
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(!!autoOpen);
   return (
     <>
       <button type="button" className={btn[p.variant ?? "primary"]} onClick={() => setOpen(true)}>

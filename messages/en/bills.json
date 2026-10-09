@@ -1,6 +1,6 @@
 {
   "title": "Bills and recurring",
-  "subtitle": "This period's bills, recurring entries and subscriptions found in your history.",
+  "subtitle": "Pay this period's bills, set up regular schedules, and see the subscriptions found in your history.",
   "thisPeriod": "Bills this period",
   "none": "No bills this period.",
   "due": "Due {date}",
@@ -12,13 +12,22 @@
   "payFrom": "Pay from",
   "skip": "Skip this time",
   "unskip": "Undo skip",
-  "kind": { "REGULAR": "Bill", "INSTALLMENT": "Installment", "CARD_STATEMENT": "Card statement", "GOAL": "Savings" },
+  "kind": {
+    "REGULAR": "Bill",
+    "INSTALLMENT": "Installment",
+    "CARD_STATEMENT": "Card statement",
+    "GOAL": "Savings"
+  },
   "addBill": "Add one-off bill",
   "recurring": "Recurring",
   "addRecurring": "Add recurring",
   "editRecurring": "Edit recurring",
   "noRecurring": "No recurring entries yet. Add salary, rent, subscriptions or installments.",
-  "mode": { "label": "How", "AUTO_POST": "Record automatically (auto-debit)", "CREATE_BILL": "Create a bill to mark paid" },
+  "mode": {
+    "label": "How",
+    "AUTO_POST": "Record automatically (auto-debit)",
+    "CREATE_BILL": "Create a bill to mark paid"
+  },
   "schedule": {
     "label": "Repeats",
     "MONTHLY": "Monthly on a day",
@@ -30,7 +39,15 @@
     "weekday": "Weekday",
     "month": "Month"
   },
-  "weekdays": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+  "weekdays": [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ],
   "opensPeriod": "This is my salary (starts a new period)",
   "startDate": "Starts",
   "endDate": "Ends",
@@ -38,7 +55,12 @@
   "paused": "Paused",
   "pause": "Pause",
   "resume": "Resume",
-  "every": { "MONTHLY": "Every month on day {day}", "PERIOD_OFFSET": "{offset} days after period start", "WEEKLY": "Every {weekday}", "YEARLY": "Every year on {day}/{month}" },
+  "every": {
+    "MONTHLY": "Every month on day {day}",
+    "PERIOD_OFFSET": "{offset} days after period start",
+    "WEEKLY": "Every {weekday}",
+    "YEARLY": "Every year on {day}/{month}"
+  },
   "subscriptions": "Subscriptions found",
   "subscriptionsBody": "Same payee, similar amount, about a month apart, at least three times.",
   "noSubscriptions": "None found yet.",
@@ -46,5 +68,9 @@
   "makeRecurring": "Make recurring",
   "bill_not_unpaid": "This bill is already settled.",
   "bill_has_payment": "This bill has a payment. Delete the payment first.",
-  "bill_has_no_account": "This bill has no target account."
+  "bill_has_no_account": "This bill has no target account.",
+  "late": "Overdue",
+  "unpaidTotal": "{amount} unpaid",
+  "thisPeriodBody": "What to pay before the next payday. Bills and goal savings already came off your spending money; card statements did not, because the purchases counted on the day you made them.",
+  "recurringBody": "Repeating schedules. Each period they record a transaction automatically or create a bill above."
 }

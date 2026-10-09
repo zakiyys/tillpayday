@@ -8,7 +8,7 @@ import { dbDate, isoOf } from "@/server/ledger/fx";
 import { detectSubscriptions } from "@/domain/recurring";
 import { addMonths } from "@/domain/dates";
 import { money, shortDate } from "@/lib/format";
-import { Card, Chip, EmptyState, PageHeader, SectionTitle, cx } from "@/components/ui";
+import { Card, Chip, EmptyState, PageHeader, SectionTitle, StatusPill, cx } from "@/components/ui";
 import { BillStatusButton, PayBillButton, RecurringButton, ToggleRecurring, type RecurringValue } from "@/components/bills";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +30,11 @@ export default async function BillsPage() {
     }),
   ]);
   const fmt = (v: bigint) => money(v, base, ctx.intl);
+  // Unpaid first (earliest due on top), then paid, then skipped.
+  const rank = { UNPAID: 0, PAID: 1, SKIPPED: 2 } as const;
+  const sorted = [...bills].sort((x, y) => rank[x.status] - rank[y.status] || x.dueDate.getTime() - y.dueDate.getTime());
+  const unpaidTotal = bills.filter((b) => b.status === "UNPAID").reduce((s, b) => s + b.amount, 0n);
+  const monthShort = (m: number) => new Intl.DateTimeFormat(ctx.intl, { month: "short", timeZone: "UTC" }).format(new Date(Date.UTC(2026, m - 1, 1)));
   const weekdays = t.raw("weekdays") as string[];
   const recNames = new Set(recs.map((r) => r.name.trim().toLowerCase()));
   const subs = detectSubscriptions(history.filter((h) => h.source !== "RECURRING").map((h) => ({ payee: h.payee!, date: isoOf(h.occurredOn), amount: h.amount }))).filter((s) => !recNames.has(s.payee));
@@ -41,38 +46,50 @@ export default async function BillsPage() {
     <>
       <PageHeader title={t("title")} subtitle={t("subtitle")} actions={<RecurringButton opts={opts} today={ctx.today} base={base} label={t("addRecurring")} />} />
 
-      <SectionTitle>{t("thisPeriod")}</SectionTitle>
+      <SectionTitle action={unpaidTotal > 0n ? <span className="num text-sm font-[650] text-muted">{t("unpaidTotal", { amount: fmt(unpaidTotal) })}</span> : null}>{t("thisPeriod")}</SectionTitle>
+      <p className="-mt-1 mb-2.5 text-sm text-muted">{t("thisPeriodBody")}</p>
       {bills.length === 0 ? (
         <EmptyState title={t("none")} />
       ) : (
         <Card flush>
           <ul className="divide-y divide-line">
-            {bills.map((b) => (
-              <li key={b.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                <div className="min-w-0 flex-1 basis-[55%]">
-                  <p className={cx("font-[600]", b.status === "UNPAID" ? "text-ink" : "text-muted")}>{b.name}</p>
-                  <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
-                    <Chip active={false}>{t(`kind.${b.kind}`)}</Chip>
-                    <span>{t("due", { date: shortDate(isoOf(b.dueDate), ctx.intl) })}</span>
-                    <span>· {b.status === "PAID" ? t("paid") : b.status === "SKIPPED" ? t("skipped") : t("unpaid")}</span>
+            {sorted.map((b) => {
+              const due = isoOf(b.dueDate);
+              const late = b.status === "UNPAID" && due < ctx.today;
+              const [, mm, dd] = due.split("-");
+              return (
+                <li key={b.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+                  <span aria-hidden className={cx("grid w-11 shrink-0 place-items-center rounded-btn py-1 leading-none", b.status === "UNPAID" ? (late ? "bg-clay-soft text-clay-ink" : "bg-ochre-soft text-ochre-ink") : "bg-surface-2 text-muted")}>
+                    <span className="num text-lg font-[750]">{Number(dd)}</span>
+                    <span className="text-[0.6875rem] font-[650]">{monthShort(Number(mm))}</span>
+                  </span>
+                  <div className="min-w-0 flex-1 basis-[45%]">
+                    <p className={cx("font-[650]", b.status === "UNPAID" ? "text-ink" : "text-muted")}>{b.name}</p>
+                    <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted">
+                      <StatusPill tone={b.status === "PAID" ? "ok" : b.status === "SKIPPED" ? "neutral" : late ? "over" : "near"}>
+                        {b.status === "PAID" ? t("paid") : b.status === "SKIPPED" ? t("skipped") : late ? t("late") : t("unpaid")}
+                      </StatusPill>
+                      <span>{t(`kind.${b.kind}`)}</span>
+                    </div>
                   </div>
-                </div>
-                <span className="num font-[600] text-ink">{fmt(b.amount)}</span>
-                {b.status === "UNPAID" && b.kind !== "INSTALLMENT" ? (
-                  <div className="flex w-full justify-end gap-1 sm:w-auto">
-                    <PayBillButton bill={{ id: b.id, name: b.name, amount: b.amount.toString(), kind: b.kind }} opts={opts} today={ctx.today} label={t("pay")} />
-                    {b.kind === "REGULAR" || b.kind === "GOAL" ? <BillStatusButton id={b.id} status="SKIPPED" label={t("skip")} /> : null}
-                  </div>
-                ) : b.status === "SKIPPED" ? (
-                  <div className="flex w-full justify-end sm:w-auto"><BillStatusButton id={b.id} status="UNPAID" label={t("unskip")} /></div>
-                ) : null}
-              </li>
-            ))}
+                  <span className={cx("num font-[700]", b.status === "UNPAID" ? "text-ink" : "text-muted")}>{fmt(b.amount)}</span>
+                  {b.status === "UNPAID" && b.kind !== "INSTALLMENT" ? (
+                    <div className="flex w-full justify-end gap-1 sm:w-auto">
+                      {b.kind === "REGULAR" || b.kind === "GOAL" ? <BillStatusButton id={b.id} status="SKIPPED" label={t("skip")} /> : null}
+                      <PayBillButton bill={{ id: b.id, name: b.name, amount: b.amount.toString(), kind: b.kind }} opts={opts} today={ctx.today} label={t("pay")} />
+                    </div>
+                  ) : b.status === "SKIPPED" ? (
+                    <div className="flex w-full justify-end sm:w-auto"><BillStatusButton id={b.id} status="UNPAID" label={t("unskip")} /></div>
+                  ) : null}
+                </li>
+              );
+            })}
           </ul>
         </Card>
       )}
 
       <SectionTitle>{t("recurring")}</SectionTitle>
+      <p className="-mt-1 mb-2.5 text-sm text-muted">{t("recurringBody")}</p>
       {recs.length === 0 ? (
         <EmptyState title={t("noRecurring")} />
       ) : (

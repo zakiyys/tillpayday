@@ -1,9 +1,20 @@
 "use client";
 
 import { useId, useState } from "react";
+import { useLocale } from "next-intl";
 import { Field, inputCls } from "./form";
 import { majorStrToMinor, minorToInput, parseMajor } from "@/lib/format";
 import { currencySymbol } from "@/lib/currency";
+
+/**
+ * Digits grouped in the page language ("1500000" reads as "1.500.000"). Three-decimal currencies stay ungrouped:
+ * "1.125" would read back as thousands.
+ */
+function grouped(minor: bigint, exp: number, locale: string) {
+  if (exp >= 3) return minorToInput(minor, exp);
+  const intl = locale === "en" ? "en-US" : "id-ID";
+  return new Intl.NumberFormat(intl, { minimumFractionDigits: 0, maximumFractionDigits: exp }).format(minorToInput(minor, exp) as unknown as number);
+}
 
 /**
  * Money input in major units, typed in the user's style ("1.500.000", "12,50").
@@ -33,7 +44,8 @@ export function MoneyInput({
   allowNegative?: boolean;
 }) {
   const id = useId();
-  const [text, setText] = useState(defaultMinor != null && defaultMinor !== "" ? minorToInput(defaultMinor, exp) : "");
+  const locale = useLocale();
+  const [text, setText] = useState(defaultMinor != null && defaultMinor !== "" ? grouped(BigInt(defaultMinor), exp, locale) : "");
   const parsed = parseMajor(text);
   const minor = parsed == null ? null : majorStrToMinor(parsed, exp);
   const invalid = text !== "" && (minor == null || (!allowNegative && minor < 0n));
@@ -52,10 +64,8 @@ export function MoneyInput({
           aria-describedby={help ? `${id}-help` : undefined}
           onBlur={() => {
             // Group the digits once the field loses focus, so "1500000" reads as "1.500.000".
-            // Three-decimal currencies stay as typed: "1.125" would read back as thousands.
-            if (minor == null || invalid || exp >= 3) return;
-            const intl = document.documentElement.lang === "en" ? "en-US" : "id-ID";
-            setText(new Intl.NumberFormat(intl, { minimumFractionDigits: 0, maximumFractionDigits: exp }).format(minorToInput(minor, exp) as unknown as number));
+            if (minor == null || invalid) return;
+            setText(grouped(minor, exp, locale));
           }}
           onChange={(e) => {
             setText(e.target.value);

@@ -38,10 +38,29 @@
   "balanceSmall": "Selisih kecil. Dicatat dengan kategori.",
   "balanceLarge": "Selisih besar.",
   "correctTo": "{before} jadi {after}",
-  "kind": { "debt": "Hutang atau pinjaman", "split": "Patungan", "trade": "Transaksi aset", "balance_check": "Cek saldo", "correct": "Koreksi" },
+  "kind": {
+    "debt": "Hutang atau pinjaman",
+    "split": "Patungan",
+    "trade": "Transaksi aset",
+    "balance_check": "Cek saldo",
+    "correct": "Koreksi"
+  },
   "proposal_incomplete": "Masih ada yang perlu dijawab.",
   "empty_input": "Ketik sesuatu dulu.",
   "file_type": "Jenis file ini tidak didukung.",
   "file_too_large": "File terlalu besar (maks 10 MB).",
-  "unsupported_content_type": "Input ini tidak didukung."
+  "unsupported_content_type": "Input ini tidak didukung.",
+  "aiSetup": "Setel AI",
+  "how1": "Ketik satu kalimat pendek, satu atau beberapa transaksi.",
+  "how2": "Periksa kartu yang muncul. Belum ada yang tersimpan.",
+  "how3": "Tekan Simpan. Jatah harianmu langsung diperbarui.",
+  "tryOne": "Coba salah satu:",
+  "exampleList": [
+    "kopi 25k",
+    "makan siang 35rb kemarin",
+    "gajian 9jt",
+    "bensin 50rb, parkir 5rb"
+  ],
+  "notSaved": "Belum tersimpan",
+  "subtitle": "Ketik, periksa kartunya, lalu simpan. Tidak ada yang tersimpan sebelum kamu menekan Simpan."
 }

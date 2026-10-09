@@ -38,10 +38,29 @@
   "balanceSmall": "Small difference. It will be recorded with a category.",
   "balanceLarge": "Large difference.",
   "correctTo": "{before} becomes {after}",
-  "kind": { "debt": "Debt or loan", "split": "Split bill", "trade": "Trade", "balance_check": "Balance check", "correct": "Correction" },
+  "kind": {
+    "debt": "Debt or loan",
+    "split": "Split bill",
+    "trade": "Trade",
+    "balance_check": "Balance check",
+    "correct": "Correction"
+  },
   "proposal_incomplete": "Some answers are still missing.",
   "empty_input": "Type something first.",
   "file_type": "That file type is not supported.",
   "file_too_large": "The file is too large (max 10 MB).",
-  "unsupported_content_type": "That input is not supported."
+  "unsupported_content_type": "That input is not supported.",
+  "aiSetup": "Set up AI",
+  "how1": "Type one short sentence, with one or more transactions.",
+  "how2": "Check the card that appears. Nothing is saved yet.",
+  "how3": "Press Save. Your daily number updates right away.",
+  "tryOne": "Try one:",
+  "exampleList": [
+    "coffee 25k",
+    "lunch 35k yesterday",
+    "salary 9m",
+    "fuel 50k, parking 5k"
+  ],
+  "notSaved": "Not saved yet",
+  "subtitle": "Type, check the card, then save. Nothing is stored before you press Save."
 }

@@ -76,4 +76,13 @@ describe("PIN quick unlock", () => {
     await prisma.session.updateMany({ where: { memberId: member.id }, data: { lastSeenAt: new Date(Date.now() - 16 * 60_000) } });
     expect(await readSession(token)).toBeNull();
   });
+
+  it("signing in again in the same browser ends the session it replaces", async () => {
+    const { member } = await newHousehold();
+    await createSession(member.id);
+    const first = jar.get(SESSION_COOKIE);
+    await createSession(member.id);
+    expect(await readSession(first)).toBeNull();
+    expect(await readSession(jar.get(SESSION_COOKIE))).not.toBeNull();
+  });
 });

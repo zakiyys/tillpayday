@@ -129,3 +129,16 @@ describe("reconcile and matching helpers", () => {
     expect(sanityWarning(2_000n, 900n, 200n)).toBe(false);
   });
 });
+
+describe("day cups", async () => {
+  const { dayCups } = await import("@/domain/allowance");
+  const tx = (on: string, amount: bigint) => ({ id: on, type: "EXPENSE", occurredOn: on, baseAmount: amount, billId: null, excludeFromAllowance: false, deletedAt: null }) as never;
+  it("follows the allowance formula day by day, then shares what is left evenly", () => {
+    const cups = dayCups({ pool: 1000n, periodStart: "2026-10-01", periodEnd: "2026-10-05", today: "2026-10-03", txs: [tx("2026-10-01", 300n), tx("2026-10-03", 50n)] });
+    expect(cups.map((c) => c.when)).toEqual(["past", "past", "today", "future", "future"]);
+    expect(cups[0]).toMatchObject({ share: 200n, spent: 300n });
+    expect(cups[1]).toMatchObject({ share: 175n, spent: 0n });
+    expect(cups[2]).toMatchObject({ share: 233n, spent: 50n });
+    expect(cups[3]!.share).toBe(325n);
+  });
+});

@@ -27,7 +27,7 @@ export default async function RecordPage({ searchParams }: { searchParams: Promi
   };
   return (
     <>
-      <PageHeader title={t("title")} />
+      <PageHeader title={t("title")} subtitle={t("subtitle")} />
       <Conversation
         opts={opts}
         intl={ctx.intl}

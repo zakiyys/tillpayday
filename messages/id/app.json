@@ -1,4 +1,6 @@
 {
   "tagline": "Keuangan pribadi di server sendiri",
-  "skip": "Langsung ke isi"
+  "skip": "Langsung ke isi",
+  "authTitle": "Satu angka sehari: berapa yang masih aman dibelanjakan sampai gajian.",
+  "authBody": "Uang gajian dikurangi tagihan dan tabungan, lalu dibagi rata ke tiap hari sampai gajian berikutnya."
 }

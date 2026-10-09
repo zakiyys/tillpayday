@@ -131,3 +131,38 @@ export function goalBillsTotal(bills: Iterable<LedgerBill>): bigint {
 export function sanityWarning(dailyBalance: bigint, leftUntilPayday: bigint, unpaidBills: bigint): boolean {
   return dailyBalance < leftUntilPayday + unpaidBills;
 }
+
+export interface DayCup {
+  date: ISODate;
+  /** That day's share of the pool (the allowance it opened with); for future days, the even share of what is left. */
+  share: bigint;
+  /** Variable spending recorded on that day (0 for future days). */
+  spent: bigint;
+  when: "past" | "today" | "future";
+}
+
+/**
+ * One cup per day of the period, for the day-cup strip (SPEC 6.2, same formula as computeAllowance): past days
+ * show the allowance they opened with and what was spent, today shows its allowance, and the days after today
+ * share what is left until payday evenly.
+ */
+export function dayCups(i: Omit<AllowanceInput, "unit">): DayCup[] {
+  const txs = [...i.txs];
+  const today = i.today < i.periodStart ? i.periodStart : i.today > i.periodEnd ? i.periodEnd : i.today;
+  const out: DayCup[] = [];
+  let spentBefore = 0n;
+  for (let d = i.periodStart; d <= today; d = addDays(d, 1)) {
+    const daysLeft = BigInt(diffDays(i.periodEnd, d) + 1);
+    const share = floorDiv(i.pool - spentBefore, daysLeft);
+    const spent = variableSpend(txs, d, d);
+    out.push({ date: d, share, spent, when: d === today ? "today" : "past" });
+    spentBefore += spent;
+  }
+  const after = diffDays(i.periodEnd, today);
+  if (after > 0) {
+    const left = i.pool - spentBefore;
+    const share = floorDiv(left > 0n ? left : 0n, BigInt(after));
+    for (let d = addDays(today, 1); d <= i.periodEnd; d = addDays(d, 1)) out.push({ date: d, share, spent: 0n, when: "future" });
+  }
+  return out;
+}

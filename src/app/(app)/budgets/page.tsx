@@ -6,7 +6,7 @@ import { budgetView, ensurePeriods } from "@/server/ledger/periods";
 import { prisma } from "@/server/db";
 import { budgetRatio, budgetStatus } from "@/domain/budget";
 import { shortDate } from "@/lib/format";
-import { EmptyState, PageHeader, SectionTitle } from "@/components/ui";
+import { EmptyState, PageHeader, SectionTitle, StatusPill } from "@/components/ui";
 import { BudgetEditor } from "@/components/budget-editor";
 
 export const dynamic = "force-dynamic";
@@ -38,9 +38,9 @@ export default async function BudgetsPage({ searchParams }: { searchParams: Prom
   return (
     <>
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
-      <p className="mb-3 text-sm font-[600] text-ink">
-        {p.open ? `${t("current")} · ` : ""}
+      <p className="mb-3 flex flex-wrap items-center gap-2 text-sm font-[650] text-ink">
         {t("period", { from: shortDate(p.start, ctx.intl), to: shortDate(p.end, ctx.intl) })}
+        {p.open ? <StatusPill tone="ok">{t("current")}</StatusPill> : null}
       </p>
       {data.length ? (
         <BudgetEditor periodId={p.id} rows={data} currency={ctx.household.baseCurrency} exp={cur?.exponent ?? 0} intl={ctx.intl} editable={p.open} />

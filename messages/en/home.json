@@ -1,5 +1,9 @@
 {
-  "greeting": { "morning": "Good morning, {name}", "afternoon": "Good afternoon, {name}", "evening": "Good evening, {name}" },
+  "greeting": {
+    "morning": "Good morning, {name}",
+    "afternoon": "Good afternoon, {name}",
+    "evening": "Good evening, {name}"
+  },
   "dayOf": "Day {day} of {days}",
   "safeToday": "Safe to spend today",
   "safeWeek": "Safe to spend this week",
@@ -26,5 +30,42 @@
   "toGoals": "Go to goals",
   "profile": "Settings",
   "emptyTitle": "Start with your accounts",
-  "emptyBody": "Add the accounts you use, then record your salary."
+  "emptyBody": "Add the accounts you use, then record your salary.",
+  "cups": {
+    "label": "Day cups for this period: day {day} of {days}. {over, plural, =0 {No day went over its share yet.} one {One day went over its share.} other {# days went over their share.}} Use the left and right arrows to see each day.",
+    "used": "share {share}, spent {spent}",
+    "planned": "planned {share}",
+    "today": "Today",
+    "leftLine": "share {share} · left {left}",
+    "overLine": "share {share} · over by {over}",
+    "plannedLine": "planned {share} a day"
+  },
+  "why": {
+    "title": "Why this number?",
+    "income": "Income this period",
+    "carried": "Left from last period",
+    "savings": "Set aside for goals",
+    "bills": "Fixed bills",
+    "pool": "Spending money this period",
+    "spentBefore": "Spent before today",
+    "perDay": "Split over {n} days left",
+    "perWeek": "Split over {n} weeks left",
+    "note": "Transfers between your own accounts do not count. Card purchases count on the day you make them."
+  },
+  "steps": {
+    "title": "Getting started ({done}/{total})",
+    "account": "Add the accounts you use",
+    "accountBody": "Bank, e-wallet or cash, with today's balance.",
+    "income": "Record this period's salary",
+    "incomeBody": "The daily number is worked out from it.",
+    "incomeExample": "salary 9m",
+    "bills": "Add your regular bills",
+    "billsBody": "Rent, power, instalments. They come off before the daily split.",
+    "goal": "Create one savings goal",
+    "goalBody": "An emergency fund, for example. Set aside on every payday.",
+    "doneLabel": "Done"
+  },
+  "glance": "At a glance",
+  "recentEmpty": "Type your first expense in the bar below, for example \"coffee 25k\".",
+  "recordIncome": "Record salary"
 }

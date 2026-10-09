@@ -16,14 +16,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <PwaClient />
       <Sidebar appName={name} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <div className="mx-auto hidden w-full max-w-[1280px] px-6 pt-6 lg:block">
-          <InputBarSlot />
+        <div className="mx-auto hidden w-full max-w-[1200px] px-8 pt-6 lg:block">
+          <InputBarSlot placement="desktop" />
         </div>
-        <main id="main" className="mx-auto w-full max-w-[1280px] flex-1 px-4 pb-44 pt-5 md:px-6 lg:pb-10 lg:pt-6">
+        <main id="main" className="mx-auto w-full max-w-[1200px] flex-1 px-4 pb-44 pt-5 md:px-6 lg:px-8 lg:pb-12 lg:pt-7">
           {children}
         </main>
-        <div className="fixed inset-x-0 bottom-0 z-30 bg-canvas lg:hidden">
-          <InputBarSlot />
+        <div className="fixed inset-x-0 bottom-0 z-30 lg:hidden">
+          <InputBarSlot placement="mobile" />
           <BottomTabs />
         </div>
       </div>

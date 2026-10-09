@@ -10,6 +10,7 @@ import { dbDate, isoOf } from "@/server/ledger/fx";
 import { addDays } from "@/domain/dates";
 import { money, shortDate } from "@/lib/format";
 import { Card, EmptyState, PageHeader, SectionTitle, Progress } from "@/components/ui";
+import { AccountLogo } from "@/components/account-logo";
 import { DebtButton, InstallmentButton, LoanPayButton, SplitButton } from "@/components/stage6";
 
 export const dynamic = "force-dynamic";
@@ -41,12 +42,13 @@ export default async function DebtsPage() {
 
   const row = (a: (typeof accounts)[number]) => (
     <li key={a.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-      <Link href={`/accounts/${a.id}`} className="min-w-0 flex-1 basis-[55%]">
-        <p className="truncate font-[600] text-ink">{a.name}</p>
+      <AccountLogo type={a.type} institution={a.institution} name={a.name} />
+      <Link href={`/accounts/${a.id}`} className="min-w-0 flex-1 basis-[45%]">
+        <p className="truncate font-[650] text-ink">{a.name}</p>
         <p className="text-xs text-muted">{ta(`type.${a.type}`)}</p>
         {a.creditLimit ? (
           <div className="mt-1.5 max-w-xs">
-            <Progress ratio={Number((-a.balance * 1000n) / (a.creditLimit || 1n)) / 1000} label={t("limitUsed", { used: fmt(-a.balance, a.currency), limit: fmt(a.creditLimit, a.currency) })} />
+            <Progress tone={-a.balance * 10n >= a.creditLimit * 9n ? "over" : -a.balance * 10n >= a.creditLimit * 7n ? "near" : "ok"} ratio={Number((-a.balance * 1000n) / (a.creditLimit || 1n)) / 1000} label={t("limitUsed", { used: fmt(-a.balance, a.currency), limit: fmt(a.creditLimit, a.currency) })} />
             <p className="num mt-1 text-xs text-muted">{t("limitUsed", { used: fmt(-a.balance, a.currency), limit: fmt(a.creditLimit, a.currency) })}</p>
           </div>
         ) : null}

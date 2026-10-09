@@ -1,6 +1,23 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+
+/**
+ * Width of the chart's box in CSS pixels. The SVG is drawn at that width so axis text stays 13 px on a phone
+ * instead of shrinking with a fixed viewBox.
+ */
+function useWidth(fallback: number) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [w, setW] = useState(fallback);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => setW(Math.max(280, Math.round(e!.contentRect.width))));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return [ref, w] as const;
+}
 
 const compact = (intl: string) => (v: number) => new Intl.NumberFormat(intl, { notation: "compact", maximumFractionDigits: 1 }).format(v);
 
@@ -25,18 +42,18 @@ export function BarPairs({
   const id = useId();
   const fmtAxis = compact(intl);
   const [hover, setHover] = useState<number | null>(null);
+  const [box, W] = useWidth(560);
   const max = Math.max(1, ...data.flatMap((d) => [d.a, d.b]));
-  const W = 560;
   const H = 260;
-  const pad = { l: 64, r: 12, t: 12, b: 36 };
+  const pad = { l: 56, r: 8, t: 12, b: 36 };
   const iw = W - pad.l - pad.r;
   const ih = H - pad.t - pad.b;
   const step = iw / Math.max(1, data.length);
   const bw = Math.min(28, step / 3);
   const ticks = [0, 0.25, 0.5, 0.75, 1].map((f) => f * max);
   return (
-    <figure className="m-0">
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby={`${id}-t ${id}-d`} className="h-auto w-full">
+    <figure className="m-0" ref={box}>
+      <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-labelledby={`${id}-t ${id}-d`} className="block h-auto max-w-full">
         <title id={`${id}-t`}>{title}</title>
         <desc id={`${id}-d`}>{desc}</desc>
         {ticks.map((v, i) => {
@@ -94,11 +111,11 @@ export function Line({ points, title, desc, intl, zeroLine = false, emptyText }:
   const id = useId();
   const fmtAxis = compact(intl);
   const [hover, setHover] = useState<number | null>(null);
+  const [box, W] = useWidth(560);
   // A trend needs two points; with one, say so instead of drawing an empty frame.
   if (points.length < 2) return <p className="rounded-btn bg-surface-2 p-3 text-sm text-muted">{emptyText ?? points[0]?.text ?? ""}</p>;
-  const W = 560;
   const H = 220;
-  const pad = { l: 64, r: 12, t: 12, b: 28 };
+  const pad = { l: 56, r: 8, t: 12, b: 28 };
   const vals = points.map((p) => p.v);
   const lo = Math.min(...vals, zeroLine ? 0 : Infinity);
   const hi = Math.max(...vals, zeroLine ? 0 : -Infinity);
@@ -106,9 +123,10 @@ export function Line({ points, title, desc, intl, zeroLine = false, emptyText }:
   const x = (i: number) => pad.l + (i / Math.max(1, points.length - 1)) * (W - pad.l - pad.r);
   const y = (v: number) => pad.t + (1 - (v - lo) / span) * (H - pad.t - pad.b);
   const d = points.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(p.v).toFixed(1)}`).join(" ");
-  const every = Math.ceil(points.length / 6);
+  const every = Math.ceil(points.length / Math.max(2, Math.floor(W / 90)));
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby={`${id}-t ${id}-d`} className="h-auto w-full">
+    <div ref={box}>
+    <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-labelledby={`${id}-t ${id}-d`} className="block h-auto max-w-full">
       <title id={`${id}-t`}>{title}</title>
       <desc id={`${id}-d`}>{desc}</desc>
       {[lo, (lo + hi) / 2, hi].map((v, i) => (
@@ -138,5 +156,6 @@ export function Line({ points, title, desc, intl, zeroLine = false, emptyText }:
         </g>
       ))}
     </svg>
+    </div>
   );
 }

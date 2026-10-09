@@ -71,7 +71,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <section className="on-hero rounded-card bg-hero p-5 text-on-hero" aria-labelledby="d-safe">
+        <section className="on-hero glaze rounded-card p-5 text-on-hero" aria-labelledby="d-safe">
           <p id="d-safe" className="text-sm text-on-hero-muted">
             {t("safeToday")}
           </p>

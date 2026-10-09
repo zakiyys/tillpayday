@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ChevronLeft } from "lucide-react";
 import { requirePage } from "@/server/context";
+import { AccountLogo } from "@/components/account-logo";
 import { actorFrom } from "@/server/ledger/scope";
 import { balancesFor, getAccount } from "@/server/ledger/accounts";
 import { listTransactions } from "@/server/ledger/transactions";
@@ -39,11 +38,8 @@ export default async function AccountDetail({ params }: { params: Promise<{ id: 
   const lt = acc.loanTerms as { principal: string; annualRatePct: string; months: number; startDate: string } | null;
   return (
     <>
-      <Link href="/accounts" className="mb-2 inline-flex min-h-11 items-center gap-1 text-sm font-[600] text-muted hover:text-ink">
-        <ChevronLeft size={18} strokeWidth={1.75} aria-hidden />
-        {ta("accounts")}
-      </Link>
       <PageHeader
+        back={{ href: "/accounts", label: ta("accounts") }}
         title={acc.name}
         subtitle={[t(`type.${acc.type}`), acc.institution, acc.last4 ? `•${acc.last4}` : null].filter(Boolean).join(" · ")}
         actions={
@@ -77,13 +73,14 @@ export default async function AccountDetail({ params }: { params: Promise<{ id: 
           </>
         }
       />
-      <Card className="flex flex-wrap items-end justify-between gap-3">
-        <div>
+      <Card className="flex flex-wrap items-center gap-4">
+        <AccountLogo type={acc.type} institution={acc.institution} name={acc.name} size={56} />
+        <div className="min-w-0 flex-1">
           <p className="text-sm text-muted">{t("balance")}</p>
           <Amount value={balance} currency={acc.currency} intl={ctx.intl} exp={exp} className="text-3xl tracking-[-0.02em]" />
           {acc.creditLimit ? <p className="mt-1 text-sm text-muted">{t("limitLeft", { amount: money(acc.creditLimit + balance, acc.currency, ctx.intl, { exp }) })}</p> : null}
         </div>
-        <p className="text-xs text-muted">{acc.lastReconciledAt ? t("reconciled", { when: dateTime(acc.lastReconciledAt, ctx.intl, ctx.household.timezone) }) : t("neverReconciled")}</p>
+        <p className="w-full text-xs text-muted sm:w-auto">{acc.lastReconciledAt ? t("reconciled", { when: dateTime(acc.lastReconciledAt, ctx.intl, ctx.household.timezone) }) : t("neverReconciled")}</p>
       </Card>
       <SectionTitle action={<AddTxButton opts={opts} base={ctx.household.baseCurrency} today={ctx.today} defaultAccountId={acc.id} />}>{t("detailTx")}</SectionTitle>
       {list.items.length ? (
@@ -91,7 +88,7 @@ export default async function AccountDetail({ params }: { params: Promise<{ id: 
           <TxList rows={list.items.map(serializeTx)} intl={ctx.intl} opts={opts} base={ctx.household.baseCurrency} today={ctx.today} viewAccountId={acc.id} />
         </Card>
       ) : (
-        <EmptyState title={(await getTranslations("tx"))("empty")} />
+        <EmptyState title={(await getTranslations("tx"))("empty")} body={(await getTranslations("tx"))("emptyAccount")} />
       )}
     </>
   );

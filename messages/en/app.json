@@ -1,4 +1,6 @@
 {
   "tagline": "Personal finance on your own server",
-  "skip": "Skip to content"
+  "skip": "Skip to content",
+  "authTitle": "One number a day: how much is still safe to spend until payday.",
+  "authBody": "Your pay, minus bills and savings, split evenly over the days until the next payday."
 }

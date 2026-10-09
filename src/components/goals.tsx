@@ -164,6 +164,7 @@ export function GoalMoneyButton({ kind, goal, opts, base, exp, today }: { kind: 
           }}
         >
           {error ? <Notice tone="warn">{error}</Notice> : null}
+          <p className="text-sm text-muted">{kind === "deposit" ? t("depositHelp") : t("allocateHelp")}</p>
           {kind === "deposit" ? (
             <Select label={t("fields.from")} name="from">
               {daily.map((a) => (

@@ -1,6 +1,6 @@
 {
   "title": "Goals",
-  "subtitle": "Pockets on top of your savings accounts.",
+  "subtitle": "Savings goals. The money stays in your savings account; a goal only records how much is for what.",
   "add": "Add goal",
   "edit": "Edit goal",
   "empty": "No goals yet",
@@ -43,5 +43,9 @@
   "allocation_exceeds_balance": "That is more than the account holds after other goals.",
   "not_savings_account": "Choose a savings account.",
   "choose_goals": "Choose which goals give up the money.",
-  "auto_needs_accounts": "Automatic transfers need both accounts."
+  "auto_needs_accounts": "Automatic transfers need both accounts.",
+  "emergencyBadge": "Emergency fund",
+  "ofTarget": "of {target} · {pct}",
+  "depositHelp": "Move new money from a daily account into savings, straight into this goal.",
+  "allocateHelp": "Mark part of the balance already in a savings account for this goal. No money moves."
 }

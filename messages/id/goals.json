@@ -1,6 +1,6 @@
 {
   "title": "Goal",
-  "subtitle": "Kantong di atas akun tabungan.",
+  "subtitle": "Tujuan tabungan. Uangnya tetap di akun tabunganmu; goal hanya mencatat berapa yang sudah untuk apa.",
   "add": "Tambah goal",
   "edit": "Ubah goal",
   "empty": "Belum ada goal",
@@ -43,5 +43,9 @@
   "allocation_exceeds_balance": "Melebihi saldo akun setelah dikurangi goal lain.",
   "not_savings_account": "Pilih akun tabungan.",
   "choose_goals": "Pilih goal yang dikurangi.",
-  "auto_needs_accounts": "Transfer otomatis perlu kedua akun."
+  "auto_needs_accounts": "Transfer otomatis perlu kedua akun.",
+  "emergencyBadge": "Dana darurat",
+  "ofTarget": "dari {target} · {pct}",
+  "depositHelp": "Pindahkan uang baru dari akun harian ke akun tabungan, langsung untuk goal ini.",
+  "allocateHelp": "Tandai sebagian saldo yang sudah ada di akun tabungan untuk goal ini. Tidak ada uang yang berpindah."
 }

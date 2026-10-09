@@ -9,6 +9,7 @@ import { missingFields, type Proposal } from "@/lib/proposals";
 import type { FormOptions } from "@/server/ui-data";
 import { useErrorText } from "./form";
 import { Chip, Notice, btn, cx } from "./ui";
+import { AccountLogo } from "./account-logo";
 import { enqueueOffline } from "@/lib/offline-queue";
 import { takePhoto } from "@/lib/pending-photo";
 
@@ -144,7 +145,7 @@ export function Conversation({ opts, intl, today, base, aiState, initialText, dr
     <div className="mx-auto flex max-w-2xl flex-col">
       {aiState !== "ok" ? (
         <div className="mb-3">
-          <Notice>{aiState === "off" ? t("aiOff") : aiState === "down" ? t("aiDown") : t("noVision")}</Notice>
+          <Notice action={aiState === "off" ? <a href="/settings/ai" className="font-[650] text-accent underline">{t("aiSetup")}</a> : undefined}>{aiState === "off" ? t("aiOff") : aiState === "down" ? t("aiDown") : t("noVision")}</Notice>
         </div>
       ) : null}
       {!online ? (
@@ -165,9 +166,24 @@ export function Conversation({ opts, intl, today, base, aiState, initialText, dr
       ) : null}
 
       {turns.length === 0 ? (
-        <div className="rounded-card-sm border border-dashed border-line-strong/40 p-5 text-center text-sm text-muted">
-          <p className="font-[600] text-ink">{t("empty")}</p>
-          <p className="mt-1">{t("examples")}</p>
+        <div className="rounded-card-sm border border-line bg-surface p-5">
+          <p className="font-[650] text-ink">{t("empty")}</p>
+          <ol className="mt-3 space-y-2 text-sm text-muted">
+            {(["how1", "how2", "how3"] as const).map((k, i) => (
+              <li key={k} className="flex gap-2.5">
+                <span aria-hidden className="grid size-6 shrink-0 place-items-center rounded-full bg-accent-soft text-xs font-[700] text-on-accent-soft">{i + 1}</span>
+                <span className="pt-0.5">{t(k)}</span>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-4 text-xs font-[650] text-muted">{t("tryOne")}</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {(t.raw("exampleList") as string[]).map((ex) => (
+              <button key={ex} type="button" onClick={() => setText(ex)} className="press min-h-10 rounded-full border border-line-strong/40 bg-surface-2 px-3.5 text-sm font-[550] text-ink hover:border-accent">
+                {ex}
+              </button>
+            ))}
+          </div>
         </div>
       ) : null}
 
@@ -194,7 +210,7 @@ export function Conversation({ opts, intl, today, base, aiState, initialText, dr
       <div ref={end} />
 
       <form
-        className="sticky bottom-[calc(env(safe-area-inset-bottom)+4.25rem)] z-20 mt-4 bg-canvas py-2 lg:bottom-0"
+        className="sticky bottom-[calc(env(safe-area-inset-bottom)+4.5rem)] z-20 mt-4 bg-canvas/95 py-2 backdrop-blur lg:bottom-0"
         onSubmit={(e) => {
           e.preventDefault();
           const v = text.trim();
@@ -247,7 +263,7 @@ export function Conversation({ opts, intl, today, base, aiState, initialText, dr
 export function InputRow({ value, onChange, onPhoto, photoDisabled, canSend, placeholder, onChat }: { value: string; onChange: (v: string) => void; onPhoto: () => void; photoDisabled?: boolean; canSend?: boolean; placeholder?: string; onChat?: () => void }) {
   const t = useTranslations("record");
   return (
-    <div className="flex items-center gap-1 rounded-full border border-line bg-surface p-1 shadow-float">
+    <div className="flex items-center gap-1 rounded-full border border-line-strong/35 bg-surface p-1 shadow-float transition-shadow focus-within:border-accent focus-within:shadow-[0_0_0_3px_var(--accent-soft)]">
       <button type="button" onClick={onPhoto} disabled={photoDisabled} aria-label={t("photo")} title={photoDisabled ? t("noVision") : undefined} className="grid size-11 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 disabled:opacity-40">
         <Camera size={20} strokeWidth={1.75} aria-hidden />
       </button>
@@ -364,7 +380,12 @@ function ReplyCard({
   return (
     <div className="w-full max-w-[92%] rounded-card-sm border border-line bg-surface p-4">
       {turn.status === "manual" ? <p className="mb-2 text-sm font-[600] text-ink">{t("manualTitle")}</p> : null}
-      {savable.length ? <p className="mb-2 text-sm text-muted">{t("found", { count: savable.length })}</p> : null}
+      {savable.length ? (
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <p className="text-sm text-muted">{t("found", { count: savable.length })}</p>
+          {turn.status === "ready" ? <span className="inline-flex h-6 items-center rounded-full bg-ochre-soft px-2.5 text-xs font-[700] text-ochre-ink">{t("notSaved")}</span> : null}
+        </div>
+      ) : null}
       <ul className="space-y-3">
         {ms.map((p, i) => (
           <li key={i} className={cx(savable.length > 1 && "border-b border-line pb-3 last:border-0 last:pb-0")}>
@@ -425,11 +446,16 @@ function ReplyCard({
               <legend className="sr-only">{t("questionPick")}</legend>
               <p className="mb-2 text-sm font-[600] text-ink">{q.question}</p>
               <div className="flex flex-wrap gap-2">
-                {q.options.map((o) => (
-                  <button key={o.label} type="button" className={btn.secondary} onClick={() => answer(q, o.patch)}>
-                    {o.label}
-                  </button>
-                ))}
+                {q.options.map((o) => {
+                  // Account choices carry the account's logo so the right wallet is recognisable at a glance.
+                  const acc = typeof o.patch.accountId === "string" ? opts.accounts.find((a) => a.id === o.patch.accountId) : undefined;
+                  return (
+                    <button key={o.label} type="button" className={cx(btn.secondary, acc && "pl-2")} onClick={() => answer(q, o.patch)}>
+                      {acc ? <AccountLogo type={acc.type} institution={acc.institution} name={acc.name} size={26} /> : null}
+                      {o.label}
+                    </button>
+                  );
+                })}
               </div>
             </fieldset>
           ))}

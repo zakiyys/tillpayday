@@ -74,7 +74,7 @@ export function Appearance({ locale, theme, accent, font }: { locale: string; th
           ))}
         </div>
         <p className="mt-1.5 text-xs text-muted">{t("fontHelp")}</p>
-        <div className="mt-3 rounded-btn bg-hero p-4 text-on-hero">
+        <div className="on-hero glaze mt-3 rounded-btn p-4 text-on-hero">
           <p className="text-sm text-on-hero-muted">{t("preview")}</p>
           <p className="num text-3xl font-[700] tracking-[-0.02em]">{t("previewAmount")}</p>
         </div>

@@ -16,5 +16,12 @@
   "menu": "Menu",
   "more": "More",
   "logout": "Sign out",
-  "main": "Main navigation"
+  "main": "Main navigation",
+  "groupDaily": "Everyday",
+  "groupMoney": "Money",
+  "groupPlan": "Plans",
+  "groupReports": "Reports",
+  "groupApp": "App",
+  "recordAction": "Record a transaction",
+  "lock": "Lock"
 }

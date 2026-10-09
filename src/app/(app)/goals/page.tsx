@@ -9,8 +9,8 @@ import { dbDate, isoOf } from "@/server/ledger/fx";
 import { toLedgerTx } from "@/server/ledger/rows";
 import { incomeExpense } from "@/domain/ledger";
 import { contributionFor, emergencyMonths, estimateReachDate, goalTotal } from "@/domain/goals";
-import { longDate, money, num } from "@/lib/format";
-import { Card, EmptyState, Notice, PageHeader, Progress, SectionTitle } from "@/components/ui";
+import { longDate, money, num, pct } from "@/lib/format";
+import { Card, EmptyState, Notice, PageHeader, Progress, SectionTitle, StatusPill } from "@/components/ui";
 import { GoalButton, GoalMoneyButton, WithdrawButton } from "@/components/goals";
 
 export const dynamic = "force-dynamic";
@@ -84,8 +84,11 @@ export default async function GoalsPage() {
             const ratio = g.targetAmount > 0n ? Number((saved * 1000n) / g.targetAmount) / 1000 : 0;
             return (
               <Card key={g.id}>
-                <div className="flex items-start justify-between gap-2">
-                  <h2 className="font-[650] text-ink">{g.name}</h2>
+                <div className="flex items-center justify-between gap-2">
+                  <h2 className="flex min-w-0 items-center gap-2 text-[1.0625rem] font-[700] text-ink">
+                    <span className="truncate">{g.name}</span>
+                    {g.isEmergencyFund && !g.name.toLowerCase().includes(t("emergencyBadge").toLowerCase()) ? <StatusPill tone="ok">{t("emergencyBadge")}</StatusPill> : null}
+                  </h2>
                   <GoalButton
                     opts={opts}
                     base={base}
@@ -106,7 +109,10 @@ export default async function GoalsPage() {
                     }}
                   />
                 </div>
-                <p className="num mt-1 text-lg font-[650] text-ink">{t("progress", { saved: fmt(saved), target: fmt(g.targetAmount) })}</p>
+                <div className="mt-1 flex items-baseline justify-between gap-3">
+                  <p className="num text-xl font-[750] tracking-[-0.01em] text-ink">{fmt(saved)}</p>
+                  <p className="num text-sm text-muted">{t("ofTarget", { target: fmt(g.targetAmount), pct: pct(Math.min(1, ratio), ctx.intl) })}</p>
+                </div>
                 <div className="mt-2">
                   <Progress ratio={ratio} label={g.name} />
                 </div>
@@ -118,7 +124,7 @@ export default async function GoalsPage() {
                 ) : null}
                 {g.allocations.length ? (
                   <div className="mt-3 border-t border-line pt-3">
-                    <p className="text-xs font-[600] uppercase tracking-[0.04em] text-muted">{t("perAccount")}</p>
+                    <p className="text-xs font-[650] text-muted">{t("perAccount")}</p>
                     <ul className="mt-1 space-y-1">
                       {g.allocations.map((a) => (
                         <li key={a.id} className="flex justify-between gap-2 text-sm">

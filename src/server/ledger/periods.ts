@@ -1,7 +1,7 @@
 import type { Prisma } from "@/generated/prisma/client";
 import { type ISODate, addDays, addMonths } from "@/domain/dates";
 import { buildPeriods, currentPeriod, type PaydayRule } from "@/domain/period";
-import { computeAllowance, fixedBillsTotal, goalBillsTotal, sanityWarning, spendingPool } from "@/domain/allowance";
+import { computeAllowance, dayCups, fixedBillsTotal, goalBillsTotal, sanityWarning, spendingPool } from "@/domain/allowance";
 import { categorySpend, suggestBudget } from "@/domain/budget";
 import { contributionFor } from "@/domain/goals";
 import { installmentDueDates, installmentScheduleSafe, occurrences, statementDates, type Schedule } from "./recurring-helpers";
@@ -284,6 +284,7 @@ export async function periodSummary(actor: Actor, today: ISODate, period?: Perio
   }
   const unit = h.allowanceUnit === "WEEKLY" ? "WEEKLY" : "DAILY";
   const a = computeAllowance({ pool, periodStart: p.start, periodEnd: p.end, today, txs, unit });
+  const cups = unit === "DAILY" ? dayCups({ pool, periodStart: p.start, periodEnd: p.end, today, txs }) : [];
   const unpaid = billRows.filter((b) => b.status === "UNPAID" && b.kind !== "INSTALLMENT");
   const unpaidTotal = unpaid.filter((b) => b.kind !== "CARD_STATEMENT").reduce((s, b) => s + b.amount, 0n);
   const daily = accounts.filter((x) => x.role === "DAILY" && x.currency === h.baseCurrency);
@@ -299,6 +300,7 @@ export async function periodSummary(actor: Actor, today: ISODate, period?: Perio
     fixedBills,
     pool,
     allowance: a,
+    cups,
     unpaid,
     unpaidTotal,
     dailyTotal,

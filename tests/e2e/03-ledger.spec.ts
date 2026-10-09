@@ -61,8 +61,9 @@ test("transactions page: filter and transfer", async ({ page }) => {
   await tx.getByLabel("Nominal", { exact: true }).fill("100.000");
   await tx.getByRole("button", { name: "Simpan" }).click();
   await expect(page.getByText("Bank Contoh ke Dompet Digital")).toBeVisible();
+  await page.getByText("Filter", { exact: true }).click();
   await page.getByLabel("Jenis").selectOption("TRANSFER");
-  await page.getByRole("button", { name: "Terapkan" }).click();
+  await page.getByRole("button", { name: "Terapkan" }).last().click();
   await expect(page.getByText("Kedai kopi")).toHaveCount(0);
   await checkA11y(page);
   await page.goto("/transactions");

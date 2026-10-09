@@ -4,7 +4,7 @@
     "household": "Household and members",
     "householdBody": "Name, base currency, time zone, payday, allowance, members and invitations.",
     "security": "Sign-in and devices",
-    "securityBody": "Passkeys, password, two-step verification, sessions.",
+    "securityBody": "PIN, passkeys, password, two-step verification and signed-in devices.",
     "tokens": "API tokens",
     "tokensBody": "Tokens for the iPhone Shortcut and the summary endpoint.",
     "ai": "AI",
@@ -42,5 +42,10 @@
     "exponent_locked": "Decimal places cannot change while accounts use this currency.",
     "same_currency": "Choose two different currencies.",
     "rate_positive": "The rate must be above zero."
-  }
+  },
+  "subtitle": "Everything about your household and this device.",
+  "groupHousehold": "Household",
+  "groupSecurity": "Security and appearance",
+  "groupConnect": "Connections",
+  "groupData": "Data"
 }

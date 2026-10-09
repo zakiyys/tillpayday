@@ -26,6 +26,10 @@ export async function createSession(memberId: string, opts: { reauth?: boolean }
   const known = await prisma.session.findFirst({ where: { memberId, deviceHash } });
   const token = randomToken();
   const expiresAt = new Date(Date.now() + SESSION_DAYS * 86_400_000);
+  // Signing in again in the same browser replaces its cookie; end the session it held so it does not linger as
+  // a valid, unlisted token in "Active sessions".
+  const previous = (await cookies()).get(SESSION_COOKIE)?.value;
+  if (previous) await prisma.session.updateMany({ where: { id: sha256(previous), revokedAt: null }, data: { revokedAt: new Date() } });
   await prisma.session.create({
     data: { id: sha256(token), memberId, deviceLabel: label, deviceHash, expiresAt, reauthAt: opts.reauth === false ? null : new Date() },
   });

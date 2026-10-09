@@ -65,5 +65,9 @@
   "account_not_found": "Akun tidak ditemukan.",
   "no_rate": "Belum ada kurs {currency}. Isi kursnya.",
   "edit_not_supported_here": "Ubah transaksi aset dari halaman Investasi.",
-  "edit_opening_on_account": "Ubah saldo awal di halaman akun."
+  "edit_opening_on_account": "Ubah saldo awal di halaman akun.",
+  "emptyAccount": "Catat transaksi pertama untuk akun ini dengan tombol di atas, atau ketik di kolom Catat.",
+  "subtitle": "Semua pemasukan, pengeluaran, dan transfer. Ketuk satu baris untuk mengubahnya.",
+  "filters": "Filter",
+  "filtersOn": "Filter ({n} aktif)"
 }

@@ -11,6 +11,7 @@ import type { FormOptions } from "@/server/ui-data";
 import { Dialog } from "./dialog";
 import { TxForm } from "./tx-form";
 import { Chip, Notice, cx } from "./ui";
+import { AccountLogo } from "./account-logo";
 import { useErrorText } from "./form";
 
 /** Signed display amount for a row as seen from `viewAccountId` (or overall when null). */
@@ -50,6 +51,11 @@ export function TxList({
   const [undo, setUndo] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const exp = (c: string) => opts.currencies.find((x) => x.code === c)?.exponent;
+  const acc = (id: string) => opts.accounts.find((a) => a.id === id);
+  // Spending per day header, in the base currency, so a day's total is visible without adding rows up.
+  const dayTotals = new Map<string, bigint>();
+  if (!compact && !viewAccountId)
+    for (const r of rows) if (r.type === "EXPENSE" && !r.deleted && r.currency === base) dayTotals.set(r.occurredOn, (dayTotals.get(r.occurredOn) ?? 0n) + BigInt(r.amount));
 
   const remove = async (id: string) => {
     setError(null);
@@ -92,12 +98,19 @@ export function TxList({
           return (
             <Fragment key={r.id}>
               {showDate ? (
-                <li className="bg-canvas/60 px-4 pb-1 pt-3 text-xs font-[600] uppercase tracking-[0.04em] text-muted" aria-hidden={false}>
-                  {r.occurredOn === today ? tc("today") : longDate(r.occurredOn, intl, today)}
+                <li className="flex items-baseline justify-between gap-3 bg-surface-2 px-4 pb-1.5 pt-3 text-xs font-[650] text-muted">
+                  <span>{r.occurredOn === today ? tc("today") : longDate(r.occurredOn, intl, today)}</span>
+                  {dayTotals.get(r.occurredOn) ? <span className="num font-[550]">{money(-dayTotals.get(r.occurredOn)!, base, intl, { sign: true, exp: exp(base) })}</span> : null}
                 </li>
               ) : null}
-              <li className={cx("flex items-center gap-3 px-4 py-2.5", r.deleted && "opacity-70")}>
-                {r.type === "TRANSFER" ? <ArrowLeftRight size={18} strokeWidth={1.75} aria-hidden className="shrink-0 text-muted" /> : null}
+              <li className={cx("flex items-center gap-3 px-4 py-3", r.deleted && "opacity-70")}>
+                {r.type === "TRANSFER" ? (
+                  <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-[30%] bg-surface-2 text-muted">
+                    <ArrowLeftRight size={18} strokeWidth={1.75} />
+                  </span>
+                ) : (
+                  <AccountLogo type={acc(r.accountId)?.type ?? "BANK"} institution={acc(r.accountId)?.institution} name={r.accountName} size={36} />
+                )}
                 <button
                   type="button"
                   disabled={!editable}
@@ -106,7 +119,7 @@ export function TxList({
                   className="min-w-0 flex-1 text-left disabled:cursor-default md:pointer-events-none"
                   tabIndex={editable ? undefined : -1}
                 >
-                  <p className="line-clamp-2 font-[550] text-ink">{title}</p>
+                  <p className="line-clamp-2 font-[600] text-ink">{title}</p>
                   <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
                     {r.categoryName && r.type !== "TRANSFER" ? <Chip>{r.categoryName}</Chip> : null}
                     {r.type !== "TRANSFER" && !viewAccountId ? <span className="truncate">{r.accountName}</span> : null}
@@ -115,7 +128,7 @@ export function TxList({
                     {r.note ? <span className="truncate">· {r.note}</span> : null}
                   </div>
                 </button>
-                <span className={cx("num shrink-0 font-[600]", s.sign && s.value > 0n ? "text-accent" : "text-ink")}>
+                <span className={cx("num shrink-0 font-[650]", s.sign && s.value > 0n ? "text-accent" : "text-ink")}>
                   {money(s.value, s.currency, intl, { sign: s.sign, exp: exp(s.currency) })}
                 </span>
                 {!compact ? (

@@ -16,5 +16,12 @@
   "menu": "Menu",
   "more": "Lainnya",
   "logout": "Keluar",
-  "main": "Navigasi utama"
+  "main": "Navigasi utama",
+  "groupDaily": "Harian",
+  "groupMoney": "Uang",
+  "groupPlan": "Rencana",
+  "groupReports": "Laporan",
+  "groupApp": "Aplikasi",
+  "recordAction": "Catat transaksi",
+  "lock": "Kunci"
 }

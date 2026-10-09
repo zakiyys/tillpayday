@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 
 const ORDER = ["BANK", "EWALLET", "CASH", "INVESTMENT", "RECEIVABLE", "CREDIT_CARD", "PAYLATER", "LOAN", "PERSONAL_DEBT"] as const;
 
-export default async function AccountsPage({ searchParams }: { searchParams: Promise<{ archived?: string }> }) {
+export default async function AccountsPage({ searchParams }: { searchParams: Promise<{ archived?: string; new?: string }> }) {
   const ctx = await requirePage();
   const sp = await searchParams;
   const t = await getTranslations("accounts");
@@ -27,7 +27,7 @@ export default async function AccountsPage({ searchParams }: { searchParams: Pro
     baseValuer(ctx.householdId, ctx.household.baseCurrency),
   ]);
   const base = ctx.household.baseCurrency;
-  const add = <AddAccountButton currencies={opts.currencies} baseCurrency={base} today={ctx.today} showVisibility={opts.multiMember} />;
+  const add = <AddAccountButton currencies={opts.currencies} baseCurrency={base} today={ctx.today} showVisibility={opts.multiMember} autoOpen={sp.new === "1"} />;
   let total = 0n;
   for (const a of accounts) if (!a.archivedAt) total += val.toBase(a.balance, a.currency) ?? 0n;
 
@@ -63,8 +63,8 @@ export default async function AccountsPage({ searchParams }: { searchParams: Pro
                             </p>
                             <p className="line-clamp-2 text-xs text-muted">
                               {a.archivedAt ? `${t("archived")} · ` : ""}
-                              {a.institution ? `${a.institution} · ` : ""}
-                              {a.lastReconciledAt ? t("reconciled", { when: dateTime(a.lastReconciledAt, ctx.intl, ctx.household.timezone) }) : t("neverReconciled")}
+                              {a.institution && a.institution.toLowerCase() !== a.name.toLowerCase() ? `${a.institution} · ` : ""}
+                              {a.lastReconciledAt ? t("reconciled", { when: dateTime(a.lastReconciledAt, ctx.intl, ctx.household.timezone) }) : t(`type.${a.type}`)}
                             </p>
                           </div>
                           <div className="text-right">

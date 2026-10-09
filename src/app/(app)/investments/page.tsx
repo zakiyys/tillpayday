@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { requirePage } from "@/server/context";
+import { currencySymbol, symbolNeedsSpace } from "@/lib/currency";
 import { actorFrom } from "@/server/ledger/scope";
 import { holdingsView } from "@/server/ledger/assets";
 import { formOptions } from "@/server/ui-data";
@@ -26,7 +27,13 @@ export default async function InvestmentsPage() {
   const total = rows.reduce((s, r) => s + (r.valueBase ?? 0n), 0n);
   const gainBase = rows.reduce((s, r) => s + (r.pnl == null ? 0n : r.holding.currency === base ? r.pnl : (r.pnlSplit?.fromPrice ?? 0n) + (r.pnlSplit?.fromFx ?? 0n)), 0n);
   const tone = (v: bigint | null) => (v == null || v === 0n ? "text-ink" : v > 0n ? "text-accent" : "text-warning");
-  const priceText = (p: (typeof rows)[number]["price"], c: string) => (p ? `${new Intl.NumberFormat(ctx.intl, { maximumFractionDigits: 6 }).format(p.toString() as unknown as number)} ${c}` : "");
+  // Prices can carry more decimals than the currency (crypto, fund NAV), so they are formatted here, with the symbol.
+  const priceText = (p: (typeof rows)[number]["price"], c: string) => {
+    if (!p) return "";
+    const sym = currencySymbol(c);
+    return `${sym}${symbolNeedsSpace(sym) ? "\u00a0" : ""}${new Intl.NumberFormat(ctx.intl, { maximumFractionDigits: 6 }).format(p.toString() as unknown as number)}`;
+  };
+  const unitsText = (u: { toString(): string }, label: string) => `${new Intl.NumberFormat(ctx.intl, { maximumFractionDigits: 8 }).format(u.toString() as unknown as number)} ${label}`;
   const actions = (r: (typeof rows)[number]) => {
     const h = r.holding;
     const fixed = h.assetType.valuation === "FIXED_PLUS_INTEREST";
@@ -79,7 +86,7 @@ export default async function InvestmentsPage() {
                       {!fixed ? (
                         <div>
                           <dt className="text-xs text-muted">{t("units")}</dt>
-                          <dd className="num text-ink">{`${h.units.toString()} ${h.assetType.unitLabel}`}</dd>
+                          <dd className="num text-ink">{unitsText(h.units, h.assetType.unitLabel)}</dd>
                         </div>
                       ) : null}
                       <div>
@@ -142,7 +149,7 @@ export default async function InvestmentsPage() {
                           {r.stale ? <Chip className="ml-1.5 bg-warning-soft text-warning">{t("stale")}</Chip> : null}
                         </p>
                       </td>
-                      <td className="num px-3 py-3 text-right text-ink">{fixed ? "" : `${h.units.toString()} ${h.assetType.unitLabel}`}</td>
+                      <td className="num px-3 py-3 text-right text-ink">{fixed ? "" : unitsText(h.units, h.assetType.unitLabel)}</td>
                       <td className="num px-3 py-3 text-right text-ink">{priceText(r.price, h.currency)}</td>
                       <td className="num px-3 py-3 text-right">
                         <p className="font-[600] text-ink">{r.value == null ? "" : fmt(r.value, h.currency)}</p>

@@ -1,6 +1,6 @@
 {
   "title": "Budgets",
-  "subtitle": "Optional limits per category. The daily allowance works without them.",
+  "subtitle": "Spending limits per category for this pay period. Optional: the daily number works without them.",
   "period": "Period {from} to {to}",
   "current": "This period",
   "history": "Earlier periods",
@@ -8,11 +8,21 @@
   "spent": "{spent} of {limit}",
   "spentOnly": "{spent} spent",
   "noLimit": "No limit",
-  "status": { "OK": "On track", "NEAR": "Almost used up", "OVER": "Over budget" },
+  "status": {
+    "OK": "On track",
+    "NEAR": "Almost used up",
+    "OVER": "Over budget"
+  },
   "suggestion": "Suggested {amount}",
   "applySuggestions": "Use suggestions",
   "saveLimits": "Save limits",
   "saved": "Limits saved.",
   "noHistory": "Suggestions appear after two periods of history.",
-  "empty": "No expense categories yet."
+  "empty": "No expense categories yet.",
+  "edit": "Set limits",
+  "editHelp": "Leave a field empty for no limit. Save below when done.",
+  "viewHelp": "Suggestions come from the last two periods.",
+  "left": "{amount} left",
+  "overBy": "over by {amount}",
+  "limitHelp": "Leave empty for no limit."
 }

@@ -1,5 +1,9 @@
 {
-  "greeting": { "morning": "Selamat pagi, {name}", "afternoon": "Selamat siang, {name}", "evening": "Selamat malam, {name}" },
+  "greeting": {
+    "morning": "Selamat pagi, {name}",
+    "afternoon": "Selamat siang, {name}",
+    "evening": "Selamat malam, {name}"
+  },
   "dayOf": "Hari ke-{day} dari {days}",
   "safeToday": "Aman dibelanjakan hari ini",
   "safeWeek": "Aman dibelanjakan minggu ini",
@@ -26,5 +30,42 @@
   "toGoals": "Ke halaman goal",
   "profile": "Setelan",
   "emptyTitle": "Mulai dari akun",
-  "emptyBody": "Tambahkan akun yang kamu pakai, lalu catat gajimu."
+  "emptyBody": "Tambahkan akun yang kamu pakai, lalu catat gajimu.",
+  "cups": {
+    "label": "Cangkir harian periode ini: hari ke-{day} dari {days}. {over, plural, =0 {Belum ada hari yang lewat jatah.} other {# hari lewat jatah.}} Pakai panah kiri dan kanan untuk melihat tiap hari.",
+    "used": "jatah {share}, terpakai {spent}",
+    "planned": "rencana {share}",
+    "today": "Hari ini",
+    "leftLine": "jatah {share} · sisa {left}",
+    "overLine": "jatah {share} · lewat {over}",
+    "plannedLine": "rencana {share} per hari"
+  },
+  "why": {
+    "title": "Kenapa angka ini?",
+    "income": "Pemasukan periode ini",
+    "carried": "Sisa periode lalu",
+    "savings": "Disisihkan untuk goal",
+    "bills": "Tagihan tetap",
+    "pool": "Uang belanja periode ini",
+    "spentBefore": "Sudah terpakai sebelum hari ini",
+    "perDay": "Dibagi {n} hari tersisa",
+    "perWeek": "Dibagi {n} minggu tersisa",
+    "note": "Transfer antar akunmu tidak dihitung. Belanja kartu kredit dihitung di hari belanjanya."
+  },
+  "steps": {
+    "title": "Langkah memulai ({done}/{total})",
+    "account": "Tambah akun yang kamu pakai",
+    "accountBody": "Rekening, e-wallet, atau tunai, dengan saldo sekarang.",
+    "income": "Catat gaji periode ini",
+    "incomeBody": "Jatah harian dihitung dari pemasukan ini.",
+    "incomeExample": "gaji 9jt",
+    "bills": "Masukkan tagihan rutin",
+    "billsBody": "Sewa, listrik, cicilan. Dipotong dulu sebelum jatah dibagi.",
+    "goal": "Buat satu goal tabungan",
+    "goalBody": "Misalnya dana darurat. Disisihkan otomatis tiap gajian.",
+    "doneLabel": "Selesai"
+  },
+  "glance": "Sekilas",
+  "recentEmpty": "Ketik pengeluaran pertamamu di kolom di bawah, misalnya \"kopi 25k\".",
+  "recordIncome": "Catat gaji"
 }

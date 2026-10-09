@@ -1,6 +1,4 @@
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { ChevronLeft } from "lucide-react";
 import { requirePage } from "@/server/context";
 import { prisma } from "@/server/db";
 import { PageHeader } from "@/components/ui";
@@ -20,11 +18,7 @@ export default async function CategoriesPage() {
   ]);
   return (
     <>
-      <Link href="/settings" className="mb-2 inline-flex min-h-11 items-center gap-1 text-sm font-[600] text-muted hover:text-ink">
-        <ChevronLeft size={18} strokeWidth={1.75} aria-hidden />
-        {ts("title")}
-      </Link>
-      <PageHeader title={t("title")} />
+      <PageHeader back={{ href: "/settings", label: ts("title") }} title={t("title")} />
       <CategorySettings
         cats={cats.map((c) => ({ id: c.id, name: c.name, kind: c.kind, countsToPool: c.countsToPool, used: counts.find((x) => x.categoryId === c.id)?._count ?? 0 }))}
         rules={rules.map((r) => ({ id: r.id, match: r.matchValue, target: [r.setCategory?.name, accounts.find((a) => a.id === r.setAccountId)?.name].filter(Boolean).join(", ") }))}

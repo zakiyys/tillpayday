@@ -65,5 +65,9 @@
   "account_not_found": "Account not found.",
   "no_rate": "No exchange rate for {currency} yet. Enter one.",
   "edit_not_supported_here": "Edit asset trades from the Investments page.",
-  "edit_opening_on_account": "Change the opening balance on the account."
+  "edit_opening_on_account": "Change the opening balance on the account.",
+  "emptyAccount": "Record this account's first transaction with the button above, or type it in the Record bar.",
+  "subtitle": "Every income, expense and transfer. Tap a row to change it.",
+  "filters": "Filters",
+  "filtersOn": "Filters ({n} on)"
 }

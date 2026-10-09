@@ -36,11 +36,11 @@ export function LogoMark({
 }
 
 /** The app icon: rounded tile (22.5% of the side) in the accent, main mark in the accent's text colour at 72%. */
-export function AppIcon({ size = 40, className }: { size?: number; className?: string }) {
+export function AppIcon({ size = 40, className, onHero = false }: { size?: number; className?: string; onHero?: boolean }) {
   return (
     <span
       aria-hidden
-      className={cx("inline-grid shrink-0 place-items-center bg-accent text-on-accent", className)}
+      className={cx("inline-grid shrink-0 place-items-center", onHero ? "bg-on-hero text-hero" : "bg-accent text-on-accent", className)}
       style={{ width: size, height: size, borderRadius: size * 0.225 }}
     >
       {/* The icon always uses the main five-bar form: only a mark drawn at 24 px or less uses the small form. */}
@@ -53,12 +53,12 @@ export function AppIcon({ size = 40, className }: { size?: number; className?: s
  * Icon plus the app name. The name comes from APP_NAME, never a hard-coded string.
  * Cap height is ~45% of the icon; the gap between them is 25% of the icon.
  */
-export function LogoLockup({ name, size = 40, className }: { name: string; size?: number; className?: string }) {
+export function LogoLockup({ name, size = 40, className, onHero = false }: { name: string; size?: number; className?: string; onHero?: boolean }) {
   return (
     <span className={cx("inline-flex items-center", className)} style={{ gap: size * GAP }}>
-      <AppIcon size={size} />
+      <AppIcon size={size} onHero={onHero} />
       <span
-        className="font-[800] leading-none tracking-[-0.02em] text-ink"
+        className={cx("font-[800] leading-none tracking-[-0.02em]", onHero ? "text-on-hero" : "text-ink")}
         style={{ fontSize: size * WORDMARK_EM }}
       >
         {name}

@@ -1,6 +1,6 @@
 {
   "title": "Tagihan dan rutin",
-  "subtitle": "Tagihan periode ini, transaksi rutin, dan langganan yang terdeteksi dari riwayat.",
+  "subtitle": "Bayar tagihan periode ini, atur jadwal rutin, dan lihat langganan yang terdeteksi.",
   "thisPeriod": "Tagihan periode ini",
   "none": "Tidak ada tagihan periode ini.",
   "due": "Jatuh tempo {date}",
@@ -12,13 +12,22 @@
   "payFrom": "Bayar dari",
   "skip": "Lewati kali ini",
   "unskip": "Batalkan lewati",
-  "kind": { "REGULAR": "Tagihan", "INSTALLMENT": "Cicilan", "CARD_STATEMENT": "Tagihan kartu", "GOAL": "Tabungan" },
+  "kind": {
+    "REGULAR": "Tagihan",
+    "INSTALLMENT": "Cicilan",
+    "CARD_STATEMENT": "Tagihan kartu",
+    "GOAL": "Tabungan"
+  },
   "addBill": "Tambah tagihan sekali",
   "recurring": "Rutin",
   "addRecurring": "Tambah rutin",
   "editRecurring": "Ubah rutin",
   "noRecurring": "Belum ada transaksi rutin. Tambahkan gaji, sewa, langganan, atau cicilan.",
-  "mode": { "label": "Cara", "AUTO_POST": "Catat otomatis (autodebet)", "CREATE_BILL": "Buat tagihan untuk ditandai lunas" },
+  "mode": {
+    "label": "Cara",
+    "AUTO_POST": "Catat otomatis (autodebet)",
+    "CREATE_BILL": "Buat tagihan untuk ditandai lunas"
+  },
   "schedule": {
     "label": "Berulang",
     "MONTHLY": "Bulanan pada tanggal",
@@ -30,7 +39,15 @@
     "weekday": "Hari",
     "month": "Bulan"
   },
-  "weekdays": ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"],
+  "weekdays": [
+    "Minggu",
+    "Senin",
+    "Selasa",
+    "Rabu",
+    "Kamis",
+    "Jumat",
+    "Sabtu"
+  ],
   "opensPeriod": "Ini gajiku (memulai periode baru)",
   "startDate": "Mulai",
   "endDate": "Selesai",
@@ -38,7 +55,12 @@
   "paused": "Dijeda",
   "pause": "Jeda",
   "resume": "Lanjutkan",
-  "every": { "MONTHLY": "Tiap bulan tanggal {day}", "PERIOD_OFFSET": "{offset} hari setelah periode mulai", "WEEKLY": "Tiap {weekday}", "YEARLY": "Tiap tahun tanggal {day}/{month}" },
+  "every": {
+    "MONTHLY": "Tiap bulan tanggal {day}",
+    "PERIOD_OFFSET": "{offset} hari setelah periode mulai",
+    "WEEKLY": "Tiap {weekday}",
+    "YEARLY": "Tiap tahun tanggal {day}/{month}"
+  },
   "subscriptions": "Langganan terdeteksi",
   "subscriptionsBody": "Penerima sama, nominal mirip, berjarak sekitar sebulan, minimal tiga kali.",
   "noSubscriptions": "Belum ada.",
@@ -46,5 +68,9 @@
   "makeRecurring": "Jadikan rutin",
   "bill_not_unpaid": "Tagihan ini sudah selesai.",
   "bill_has_payment": "Tagihan ini punya pembayaran. Hapus pembayarannya dulu.",
-  "bill_has_no_account": "Tagihan ini tidak punya akun tujuan."
+  "bill_has_no_account": "Tagihan ini tidak punya akun tujuan.",
+  "late": "Lewat jatuh tempo",
+  "unpaidTotal": "Belum lunas {amount}",
+  "thisPeriodBody": "Yang harus dibayar sebelum gajian berikutnya. Tagihan dan setoran goal sudah dipotong dari uang belanja; tagihan kartu tidak, karena belanjanya sudah dihitung di hari belanja.",
+  "recurringBody": "Jadwal berulang. Tiap periode, jadwal ini mencatat transaksi otomatis atau membuat tagihan di atas."
 }
