@@ -9,7 +9,7 @@ import { dbDate, isoOf } from "@/server/ledger/fx";
 import { toLedgerTx } from "@/server/ledger/rows";
 import { incomeExpense } from "@/domain/ledger";
 import { contributionFor, emergencyMonths, estimateReachDate, goalTotal } from "@/domain/goals";
-import { longDate, money } from "@/lib/format";
+import { longDate, money, num } from "@/lib/format";
 import { Card, EmptyState, Notice, PageHeader, Progress, SectionTitle } from "@/components/ui";
 import { GoalButton, GoalMoneyButton, WithdrawButton } from "@/components/goals";
 
@@ -111,10 +111,10 @@ export default async function GoalsPage() {
                   <Progress ratio={ratio} label={g.name} />
                 </div>
                 <p className="mt-2 text-sm text-muted">
-                  {saved >= g.targetAmount ? t("reached") : reach ? t("reach", { date: longDate(reach.date, ctx.intl), amount: fmt(per) }) : t("reachNone")}
+                  {saved >= g.targetAmount ? t("reached") : reach ? t("reach", { date: longDate(reach.date, ctx.intl, ctx.today), amount: fmt(per) }) : t("reachNone")}
                 </p>
                 {g.isEmergencyFund ? (
-                  <p className="mt-1 text-sm font-[600] text-ink">{months ? t("emergency", { months: months.toDecimalPlaces(1).toString() }) : t("emergencyNone")}</p>
+                  <p className="mt-1 text-sm font-[600] text-ink">{months ? t("emergency", { months: num(months.toDecimalPlaces(1).toNumber(), ctx.intl) }) : t("emergencyNone")}</p>
                 ) : null}
                 {g.allocations.length ? (
                   <div className="mt-3 border-t border-line pt-3">

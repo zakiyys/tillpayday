@@ -82,3 +82,28 @@ describe("local parser (scenario 16)", () => {
     }
   });
 });
+
+describe("local parser on everyday phrasing", () => {
+  const ctx = { today: "2026-10-09", accounts: [{ id: "gopay", names: ["gopay"] }], decimalComma: true, plainThousands: true };
+  const one = (s: string) => {
+    const r = localParse(s, ctx);
+    return r.confident ? r.entries.map((e) => ({ d: e.description, a: e.amount.major, on: e.date })) : null;
+  };
+  it("keeps a decimal comma inside an amount", () => {
+    expect(one("makan 1,5jt")).toEqual([{ d: "makan", a: "1500000", on: "2026-10-09" }]);
+    expect(one("nasi goreng 25k, es teh 5k")).toHaveLength(2);
+  });
+  it("reads 'lalu' after a day word as part of the date, elsewhere as 'then'", () => {
+    expect(one("jumat lalu nonton 50k")).toEqual([{ d: "nonton", a: "50000", on: "2026-10-02" }]);
+    expect(one("3 hari lalu bakso 20k")).toEqual([{ d: "bakso", a: "20000", on: "2026-10-06" }]);
+    expect(one("kopi 20k lalu roti 10k")).toHaveLength(2);
+  });
+  it("accepts the ',-' suffix and 'tadi pagi'", () => {
+    expect(one("kopi 25.000,-")).toEqual([{ d: "kopi", a: "25000", on: "2026-10-09" }]);
+    expect(one("tadi pagi kopi 20k")).toEqual([{ d: "kopi", a: "20000", on: "2026-10-09" }]);
+  });
+  it("leaves a top-up to the model or the form: it is a transfer, not spending", () => {
+    expect(one("topup gopay 100k")).toBeNull();
+    expect(one("top up gopay 100k")).toBeNull();
+  });
+});

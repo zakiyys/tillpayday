@@ -20,7 +20,7 @@ deploy.local/
 
 # local tools and data
 .tools/
-data/
+/data/
 compose.override.yaml
 backups/
 uploads/

@@ -34,8 +34,13 @@ export function money(
 export function shortDate(iso: string, intl = "id-ID") {
   return new Intl.DateTimeFormat(intl, { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${iso}T00:00:00Z`));
 }
-export function longDate(iso: string, intl = "id-ID") {
-  return new Intl.DateTimeFormat(intl, { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${iso}T00:00:00Z`));
+/** Weekday, day and month. Pass `today` to add the year when the date falls in another year. */
+export function longDate(iso: string, intl = "id-ID", today?: string) {
+  const withYear = !!today && iso.slice(0, 4) !== today.slice(0, 4);
+  return new Intl.DateTimeFormat(intl, { weekday: "long", day: "numeric", month: "long", year: withYear ? "numeric" : undefined, timeZone: "UTC" }).format(new Date(`${iso}T00:00:00Z`));
+}
+export function num(v: number, intl = "id-ID", digits = 1) {
+  return new Intl.NumberFormat(intl, { maximumFractionDigits: digits }).format(v);
 }
 export function dateTime(d: Date | string, intl = "id-ID", timeZone = "UTC") {
   return new Intl.DateTimeFormat(intl, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone }).format(new Date(d));

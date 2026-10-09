@@ -56,7 +56,7 @@ export function parseDate(text: string, today: ISODate): { date: ISODate; match:
   let m: RegExpExecArray | null;
   if ((m = /\b(kemarin lusa|lusa kemarin)\b/.exec(t))) return { date: addDays(today, -2), match: m[0] };
   if ((m = /\b(kemarin|yesterday)\b/.exec(t))) return { date: addDays(today, -1), match: m[0] };
-  if ((m = /\b(hari ini|tadi|today)\b/.exec(t))) return { date: today, match: m[0] };
+  if ((m = /\b(hari ini|tadi(?: pagi| siang| sore| malam)?|today)\b/.exec(t))) return { date: today, match: m[0] };
   if ((m = /\b(\d{1,2})\s*(hari|hr|days?)\s*(lalu|yang lalu|yg lalu|ago)\b/.exec(t))) return { date: addDays(today, -Number(m[1])), match: m[0] };
   if ((m = /\b(seminggu|minggu) (lalu|kemarin)\b|\b(a )?week ago\b/.exec(t))) return { date: addDays(today, -7), match: m[0] };
   if ((m = /\b(minggu|senin|selasa|rabu|kamis|jum'?at|sabtu|sunday|monday|tuesday|wednesday|thursday|friday|saturday)\s*(lalu|kemarin|last)?\b/.exec(t))) {
@@ -126,7 +126,7 @@ export interface LocalEntry {
 }
 
 const INCOME_WORDS = /\b(gaji|gajian|salary|payday|bonus|thr|pemasukan|income|terima|dapat|refund)\b/i;
-const COMPLEX = /\b(trf|transfer|tf|kirim|pindah|pinjam|minjem|hutang|utang|piutang|bayar hutang|patungan|split|bagi|beli saham|jual|saldo|harusnya|ganti|ubah|berapa|how much|habis berapa|simulasi|cicil|lot|gram)\b|\?/i;
+const COMPLEX = /\b(trf|transfer|tf|kirim|pindah|top ?up|isi saldo|pinjam|minjem|hutang|utang|piutang|bayar hutang|patungan|split|bagi|beli saham|jual|saldo|harusnya|ganti|ubah|berapa|how much|habis berapa|simulasi|cicil|lot|gram)\b|\?/i;
 
 /**
  * One or more simple entries separated by commas, "dan", "trus", "terus", "lalu", "and", "then".
@@ -139,7 +139,11 @@ export function localParse(
 ): { confident: boolean; entries: LocalEntry[] } {
   const clean = text.trim();
   if (!clean || clean.length > 300 || COMPLEX.test(clean)) return { confident: false, entries: [] };
-  const pieces = clean.split(/\s*(?:,|;|\n|\b(?:dan|trus|terus|lalu|and|then|plus)\b)\s*/i).filter((p) => p.trim());
+  // A comma between digits is a decimal ("1,5jt"), and "lalu" after a day word is part of a date ("jumat lalu").
+  const pieces = clean
+    .replace(/(\d)\s*[.,]-(?=\s|$)/g, "$1")
+    .split(/\s*(?:(?<!\d),|,(?!\d)|;|\n|\b(?:dan|trus|terus|and|then|plus)\b|(?<!\b(?:hari|hr|days?|minggu|senin|selasa|rabu|kamis|jum'?at|sabtu|yang|yg)\s+)\blalu\b)\s*/i)
+    .filter((p) => p.trim());
   const entries: LocalEntry[] = [];
   for (const piece of pieces) {
     let rest = ` ${piece} `;

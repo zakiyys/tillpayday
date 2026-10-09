@@ -93,7 +93,7 @@ export function TxList({
             <Fragment key={r.id}>
               {showDate ? (
                 <li className="bg-canvas/60 px-4 pb-1 pt-3 text-xs font-[600] uppercase tracking-[0.04em] text-muted" aria-hidden={false}>
-                  {r.occurredOn === today ? tc("today") : longDate(r.occurredOn, intl)}
+                  {r.occurredOn === today ? tc("today") : longDate(r.occurredOn, intl, today)}
                 </li>
               ) : null}
               <li className={cx("flex items-center gap-3 px-4 py-2.5", r.deleted && "opacity-70")}>
@@ -110,7 +110,7 @@ export function TxList({
                   <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
                     {r.categoryName && r.type !== "TRANSFER" ? <Chip>{r.categoryName}</Chip> : null}
                     {r.type !== "TRANSFER" && !viewAccountId ? <span className="truncate">{r.accountName}</span> : null}
-                    {compact ? <span>{r.occurredOn === today ? tc("today") : longDate(r.occurredOn, intl)}</span> : null}
+                    {compact ? <span>{r.occurredOn === today ? tc("today") : longDate(r.occurredOn, intl, today)}</span> : null}
                     {r.fxRateIsEstimate ? <span>· {t("estimate")}</span> : null}
                     {r.note ? <span className="truncate">· {r.note}</span> : null}
                   </div>
