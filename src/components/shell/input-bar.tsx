@@ -8,17 +8,15 @@ import { holdPhoto } from "@/lib/pending-photo";
 
 /**
  * Input bar on every page (SPEC 10). Sends the text to Record, which runs the parser and shows the card.
- * Hidden on Record itself, which has its own bar inside the conversation, and on phones outside Home.
+ * Hidden on Record itself, which has its own bar inside the conversation.
  */
-export function InputBar({ aiState, placement }: { aiState: "off" | "ok" | "down" | "novision"; placement: "mobile" | "desktop" }) {
+export function InputBar({ aiState }: { aiState: "off" | "ok" | "down" | "novision"; placement: "mobile" | "desktop" }) {
   const t = useTranslations("record");
   const path = usePathname();
   const router = useRouter();
   const [v, setV] = useState("");
   const file = useRef<HTMLInputElement>(null);
   if (path.startsWith("/record") || path.startsWith("/onboarding") || path.startsWith("/settings")) return null;
-  // On phones the bar lives on Home only; every other page reaches it through the raised Record button.
-  if (placement === "mobile" && path !== "/") return null;
   return (
     <form
       className="border-t border-line/60 bg-canvas/95 px-3 pb-2 pt-2 backdrop-blur lg:border-0 lg:bg-transparent lg:px-0 lg:pb-0 lg:pt-0 lg:backdrop-blur-none"

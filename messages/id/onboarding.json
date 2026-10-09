@@ -97,5 +97,6 @@
   "done": "Semua topik sudah dibahas. Periksa ringkasannya.",
   "toSummary": "Ke ringkasan",
   "ai_unavailable": "Model sedang tidak menjawab.",
-  "ai_consent_required": "Setujui dulu apa yang dikirim."
+  "ai_consent_required": "Setujui dulu apa yang dikirim.",
+  "recommended": "Disarankan"
 }

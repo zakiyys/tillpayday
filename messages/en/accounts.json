@@ -61,7 +61,7 @@
     "loanStart": "First installment date",
     "nameHelp": "A name you recognise, such as \"BCA Salary\" or \"GoPay\".",
     "institutionHelp": "Pick from the list to show its logo, or type your own.",
-    "institutionPick": "Pick a bank or provider",
+    "institutionPick": "Known providers",
     "more": "More settings (currency, last 4 digits, other names)"
   },
   "reconciled": "Checked {when}",

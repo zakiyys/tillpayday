@@ -97,5 +97,6 @@
   "done": "All topics are covered. Check the summary.",
   "toSummary": "Go to summary",
   "ai_unavailable": "The model is not answering right now.",
-  "ai_consent_required": "Agree to what is sent first."
+  "ai_consent_required": "Agree to what is sent first.",
+  "recommended": "Recommended"
 }

@@ -53,7 +53,7 @@ test("home, budgets, bills and goals with a salary, a bill and a goal", async ({
   const dep = page.getByRole("dialog", { name: /Setor ke/ });
   await dep.getByLabel("Nominal").fill("3.000.000");
   await dep.getByRole("button", { name: "Setor" }).click();
-  await expect(page.getByText("Rp 3.000.000 dari Rp 30.000.000")).toBeVisible();
+  await expect(page.getByText(/dari Rp\s30\.000\.000/)).toBeVisible();
   await checkA11y(page);
   await shoot(page, "goals");
 

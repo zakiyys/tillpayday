@@ -61,7 +61,7 @@
     "loanStart": "Tanggal cicilan pertama",
     "nameHelp": "Nama yang kamu kenali, misalnya \"BCA Gaji\" atau \"GoPay\".",
     "institutionHelp": "Pilih dari daftar supaya logonya muncul, atau ketik sendiri.",
-    "institutionPick": "Pilih bank atau penyedia",
+    "institutionPick": "Daftar yang dikenal",
     "more": "Pengaturan lain (mata uang, 4 digit, nama lain)"
   },
   "reconciled": "Dicocokkan {when}",
