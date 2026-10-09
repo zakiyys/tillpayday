@@ -25,8 +25,9 @@ export function Appearance({ locale, theme, accent, font }: { locale: string; th
   // Preview the text size right away; it is stored with the other choices on "apply".
   const pickFont = (k: string) => {
     setFs(k);
-    if (k === "md") delete document.documentElement.dataset.font;
-    else document.documentElement.dataset.font = k;
+    const root = document.documentElement;
+    if (k === "md") root.removeAttribute("data-font");
+    else root.setAttribute("data-font", k);
   };
   return (
     <Card className="max-w-xl space-y-4">
