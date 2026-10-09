@@ -171,19 +171,27 @@ serves a single request.
 - **One input bar** for everything: text, a receipt photo, a shared screenshot or a PDF statement.
 - **Receipts with a note.** Pick a photo, add a line like *"I only bought the fried rice, add the tax"*, and the card lists just your items plus your share of tax and service. The model only reads the receipt; the app does the arithmetic.
 - **Safe to spend today**, with periods that follow your payday and a daily or weekly allowance.
+- **Day cups.** Home and Budget show the pay period as a row of equal cups, one per day: what each past day kept,
+  today's cup lit, the days ahead outlined. Tap a cup (or use the arrow keys) to see that day's share and spending.
+- **"Why this number?"** under the daily number lays out income, bills, goal savings and the days left, so the
+  figure is never a mystery.
+- **First steps on Home** (add an account, record the salary, add regular bills, create a goal) tick themselves off.
 - **Confirmation cards** before anything is saved; the app learns rules from your corrections.
 - **Ask questions** in the same bar: "how much on food this month?", "can I afford a 6 million phone in 3 installments?"
 
 **Money in all its shapes**
 
-- Accounts of every kind: bank, e-wallet, cash, credit card, paylater, loans, investment accounts.
+- Accounts of every kind: bank, e-wallet, cash, credit card, paylater, loans, investment accounts, each with
+  its **bank or provider logo** (BCA, Mandiri, BRI, GoPay, OVO, DANA, ShopeePay and about 70 more; anything else
+  gets an icon for its type).
 - Transfers as one row with two sides, never as an expense.
 - Credit cards with statements and installment plans; paylater.
 - Debts and receivables per person, split bills, loans with principal and interest.
 - Recurring entries and bills, budgets with suggestions, goals on top of savings accounts, emergency fund in months.
 - Investments of any type (asset types are data): weighted average cost, realised and unrealised gain, gain split into
   price and exchange rate for foreign holdings.
-- Multiple currencies with one base currency; old figures keep the rate of their day; trip mode for travel.
+- Multiple currencies with one base currency, always shown with their symbol (Rp, $, S$, RM, ¥); old figures keep
+  the rate of their day; trip mode for travel.
 - Balance checks: tell it what your bank app shows, and it suggests the missing admin fee or interest.
 
 **Seeing the picture**
@@ -198,7 +206,9 @@ serves a single request.
 - Installable PWA with an offline queue, Android share target, an endpoint for iPhone Shortcuts, Web Push.
 - Two-person mode: invite a partner, keep private and shared accounts.
 - Sign in with passkeys; password plus authenticator code and recovery codes as backup.
-- Light and dark theme, your own accent colour, Indonesian and English.
+- **Quick PIN** on your own devices: open the app with six digits instead of the password, with optional
+  auto-lock after a period of no use.
+- Light and dark theme, your own accent colour, **adjustable text size**, Indonesian and English.
 - Works completely without AI.
 
 <p align="center">
@@ -497,6 +507,10 @@ Good to know:
   tokens** has a step-by-step Shortcut that sends text or photos to `POST /api/v1/ingest` with an INGEST token.
 - Push notifications on iPhone work only after the app is added to the Home Screen and opened from there.
 - Entries made offline stay on the device and are sent when you are back online.
+- The input bar sits above the bottom bar on every page; the round **+** in the middle of the bar opens the full
+  Record screen with its history. Everything else is under **More**, grouped by what it is for.
+- Tired of typing the password? **Settings > Sign-in and devices > Quick PIN** sets a 6-digit PIN for that
+  phone.
 
 ## Security
 
@@ -506,6 +520,9 @@ The app is built to be safe on the open internet on its own. In short:
 - Owner creation needs `SETUP_TOKEN`; afterwards sign-up is closed and members join only by single-use invitation.
 - Passkeys first; argon2id password plus TOTP and one-time recovery codes as backup. Sessions are listed per device
   and revocable. Export, AI settings, tokens, invitations and member removal ask you to sign in again.
+- An optional 6-digit PIN unlocks only devices you trusted while signed in. Five wrong PINs forget the device,
+  easy PINs (123456, 111111) are refused, and a PIN sign-in never counts as the fresh confirmation sensitive
+  actions need.
 - Rate limits with growing lockouts on sign-in, uploads, invitations and AI tests.
 - CSRF checks on every state-changing request, a strict Content Security Policy with no third-party origins,
   HSTS, `X-Frame-Options: DENY` and the other standard headers.

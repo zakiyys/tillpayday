@@ -18,6 +18,11 @@ Do not test against installs you do not own. Every install holds someone's perso
 - Passkeys first; password (argon2id) plus TOTP and one-time recovery codes as backup. Sessions are stored in the
   database, listed per device and revocable. Sensitive actions (export, AI settings, tokens, invitations, member
   removal, bulk import) require re-authentication.
+- Optional quick PIN: six digits, argon2id-hashed, set only after re-authentication. It works only on a browser
+  trusted at that moment (a random token in an `HttpOnly` cookie, stored as a SHA-256 hash), is rate limited per IP,
+  and five wrong PINs revoke that device. A PIN sign-in never satisfies re-authentication. Removing the PIN forgets
+  every trusted device. Optional auto-lock ends idle sessions so the next visit asks for the PIN.
+- Signing in again in the same browser revokes the session it replaces.
 - Rate limits with growing lockouts on login, re-authentication, ingest, uploads, invitations and AI tests.
 - CSRF checks on every state-changing request, a strict Content Security Policy with no third-party origins,
   `HttpOnly`/`SameSite` cookies (`Secure` behind HTTPS), standard security headers.

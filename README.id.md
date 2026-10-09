@@ -171,19 +171,28 @@ pertama.
 - **Satu kolom input** untuk semuanya: teks, foto struk, screenshot yang dibagikan, atau PDF mutasi rekening.
 - **Struk plus keterangan.** Pilih foto, tulis misalnya *"aku cuma beli nasi goreng, hitung pajaknya"*, dan kartunya menampilkan item milikmu saja plus bagian pajak dan service-nya. Model cuma membaca struk; hitungannya dikerjakan aplikasi.
 - **Aman dibelanjakan hari ini**, dengan periode mengikuti gajian dan jatah harian atau mingguan.
+- **Cangkir harian.** Beranda dan Budget menampilkan periode gajian sebagai deretan cangkir sama besar, satu per
+  hari: sisa tiap hari yang lewat, cangkir hari ini menyala, hari-hari berikutnya bergaris putus. Ketuk satu cangkir
+  (atau pakai tombol panah) untuk melihat jatah dan belanja hari itu.
+- **"Kenapa angka ini?"** di bawah angka harian menguraikan pemasukan, tagihan, setoran goal, dan sisa hari, jadi
+  angkanya tidak pernah misterius.
+- **Langkah memulai di Beranda** (tambah akun, catat gaji, masukkan tagihan rutin, buat goal) tercentang sendiri.
 - **Kartu konfirmasi** sebelum menyimpan; app belajar aturan dari koreksi kamu.
 - **Tanya langsung** di kolom yang sama: "makan bulan ini habis berapa?", "kuat nggak beli HP 6 juta cicil 3 kali?"
 
 **Uang dalam segala bentuk**
 
-- Semua jenis akun: bank, e-wallet, tunai, kartu kredit, paylater, pinjaman, akun investasi.
+- Semua jenis akun: bank, e-wallet, tunai, kartu kredit, paylater, pinjaman, akun investasi, masing-masing dengan
+  **logo bank atau penyedianya** (BCA, Mandiri, BRI, GoPay, OVO, DANA, ShopeePay, dan sekitar 70 lainnya; selebihnya
+  memakai ikon jenis akun).
 - Transfer sebagai satu baris dua sisi, bukan pengeluaran.
 - Kartu kredit dengan statement dan cicilan; paylater.
 - Utang-piutang per orang, patungan, pinjaman dengan pokok dan bunga.
 - Transaksi berulang dan tagihan, anggaran dengan saran, tujuan di atas rekening tabungan, dana darurat dalam bulan.
 - Investasi jenis apa pun (jenis aset adalah data): harga rata-rata tertimbang, untung terealisasi dan belum, untung
   dipisah antara harga dan kurs untuk aset luar negeri.
-- Multi mata uang dengan satu mata uang dasar; angka lama memakai kurs di harinya; mode perjalanan.
+- Multi mata uang dengan satu mata uang dasar, selalu tampil dengan simbolnya (Rp, $, S$, RM, ¥); angka lama
+  memakai kurs di harinya; mode perjalanan.
 - Cek saldo: ketik saldo di aplikasi bank, app menyarankan biaya admin atau bunga yang belum tercatat.
 
 **Melihat gambaran besar**
@@ -198,7 +207,9 @@ pertama.
 - PWA yang bisa dipasang, antrean offline, share target Android, endpoint untuk Shortcut iPhone, Web Push.
 - Mode berdua: undang pasangan, pisahkan akun pribadi dan bersama.
 - Masuk dengan passkey; password plus kode autentikator dan recovery code sebagai cadangan.
-- Tema terang dan gelap, warna aksen sendiri, Bahasa Indonesia dan Inggris.
+- **PIN cepat** di perangkatmu sendiri: buka aplikasi dengan 6 digit, tidak perlu password tiap kali, plus kunci
+  otomatis kalau mau.
+- Tema terang dan gelap, warna aksen sendiri, **ukuran huruf yang bisa diatur**, Bahasa Indonesia dan Inggris.
 - Jalan penuh tanpa AI.
 
 <p align="center">
@@ -499,6 +510,9 @@ Perlu diketahui:
   dengan token INGEST.
 - Notifikasi push di iPhone baru jalan setelah app ditambahkan ke Layar Utama dan dibuka dari sana.
 - Catatan yang dibuat saat offline disimpan di perangkat dan dikirim saat online lagi.
+- Kolom input ada di atas bar bawah di setiap halaman; tombol bulat **+** di tengah bar membuka layar Catat lengkap
+  dengan riwayatnya. Halaman lain ada di **Lainnya**, dikelompokkan menurut kegunaannya.
+- Capek mengetik password? **Setelan > Masuk dan perangkat > PIN cepat** memasang PIN 6 digit untuk HP itu.
 
 ## Keamanan
 
@@ -509,6 +523,9 @@ App ini dirancang aman di internet terbuka tanpa lapisan tambahan. Ringkasnya:
   pakai.
 - Passkey dulu; password argon2id plus TOTP dan recovery code sekali pakai sebagai cadangan. Sesi tercatat per
   perangkat dan bisa dicabut. Ekspor, pengaturan AI, token, undangan, dan menghapus anggota meminta kamu masuk ulang.
+- PIN 6 digit (opsional) hanya membuka perangkat yang kamu percayai saat sudah masuk. Lima kali PIN salah membuat
+  perangkat itu dilupakan, PIN yang mudah ditebak (123456, 111111) ditolak, dan masuk dengan PIN tidak pernah dihitung
+  sebagai konfirmasi ulang untuk aksi sensitif.
 - Rate limit dengan penguncian yang makin lama untuk login, unggahan, undangan, dan tes AI.
 - Cek CSRF di setiap request yang mengubah data, Content Security Policy ketat tanpa origin pihak ketiga, HSTS,
   `X-Frame-Options: DENY`, dan header standar lainnya.
