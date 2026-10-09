@@ -43,12 +43,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const jar = await cookies();
   const theme = jar.get("theme")?.value;
   const accent = jar.get("accent")?.value;
+  const font = jar.get("font")?.value;
   const symbols = await loadSymbols();
   return (
     <html
       lang={locale}
       data-theme={theme === "dark" || theme === "light" ? theme : "system"}
       data-accent={accent && ["slate", "plum", "graphite"].includes(accent) ? accent : undefined}
+      data-font={font && ["sm", "lg", "xl"].includes(font) ? font : undefined}
       suppressHydrationWarning
     >
       <head>

@@ -102,6 +102,11 @@
   --shadow-float: var(--shadow-float);
 }
 
+/* Text size setting (per device). Everything is sized in rem, so the whole interface scales together. */
+html[data-font="sm"] { font-size: 93.75%; }
+html[data-font="lg"] { font-size: 112.5%; }
+html[data-font="xl"] { font-size: 125%; }
+
 html {
   background: var(--canvas);
   color: var(--ink);

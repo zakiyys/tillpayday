@@ -20,7 +20,7 @@ export default async function AppearancePage() {
         {ts("title")}
       </Link>
       <PageHeader title={t("title")} />
-      <Appearance locale={ctx.locale} theme={jar.get("theme")?.value ?? "system"} accent={jar.get("accent")?.value || "evergreen"} />
+      <Appearance locale={ctx.locale} theme={jar.get("theme")?.value ?? "system"} accent={jar.get("accent")?.value || "evergreen"} font={jar.get("font")?.value || "md"} />
     </>
   );
 }

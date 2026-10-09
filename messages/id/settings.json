@@ -17,8 +17,8 @@
     "notificationsBody": "Notifikasi push dan di app, waktu rekap mingguan.",
     "data": "Backup dan ekspor",
     "dataBody": "Ekspor semua data ke CSV atau JSON, impor kembali, daftar akhir tahun.",
-    "appearance": "Bahasa dan tema",
-    "appearanceBody": "Bahasa, terang atau gelap, warna aksen."
+    "appearance": "Tampilan",
+    "appearanceBody": "Bahasa, tema, warna aksen, dan ukuran huruf."
   },
   "currencies": {
     "title": "Mata uang dan kurs",

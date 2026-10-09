@@ -1,5 +1,5 @@
 {
-  "title": "Language and theme",
+  "title": "Appearance",
   "language": "Language",
   "theme": "Theme",
   "system": "Follow the device",
@@ -10,5 +10,13 @@
   "slate": "Slate blue",
   "plum": "Plum",
   "graphite": "Graphite",
-  "save": "Apply"
+  "save": "Apply",
+  "fontSize": "Text size",
+  "fontHelp": "Applies to all text and buttons on this device.",
+  "font_sm": "Small",
+  "font_md": "Normal",
+  "font_lg": "Large",
+  "font_xl": "Extra large",
+  "preview": "Example: Safe to spend today",
+  "previewAmount": "Rp 166,000"
 }

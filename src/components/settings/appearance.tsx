@@ -14,11 +14,20 @@ const ACCENTS = [
 ] as const;
 
 /** Language, theme and accent are per device (cookies), so each member can choose their own. */
-export function Appearance({ locale, theme, accent }: { locale: string; theme: string; accent: string }) {
+const FONTS = ["sm", "md", "lg", "xl"] as const;
+
+export function Appearance({ locale, theme, accent, font }: { locale: string; theme: string; accent: string; font: string }) {
   const t = useTranslations("look");
   const [l, setL] = useState(locale);
   const [th, setTh] = useState(theme);
   const [ac, setAc] = useState(accent);
+  const [fs, setFs] = useState(font);
+  // Preview the text size right away; it is stored with the other choices on "apply".
+  const pickFont = (k: string) => {
+    setFs(k);
+    if (k === "md") delete document.documentElement.dataset.font;
+    else document.documentElement.dataset.font = k;
+  };
   return (
     <Card className="max-w-xl space-y-4">
       <Select label={t("language")} value={l} onChange={(e) => setL(e.target.value)}>
@@ -44,6 +53,31 @@ export function Appearance({ locale, theme, accent }: { locale: string; theme: s
           ))}
         </div>
       </fieldset>
+      <fieldset>
+        <legend className="mb-1.5 text-sm font-[550] text-ink">{t("fontSize")}</legend>
+        <div className="grid grid-cols-4 gap-2">
+          {FONTS.map((k, i) => (
+            <label
+              key={k}
+              className={cx(
+                "flex min-h-16 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-btn border px-1 text-center",
+                fs === k ? "border-accent bg-accent-soft text-on-accent-soft" : "border-line text-ink",
+              )}
+            >
+              <input type="radio" name="font" className="sr-only" checked={fs === k} onChange={() => pickFont(k)} />
+              <span aria-hidden className="font-[650] leading-none" style={{ fontSize: `${14 + i * 3}px` }}>
+                Aa
+              </span>
+              <span className="text-xs font-[600]">{t(`font_${k}`)}</span>
+            </label>
+          ))}
+        </div>
+        <p className="mt-1.5 text-xs text-muted">{t("fontHelp")}</p>
+        <div className="mt-3 rounded-btn bg-hero p-4 text-on-hero">
+          <p className="text-sm text-on-hero-muted">{t("preview")}</p>
+          <p className="num text-3xl font-[700] tracking-[-0.02em]">{t("previewAmount")}</p>
+        </div>
+      </fieldset>
       <button
         type="button"
         className={btn.primary}
@@ -52,6 +86,7 @@ export function Appearance({ locale, theme, accent }: { locale: string; theme: s
           document.cookie = `locale=${l}; ${y}`;
           document.cookie = `theme=${th}; ${y}`;
           document.cookie = `accent=${ac === "evergreen" ? "" : ac}; ${y}`;
+          document.cookie = `font=${fs === "md" ? "" : fs}; ${y}`;
           window.location.reload();
         }}
       >

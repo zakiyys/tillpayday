@@ -1,5 +1,5 @@
 {
-  "title": "Bahasa dan tema",
+  "title": "Tampilan",
   "language": "Bahasa",
   "theme": "Tema",
   "system": "Ikuti perangkat",
@@ -10,5 +10,13 @@
   "slate": "Biru batu",
   "plum": "Ungu plum",
   "graphite": "Grafit",
-  "save": "Terapkan"
+  "save": "Terapkan",
+  "fontSize": "Ukuran huruf",
+  "fontHelp": "Berlaku untuk semua teks dan tombol di perangkat ini.",
+  "font_sm": "Kecil",
+  "font_md": "Normal",
+  "font_lg": "Besar",
+  "font_xl": "Sangat besar",
+  "preview": "Contoh: Aman dibelanjakan hari ini",
+  "previewAmount": "Rp 166.000"
 }

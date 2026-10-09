@@ -17,8 +17,8 @@
     "notificationsBody": "Push and in-app notifications, weekly recap time.",
     "data": "Backup and export",
     "dataBody": "Export everything to CSV or JSON, import an export, year-end list.",
-    "appearance": "Language and theme",
-    "appearanceBody": "Language, light or dark, accent colour."
+    "appearance": "Appearance",
+    "appearanceBody": "Language, light or dark, accent colour and text size."
   },
   "currencies": {
     "title": "Currencies and rates",
