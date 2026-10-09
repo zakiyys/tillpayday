@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import { Field, inputCls } from "./form";
 import { majorStrToMinor, minorToInput, parseMajor } from "@/lib/format";
+import { currencySymbol } from "@/lib/currency";
 
 /**
  * Money input in major units, typed in the user's style ("1.500.000", "12,50").
@@ -39,7 +40,7 @@ export function MoneyInput({
   return (
     <Field id={id} label={label} help={help} error={error}>
       <div className="relative">
-        <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-[600] text-muted">{currency}</span>
+        <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-[600] text-muted">{currencySymbol(currency)}</span>
         <input
           id={id}
           inputMode="decimal"
@@ -49,6 +50,13 @@ export function MoneyInput({
           required={required}
           aria-invalid={invalid || undefined}
           aria-describedby={help ? `${id}-help` : undefined}
+          onBlur={() => {
+            // Group the digits once the field loses focus, so "1500000" reads as "1.500.000".
+            // Three-decimal currencies stay as typed: "1.125" would read back as thousands.
+            if (minor == null || invalid || exp >= 3) return;
+            const intl = document.documentElement.lang === "en" ? "en-US" : "id-ID";
+            setText(new Intl.NumberFormat(intl, { minimumFractionDigits: 0, maximumFractionDigits: exp }).format(minorToInput(minor, exp) as unknown as number));
+          }}
           onChange={(e) => {
             setText(e.target.value);
             const p = parseMajor(e.target.value);

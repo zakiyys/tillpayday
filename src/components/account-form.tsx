@@ -7,6 +7,7 @@ import { api } from "@/lib/api-client";
 import { Checkbox, Select, TextInput, useErrorText } from "./form";
 import { MoneyInput } from "./money-input";
 import { btn, Notice } from "./ui";
+import { currencyLabel } from "@/lib/currency";
 
 export interface CurrencyOpt {
   code: string;
@@ -114,7 +115,7 @@ export function AccountForm({
         <Select label={t("fields.currency")} name="currency" value={currency} onChange={(e) => setCurrency(e.target.value)}>
           {currencies.map((c) => (
             <option key={c.code} value={c.code}>
-              {c.code}
+              {currencyLabel(c.code)}
             </option>
           ))}
         </Select>

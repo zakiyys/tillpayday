@@ -42,7 +42,7 @@ test("debts, split, investments, trips and currencies pages", async ({ page }) =
   await h.getByLabel("Nama", { exact: true }).fill("Saham Contoh");
   await h.getByLabel("Jenis aset").selectOption({ label: "Saham" });
   await h.getByLabel("Simbol atau kode").fill("ABCD");
-  await h.getByLabel("Akun").selectOption({ label: "Sekuritas Contoh (IDR)" });
+  await h.getByLabel("Akun").selectOption({ label: "Sekuritas Contoh (Rp)" });
   await h.getByRole("button", { name: "Simpan" }).click();
   await page.getByRole("button", { name: "Beli: Saham Contoh" }).click();
   const b = page.getByRole("dialog", { name: "Beli Saham Contoh" });

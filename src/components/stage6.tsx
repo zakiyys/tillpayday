@@ -7,6 +7,7 @@ import { FormDialog } from "./form-dialog";
 import { Checkbox, Select, TextInput } from "./form";
 import { MoneyInput } from "./money-input";
 import { majorStrToMinor, parseMajor } from "@/lib/format";
+import { currencySymbol, currencyLabel } from "@/lib/currency";
 
 type Opts = Pick<FormOptions, "accounts" | "categories" | "currencies">;
 const expOf = (opts: Opts, c: string) => opts.currencies.find((x) => x.code === c)?.exponent ?? 2;
@@ -23,7 +24,7 @@ const AccountOptions = ({ list }: { list: Opts["accounts"] }) => (
     {list.map((a) => (
       <option key={a.id} value={a.id}>
         {a.name}
-        {a.last4 ? ` •${a.last4}` : ""} ({a.currency})
+        {a.last4 ? ` •${a.last4}` : ""} ({currencySymbol(a.currency)})
       </option>
     ))}
   </>
@@ -232,7 +233,7 @@ export function HoldingButton({ opts, types }: { opts: Opts; types: AssetTypeOpt
           <option value="">{t("sameAsAccount")}</option>
           {opts.currencies.map((c) => (
             <option key={c.code} value={c.code}>
-              {c.code}
+              {currencyLabel(c.code)}
             </option>
           ))}
         </Select>
@@ -356,7 +357,7 @@ export function TripButton({ opts, base, today, goals }: { opts: Opts; base: str
       <Select label={t("fields.currency")} name="currency" defaultValue={base}>
         {opts.currencies.map((c) => (
           <option key={c.code} value={c.code}>
-            {c.code}
+            {currencyLabel(c.code)}
           </option>
         ))}
       </Select>

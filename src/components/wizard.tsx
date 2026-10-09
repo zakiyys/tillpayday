@@ -9,6 +9,7 @@ import type { Draft, Topic, TopicState } from "@/server/onboarding/draft";
 import { Checkbox, Select, TextInput, useErrorText } from "./form";
 import { MoneyInput } from "./money-input";
 import { btn, Card, Notice, cx } from "./ui";
+import { currencyLabel } from "@/lib/currency";
 
 const TOPICS: Topic[] = ["basics", "payday", "accounts", "wallets", "debts", "assets", "bills", "goals"];
 const TYPES: Partial<Record<Topic, Draft["accounts"][number]["type"][]>> = {
@@ -107,7 +108,7 @@ export function Wizard({ initial, topics: initialTopics, currencies, assetTypes,
                 <Select label={t("baseCurrency")} value={base} onChange={(e) => setD({ ...d, basics: { ...d.basics, baseCurrency: e.target.value } })}>
                   {currencies.map((c) => (
                     <option key={c.code} value={c.code}>
-                      {c.code}
+                      {currencyLabel(c.code)}
                     </option>
                   ))}
                 </Select>

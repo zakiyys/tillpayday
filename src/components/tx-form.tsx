@@ -8,6 +8,7 @@ import type { FormOptions } from "@/server/ui-data";
 import { Checkbox, Select, TextInput, useErrorText } from "./form";
 import { MoneyInput } from "./money-input";
 import { btn, Notice } from "./ui";
+import { currencySymbol } from "@/lib/currency";
 
 export interface TxFormValue {
   id?: string;
@@ -107,7 +108,7 @@ export function TxForm({
         {opts.accounts.map((a) => (
           <option key={a.id} value={a.id}>
             {a.name}
-            {a.last4 ? ` •${a.last4}` : ""} ({a.currency})
+            {a.last4 ? ` •${a.last4}` : ""} ({currencySymbol(a.currency)})
           </option>
         ))}
       </Select>
@@ -119,7 +120,7 @@ export function TxForm({
               .map((a) => (
                 <option key={a.id} value={a.id}>
                   {a.name}
-                  {a.last4 ? ` •${a.last4}` : ""} ({a.currency})
+                  {a.last4 ? ` •${a.last4}` : ""} ({currencySymbol(a.currency)})
                 </option>
               ))}
           </Select>

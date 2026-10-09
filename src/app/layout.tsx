@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
+import { loadSymbols } from "@/server/symbols";
+import { CurrencySymbols } from "@/components/shell/currency-symbols";
 import "./globals.css";
 
 const name = process.env.APP_NAME ?? "TillPayDay";
@@ -41,6 +43,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const jar = await cookies();
   const theme = jar.get("theme")?.value;
   const accent = jar.get("accent")?.value;
+  const symbols = await loadSymbols();
   return (
     <html
       lang={locale}
@@ -53,7 +56,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <CurrencySymbols rows={symbols} />
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   );

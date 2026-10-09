@@ -7,6 +7,7 @@ import { api } from "@/lib/api-client";
 import { Select, TextInput, useErrorText } from "@/components/form";
 import { MoneyInput } from "@/components/money-input";
 import { btn, Card, Notice } from "@/components/ui";
+import { currencyLabel } from "@/lib/currency";
 
 const TZ = ["Asia/Jakarta", "Asia/Makassar", "Asia/Jayapura", "Asia/Singapore", "Asia/Kuala_Lumpur", "Asia/Tokyo", "Europe/London", "Europe/Amsterdam", "America/New_York", "Australia/Sydney", "UTC"];
 
@@ -68,7 +69,7 @@ export function HouseholdForm(p: {
         <Select label={t("baseCurrency")} name="baseCurrency" defaultValue={p.baseCurrency} disabled={dis || p.baseLocked} help={p.baseLocked ? t("baseLocked") : undefined}>
           {p.currencies.map((c) => (
             <option key={c.code} value={c.code}>
-              {c.code}
+              {currencyLabel(c.code)}
             </option>
           ))}
         </Select>

@@ -1,4 +1,5 @@
 // Formatting helpers usable on server and client. Money arrives as bigint or a decimal string of minor units.
+import { currencySymbol, symbolNeedsSpace } from "./currency";
 
 const KNOWN_EXP: Record<string, number> = { IDR: 0, JPY: 0, KRW: 0, VND: 0 };
 export const expOf = (code: string, fallback?: number) => fallback ?? KNOWN_EXP[code] ?? 2;
@@ -19,16 +20,15 @@ export function money(
   const v = typeof minor === "bigint" ? minor : BigInt(minor);
   const exp = expOf(currency, opts.exp);
   const nf = new Intl.NumberFormat(intl, {
-    style: "currency",
-    currency,
-    currencyDisplay: "narrowSymbol",
     minimumFractionDigits: opts.compact ? 0 : exp,
     maximumFractionDigits: opts.compact ? 1 : exp,
     notation: opts.compact ? "compact" : "standard",
-    signDisplay: opts.sign ? "exceptZero" : "auto",
   });
   // Intl.NumberFormat accepts decimal strings, so large values keep full precision.
-  return nf.format(toMajorString(v, exp) as unknown as number).replace("-", "\u2212");
+  const digits = nf.format(toMajorString(v < 0n ? -v : v, exp) as unknown as number);
+  const sym = currencySymbol(currency);
+  const sign = v < 0n ? "\u2212" : opts.sign && v > 0n ? "+" : "";
+  return `${sign}${sym}${symbolNeedsSpace(sym) ? "\u00a0" : ""}${digits}`;
 }
 
 export function shortDate(iso: string, intl = "id-ID") {

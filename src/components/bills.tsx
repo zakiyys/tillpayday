@@ -10,6 +10,7 @@ import { Dialog } from "./dialog";
 import { Checkbox, Select, TextInput, useErrorText } from "./form";
 import { MoneyInput } from "./money-input";
 import { btn, Notice } from "./ui";
+import { currencySymbol } from "@/lib/currency";
 
 type Opts = Pick<FormOptions, "accounts" | "categories" | "currencies">;
 
@@ -47,7 +48,7 @@ export function PayBillButton({ bill, opts, today, label }: { bill: { id: string
           <Select label={t("payFrom")} name="accountId">
             {daily.map((a) => (
               <option key={a.id} value={a.id}>
-                {a.name} ({a.currency})
+                {a.name} ({currencySymbol(a.currency)})
               </option>
             ))}
           </Select>
@@ -140,7 +141,7 @@ export function RecurringForm({ opts, today, base, initial, onDone }: { opts: Op
       <Select label={type === "TRANSFER" ? ttx("fields.from") : ttx("fields.account")} value={accountId} onChange={(e) => setAccountId(e.target.value)}>
         {opts.accounts.map((a) => (
           <option key={a.id} value={a.id}>
-            {a.name} ({a.currency})
+            {a.name} ({currencySymbol(a.currency)})
           </option>
         ))}
       </Select>

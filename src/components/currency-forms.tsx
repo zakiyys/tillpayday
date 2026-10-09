@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { FormDialog } from "./form-dialog";
 import { Select, TextInput } from "./form";
+import { currencyLabel } from "@/lib/currency";
 
 export function CurrencyButton() {
   const t = useTranslations("settings.currencies");
@@ -46,14 +47,14 @@ export function RateButton({ currencies, base, today }: { currencies: string[]; 
         <Select label={t("from")} name="from" defaultValue={currencies.find((c) => c !== base)}>
           {currencies.map((c) => (
             <option key={c} value={c}>
-              {c}
+              {currencyLabel(c)}
             </option>
           ))}
         </Select>
         <Select label={t("to")} name="to" defaultValue={base}>
           {currencies.map((c) => (
             <option key={c} value={c}>
-              {c}
+              {currencyLabel(c)}
             </option>
           ))}
         </Select>
