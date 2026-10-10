@@ -106,4 +106,11 @@ describe("local parser on everyday phrasing", () => {
     expect(one("topup gopay 100k")).toBeNull();
     expect(one("top up gopay 100k")).toBeNull();
   });
+  it("leaves every everyday spelling of lending/borrowing to the model, so it becomes a debt not an expense", () => {
+    // "pinjem" is the common spelling; missing it made the local parser record a plain expense and
+    // the AI (which knows pinjem/utang = record_debt_or_loan) was never asked. See tests/unit/parse.test.ts.
+    for (const w of ["pinjam", "pinjem", "pinjemin", "pinjamin", "minjam", "minjem", "minjemin", "ngutang", "ngutangin", "ngebon", "utang", "hutang"]) {
+      expect(one(`didit ${w} uang 500rb`), w).toBeNull();
+    }
+  });
 });

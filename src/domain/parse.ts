@@ -126,7 +126,7 @@ export interface LocalEntry {
 }
 
 const INCOME_WORDS = /\b(gaji|gajian|salary|payday|bonus|thr|pemasukan|income|terima|dapat|refund)\b/i;
-const COMPLEX = /\b(trf|transfer|tf|kirim|pindah|top ?up|isi saldo|pinjam|minjem|hutang|utang|piutang|bayar hutang|patungan|split|bagi|beli saham|jual|saldo|harusnya|ganti|ubah|berapa|how much|habis berapa|simulasi|cicil|lot|gram)\b|\?/i;
+const COMPLEX = /\b(trf|transfer|tf|kirim|pindah|top ?up|isi saldo|pinjam|pinjem|pinjamin|pinjemin|minjam|minjem|minjemin|ngutang|ngutangin|ngebon|hutang|utang|piutang|bayar hutang|patungan|split|bagi|beli saham|jual|saldo|harusnya|ganti|ubah|berapa|how much|habis berapa|simulasi|cicil|lot|gram)\b|\?/i;
 
 /**
  * One or more simple entries separated by commas, "dan", "trus", "terus", "lalu", "and", "then".
